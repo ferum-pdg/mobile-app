@@ -1,4 +1,3 @@
-import 'package:ferum/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 
@@ -45,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       //Récupère le total dédupliqué
-      int? totalSteps = await _health.getTotalStepsInInterval(midnight, now);
+      //int? totalSteps = await _health.getTotalStepsInInterval(midnight, now);
       double totalActive_energy_burned = 0;
       double totalDistance_walking_running = 0.0;
       int totalHeart_rate_resting = 0;
@@ -83,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       //on met les valeurs disponible pour le reste de l'application
       setState(() {
-        steps = totalSteps;
+        //steps = totalSteps;
         active_energy_burned = totalActive_energy_burned;
         //distance récupérée en mêtre on le passe en km
         distance_walking_running = totalDistance_walking_running / 1000;
@@ -141,8 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        
-      ),      
+      ),
     );
   }
 }

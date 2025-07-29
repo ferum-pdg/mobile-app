@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../pages/profile.dart';
 import '../pages/home.dart';
 
@@ -14,7 +15,7 @@ class _BottomNavState extends State<BottomNav> {
 
   PageController pageController = PageController();
 
-  void onTapped(int index){
+  void onTapped(int index) {
     setState(() {
       selectedIndex = index;
     });
@@ -26,10 +27,7 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: [
-          MyHomePage(),
-          ProfilePage()
-        ],
+        children: [MyHomePage(), ProfilePage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
@@ -38,20 +36,20 @@ class _BottomNavState extends State<BottomNav> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Accueil',
-            backgroundColor: Colors.blue
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports),
             label: 'Entrainements',
-            backgroundColor: Colors.blue
+            backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profil',
-            backgroundColor: Colors.blue
-          ),          
+            backgroundColor: Colors.blue,
+          ),
         ],
-        onTap: onTapped,        
+        onTap: onTapped,
       ),
     );
   }
