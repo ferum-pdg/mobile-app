@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -28,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
       HealthDataType.ACTIVE_ENERGY_BURNED,
       HealthDataType.DISTANCE_WALKING_RUNNING,
       HealthDataType.RESTING_HEART_RATE,
+      HealthDataType.WORKOUT,
     ];
 
     DateTime now = DateTime.now();
@@ -37,12 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final authorized = await _health.requestAuthorization(types);
 
     if (authorized) {
-      final result = await _health.getHealthDataFromTypes(
+      List<HealthDataPoint> points = await _health.getHealthDataFromTypes(
         types: types,
         startTime: midnight,
         endTime: now,
       );
 
+      //Json des données
+      List<Map<String, dynamic>> healthDataJson = [];
       //Récupère le total dédupliqué
       //int? totalSteps = await _health.getTotalStepsInInterval(midnight, now);
       double totalActive_energy_burned = 0;
@@ -50,11 +58,22 @@ class _MyHomePageState extends State<MyHomePage> {
       int totalHeart_rate_resting = 0;
 
       //Récupère toutes les valeurs et les mets dans le bon format type.
-      for (var point in result) {
+
+      points = _health.removeDuplicates(points);
+
+      for (var point in points) {
         //Debug info
         /*print(
           '${point.type}-${point.value}-${point.dateFrom}-${point.dateTo}-${point.sourceName}',
         );*/
+
+        if (point.type == HealthDataType.WORKOUT) {
+          //healthDataJson.add(point.toJson());
+          healthDataJson.add(point.workoutSummary!.toJson());
+
+          continue;
+        }
+
         if (point.value is NumericHealthValue) {
           //On additionne toutes les valeurs que l'on récupère afin d'avoir les totaux.
           switch (point.type) {
@@ -80,6 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       }
+      String filePath = await saveJsonToFile(healthDataJson);
+      shareHealthData(filePath);
       //on met les valeurs disponible pour le reste de l'application
       setState(() {
         //steps = totalSteps;
@@ -172,4 +193,19 @@ class InfoCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
+  final directory =
+      await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
+  final filePath = '${directory.path}/health_data.json';
+  final file = File(filePath);
+
+  await file.writeAsString(jsonEncode(jsonData));
+  print('✅ Fichier sauvegardé : $filePath');
+  return filePath;
+}
+
+void shareHealthData(String filePath) {
+  Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
 }
