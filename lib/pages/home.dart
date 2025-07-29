@@ -1,9 +1,9 @@
+import 'package:ferum/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -141,7 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-      ),
+        
+      ),      
     );
   }
 }

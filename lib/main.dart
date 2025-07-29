@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './pages/profile.dart';
-import './pages/home.dart';
-
+import './widgets/bottomNav.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Steps Counter'),
+      home: BottomNav(),
     );
   }
 }
