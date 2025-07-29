@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../pigeons/workout.g.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -23,8 +25,29 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _health = Health();
-    getAppleHealth();
+    //_health = Health();
+    //getAppleHealth();
+    workoutsApi
+        .requestAuthorization()
+        .then((_) {
+          loadWorkouts();
+        })
+        .catchError((e) {
+          print(" Autorisation HealthKit refusée ou échouée: $e");
+        });
+  }
+
+  final workouts = Workouts();
+
+  final workoutsApi = Workouts(); // API Pigeon
+
+  Future<void> loadWorkouts() async {
+    final workoutList = await workoutsApi.getWorkouts();
+    for (var w in workoutList) {
+      print(
+        "🏃 Workout: ${w.type}, FC moyenne: ${w.avgHeartRate}, FC max: ${w.maxHeartRate}, Allure: ${w.avgPace}",
+      );
+    }
   }
 
   Future<void> getAppleHealth() async {
