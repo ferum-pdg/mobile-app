@@ -2,6 +2,7 @@
 // See also: https://pub.dev/packages/pigeon
 
 import Foundation
+import HealthKit
 
 #if os(iOS)
   import Flutter
@@ -107,12 +108,12 @@ func deepEqualsworkout(_ lhs: Any?, _ rhs: Any?) -> Bool {
 
 func deepHashworkout(value: Any?, hasher: inout Hasher) {
   if let valueList = value as? [AnyHashable] {
-     for item in valueList { deepHashworkout(value: item, hasher: &hasher) }
-     return
+    for item in valueList { deepHashworkout(value: item, hasher: &hasher) }
+    return
   }
 
   if let valueDict = value as? [AnyHashable: AnyHashable] {
-    for key in valueDict.keys { 
+    for key in valueDict.keys {
       hasher.combine(key)
       deepHashworkout(value: valueDict[key]!, hasher: &hasher)
     }
@@ -126,8 +127,6 @@ func deepHashworkout(value: Any?, hasher: inout Hasher) {
   return hasher.combine(String(describing: value))
 }
 
-    
-
 /// Generated class from Pigeon that represents data sent in messages.
 struct WorkoutData: Hashable {
   var type: String? = nil
@@ -139,7 +138,6 @@ struct WorkoutData: Hashable {
   var duration: Double? = nil
   var startDate: String? = nil
   var endDate: String? = nil
-
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> WorkoutData? {
@@ -179,7 +177,8 @@ struct WorkoutData: Hashable {
     ]
   }
   static func == (lhs: WorkoutData, rhs: WorkoutData) -> Bool {
-    return deepEqualsworkout(lhs.toList(), rhs.toList())  }
+    return deepEqualsworkout(lhs.toList(), rhs.toList())
+  }
   func hash(into hasher: inout Hasher) {
     deepHashworkout(value: toList(), hasher: &hasher)
   }
@@ -232,9 +231,13 @@ protocol Workouts {
 class WorkoutsSetup {
   static var codec: FlutterStandardMessageCodec { WorkoutPigeonCodec.shared }
   /// Sets up an instance of `Workouts` to handle messages through the `binaryMessenger`.
-  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: Workouts?, messageChannelSuffix: String = "") {
+  static func setUp(
+    binaryMessenger: FlutterBinaryMessenger, api: Workouts?, messageChannelSuffix: String = ""
+  ) {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let getWorkoutsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ferum.Workouts.getWorkouts\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let getWorkoutsChannel = FlutterBasicMessageChannel(
+      name: "dev.flutter.pigeon.ferum.Workouts.getWorkouts\(channelSuffix)",
+      binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getWorkoutsChannel.setMessageHandler { _, reply in
         do {
@@ -248,7 +251,9 @@ class WorkoutsSetup {
       getWorkoutsChannel.setMessageHandler(nil)
     }
     /// Demande autorisation HealthKit
-    let requestAuthorizationChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ferum.Workouts.requestAuthorization\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let requestAuthorizationChannel = FlutterBasicMessageChannel(
+      name: "dev.flutter.pigeon.ferum.Workouts.requestAuthorization\(channelSuffix)",
+      binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       requestAuthorizationChannel.setMessageHandler { _, reply in
         do {
@@ -260,106 +265,6 @@ class WorkoutsSetup {
       }
     } else {
       requestAuthorizationChannel.setMessageHandler(nil)
-    }
-  }
-}
-
-
-import HealthKit
-
-class WorkoutsImpl: NSObject, Workouts {
-  let healthStore = HKHealthStore()
-
-  func requestAuthorization() throws {
-      let typesToShare: Set<HKSampleType> = []
-      let typesToRead: Set<HKObjectType> = [
-          HKObjectType.workoutType(),
-          HKObjectType.quantityType(forIdentifier: .heartRate)!,
-          HKObjectType.quantityType(forIdentifier: .restingHeartRate)!,
-          HKObjectType.quantityType(forIdentifier: .stepCount)!,
-          HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-          HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
-      ]
-
-      var authError: Error?
-      let semaphore = DispatchSemaphore(value: 0)
-
-      healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
-          if !success {
-              authError = error ?? NSError(domain: "HealthKit", code: 1, userInfo: [NSLocalizedDescriptionKey: "Authorization failed"])
-          }
-          semaphore.signal()
-      }
-
-      semaphore.wait()
-      if let err = authError {
-          throw err
-      }
-  }
-
-    func getWorkouts() throws -> [WorkoutData] {
-
-    var workoutsData: [WorkoutData] = []
-    let semaphore = DispatchSemaphore(value: 0)
-    var queryError: Error?
-
-    let predicate = HKQuery.predicateForSamples(withStart: Date.distantPast, end: Date(), options: [])
-    let query = HKSampleQuery(sampleType: .workoutType(), predicate: predicate, limit: 10, sortDescriptors: nil) { _, samples, error in
-
-        if let err = error {
-            queryError = err
-            semaphore.signal()
-            return
-        }
-
-        guard let workouts = samples as? [HKWorkout] else {
-            semaphore.signal()
-            return
-        }
-
-        for w in workouts {
-            var data = WorkoutData()
-            data.type = w.workoutActivityType.name
-            data.totalDistance = w.totalDistance?.doubleValue(for: .meter())
-            data.totalEnergyBurned = w.totalEnergyBurned?.doubleValue(for: .kilocalorie())
-            data.duration = w.duration
-            data.startDate = ISO8601DateFormatter().string(from: w.startDate)
-            data.endDate = ISO8601DateFormatter().string(from: w.endDate)
-
-            if let meta = w.metadata {
-                data.avgHeartRate = meta["HKAverageHeartRate"] as? Double
-                data.maxHeartRate = meta["HKMaximumHeartRate"] as? Double
-                data.avgPace = meta["HKAveragePace"] as? Double
-            }
-
-            workoutsData.append(data)
-        }
-
-        semaphore.signal()
-    }
-
-    healthStore.execute(query)
-    semaphore.wait()
-
-    if let err = queryError {
-        throw err
-    }
-
-    return workoutsData
-  } 
-}
-
-extension HKWorkoutActivityType {
-var name: String {
-    switch self {
-    case .running: return "running"
-    case .cycling: return "cycling"
-    case .hiking: return "hiking"
-    case .walking: return "walking"
-    case .swimming: return "swimming"
-    case .yoga: return "yoga"
-    case .other: return "other"
-    default: return "unknown"
     }
   }
 }

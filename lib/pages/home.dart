@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final workoutList = await workoutsApi.getWorkouts();
     for (var w in workoutList) {
       print(
-        "🏃 Workout: ${w.type}, FC moyenne: ${w.avgHeartRate}, FC max: ${w.maxHeartRate}, Allure: ${w.avgPace}",
+        "🏃 Workout: ${w.type}, Start ${w.startDate}, End ${w.endDate}, Durée ${w.duration}, Distance ${w.totalDistance}, EnergyBurned ${w.totalEnergyBurned} FC moyenne: ${w.avgHeartRate}, FC max: ${w.maxHeartRate}, Allure: ${w.avgPace}",
       );
     }
   }
