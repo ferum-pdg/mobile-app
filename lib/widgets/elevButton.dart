@@ -10,14 +10,14 @@ class ElevButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SizedBox(
+      width: double.infinity,
       child:
         ElevatedButton(                                            
           onPressed: () {},
-          style: ElevatedButton.styleFrom(
+          style: ElevatedButton.styleFrom(            
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8)
             )
