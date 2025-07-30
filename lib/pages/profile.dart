@@ -2,6 +2,7 @@ import 'package:ferum/widgets/inforSectionCard.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/infoCard.dart';
+import '../widgets/elevButton.dart';
 
 class ProfilePage extends StatelessWidget {
 
@@ -155,21 +156,7 @@ class ProfilePage extends StatelessWidget {
 
                 const SizedBox(height: 18),
 
-                Center(
-                  child:
-                    ElevatedButton(                                            
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)
-                        )
-                      ), 
-                      child: Text("Modifier le profil")
-                    )
-                )
+                ElevButton(title: "Modifier le profil")
               ],
           ),
         )
