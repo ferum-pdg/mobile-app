@@ -15,7 +15,4 @@ class WorkoutData {
 @HostApi()
 abstract class Workouts {
   List<WorkoutData> getWorkouts();
-
-  /// Demande autorisation HealthKit
-  void requestAuthorization();
 }

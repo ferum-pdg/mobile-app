@@ -2,7 +2,6 @@
 // See also: https://pub.dev/packages/pigeon
 
 import Foundation
-import HealthKit
 
 #if os(iOS)
   import Flutter
@@ -108,12 +107,12 @@ func deepEqualsworkout(_ lhs: Any?, _ rhs: Any?) -> Bool {
 
 func deepHashworkout(value: Any?, hasher: inout Hasher) {
   if let valueList = value as? [AnyHashable] {
-    for item in valueList { deepHashworkout(value: item, hasher: &hasher) }
-    return
+     for item in valueList { deepHashworkout(value: item, hasher: &hasher) }
+     return
   }
 
   if let valueDict = value as? [AnyHashable: AnyHashable] {
-    for key in valueDict.keys {
+    for key in valueDict.keys { 
       hasher.combine(key)
       deepHashworkout(value: valueDict[key]!, hasher: &hasher)
     }
@@ -127,6 +126,8 @@ func deepHashworkout(value: Any?, hasher: inout Hasher) {
   return hasher.combine(String(describing: value))
 }
 
+    
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct WorkoutData: Hashable {
   var type: String? = nil
@@ -138,6 +139,7 @@ struct WorkoutData: Hashable {
   var duration: Double? = nil
   var startDate: String? = nil
   var endDate: String? = nil
+
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> WorkoutData? {
@@ -177,8 +179,7 @@ struct WorkoutData: Hashable {
     ]
   }
   static func == (lhs: WorkoutData, rhs: WorkoutData) -> Bool {
-    return deepEqualsworkout(lhs.toList(), rhs.toList())
-  }
+    return deepEqualsworkout(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashworkout(value: toList(), hasher: &hasher)
   }
@@ -223,21 +224,15 @@ class WorkoutPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol Workouts {
   func getWorkouts() throws -> [WorkoutData]
-  /// Demande autorisation HealthKit
-  func requestAuthorization() throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
 class WorkoutsSetup {
   static var codec: FlutterStandardMessageCodec { WorkoutPigeonCodec.shared }
   /// Sets up an instance of `Workouts` to handle messages through the `binaryMessenger`.
-  static func setUp(
-    binaryMessenger: FlutterBinaryMessenger, api: Workouts?, messageChannelSuffix: String = ""
-  ) {
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: Workouts?, messageChannelSuffix: String = "") {
     let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
-    let getWorkoutsChannel = FlutterBasicMessageChannel(
-      name: "dev.flutter.pigeon.ferum.Workouts.getWorkouts\(channelSuffix)",
-      binaryMessenger: binaryMessenger, codec: codec)
+    let getWorkoutsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.ferum.Workouts.getWorkouts\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getWorkoutsChannel.setMessageHandler { _, reply in
         do {
@@ -249,22 +244,6 @@ class WorkoutsSetup {
       }
     } else {
       getWorkoutsChannel.setMessageHandler(nil)
-    }
-    /// Demande autorisation HealthKit
-    let requestAuthorizationChannel = FlutterBasicMessageChannel(
-      name: "dev.flutter.pigeon.ferum.Workouts.requestAuthorization\(channelSuffix)",
-      binaryMessenger: binaryMessenger, codec: codec)
-    if let api = api {
-      requestAuthorizationChannel.setMessageHandler { _, reply in
-        do {
-          try api.requestAuthorization()
-          reply(wrapResult(nil))
-        } catch {
-          reply(wrapError(error))
-        }
-      }
-    } else {
-      requestAuthorizationChannel.setMessageHandler(nil)
     }
   }
 }

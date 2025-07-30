@@ -11,6 +11,9 @@ import Flutter
         
         // setup pigeon for workouts
         WorkoutsSetup.setUp(binaryMessenger: controller.binaryMessenger, api: WorkoutsImpl())
+
+        //setup pigeon for HealthKit authorization
+        HealthKitAuthorizationSetup.setUp(binaryMessenger: controller.binaryMessenger, api: HealthKitAuthorizationImpl())
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

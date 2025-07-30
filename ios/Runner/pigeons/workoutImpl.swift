@@ -7,37 +7,6 @@ import Foundation
 class WorkoutsImpl: NSObject, Workouts {
   let healthStore = HKHealthStore()
 
-  func requestAuthorization() throws {
-    let typesToShare: Set<HKSampleType> = []
-    let typesToRead: Set<HKObjectType> = [
-      HKObjectType.workoutType(),
-      HKObjectType.quantityType(forIdentifier: .heartRate)!,
-      HKObjectType.quantityType(forIdentifier: .restingHeartRate)!,
-      HKObjectType.quantityType(forIdentifier: .stepCount)!,
-      HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-      HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-    ]
-
-    var authError: Error?
-    let semaphore = DispatchSemaphore(value: 0)
-
-    healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
-      if !success {
-        authError =
-          error
-          ?? NSError(
-            domain: "HealthKit", code: 1,
-            userInfo: [NSLocalizedDescriptionKey: "Authorization failed"])
-      }
-      semaphore.signal()
-    }
-
-    semaphore.wait()
-    if let err = authError {
-      throw err
-    }
-  }
-
   func getWorkouts() throws -> [WorkoutData] {
 
     var workoutsData: [WorkoutData] = []
