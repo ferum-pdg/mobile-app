@@ -38,6 +38,9 @@ dependencies:
   # Add apple heath plugin
   health: ^13.1.1
 
+  # Add HTTP plugin
+  http: ^1.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
