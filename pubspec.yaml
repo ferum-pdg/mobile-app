@@ -42,6 +42,9 @@ dependencies:
   pigeon: ^26.0.0
 
 
+  # Add HTTP plugin
+  http: ^1.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
