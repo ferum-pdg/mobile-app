@@ -1,5 +1,3 @@
-
-
 import HealthKit
 import Foundation
 
@@ -134,30 +132,6 @@ class WorkoutsImpl: NSObject, Workouts {
     }
 
     healthStore.execute(query)
-
-    /*
-    print("🔍 Query HR for workout from \(workout.startDate) to \(workout.endDate)")
-    guard let quantityType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
-      completion(nil, nil)
-      return
-    }
-    
-    let predicate = HKQuery.predicateForSamples(
-      withStart: workout.startDate.addingTimeInterval(-120), end: workout.endDate.addingTimeInterval(120), options: .strictStartDate)
-    
-    let query = HKStatisticsQuery(
-      quantityType: quantityType, quantitySamplePredicate: predicate,
-      options: [.discreteAverage, .discreteMax]
-    ) { _, statistics, _ in
-      let avg = statistics?.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min"))
-      let max = statistics?.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min"))
-      completion(avg, max)
-    }
-    
-    let myquery = HKStatisticsQuery(quantityType: energyc, quantitySamplePredicate: NSPredicate?, completionHandler: (HKStatisticsQuery, HKStatistics?, (any Error)?) -> Void)
-    
-    healthStore.execute(query)
-    */
   }
 
 }
