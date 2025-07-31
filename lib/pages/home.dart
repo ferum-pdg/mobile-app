@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../pigeons/workout.g.dart';
+import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/infoCard.dart';
 
@@ -15,81 +21,38 @@ class _MyHomePageState extends State<MyHomePage> {
   double active_energy_burned = 0;
   double distance_walking_running = 0;
   int heart_rate_resting = 0;
-  late final Health _health;
 
   @override
   void initState() {
     super.initState();
-    _health = Health();
-    getAppleHealth();
+
+    //Demande authorisation
+    authHealthKit
+        .requestAuthorization()
+        .then((isAuthorized) {
+          if (isAuthorized == true) {
+            loadWorkouts();
+          } else {
+            print("⚠️ Accès Apple Health refusé par l'utilisateur");
+          }
+        })
+        .catchError((e) {
+          print("❌ Erreur lors de la demande d'autorisation: $e");
+        });
   }
 
-  Future<void> getAppleHealth() async {
-    //Récupère les valeurs que l'on souhaite on ne prend pas les pas ici
-    List<HealthDataType> types = <HealthDataType>[
-      HealthDataType.ACTIVE_ENERGY_BURNED,
-      HealthDataType.DISTANCE_WALKING_RUNNING,
-      HealthDataType.RESTING_HEART_RATE,
-    ];
+  final workouts = Workouts();
 
-    DateTime now = DateTime.now();
-    DateTime midnight = DateTime(now.year, now.month, now.day);
+  final workoutsApi = Workouts(); // API Pigeon pour les workouts
 
-    // Demande d'autorisation
-    final authorized = await _health.requestAuthorization(types);
+  final authHealthKit = HealthKitAuthorization(); // ✅ classe générée Pigeon
 
-    if (authorized) {
-      final result = await _health.getHealthDataFromTypes(
-        types: types,
-        startTime: midnight,
-        endTime: now,
+  Future<void> loadWorkouts() async {
+    final workoutList = await workoutsApi.getWorkouts();
+    for (var w in workoutList) {
+      print(
+        "🏃 Workout: ${w.type}, Start ${w.startDate}, End ${w.endDate}, Durée ${w.duration}, Distance ${w.totalDistance}, EnergyBurned ${w.totalEnergyBurned} FC moyenne: ${w.avgHeartRate}, FC max: ${w.maxHeartRate}, Allure: ${w.avgPace}",
       );
-
-      //Récupère le total dédupliqué
-      //int? totalSteps = await _health.getTotalStepsInInterval(midnight, now);
-      double totalActive_energy_burned = 0;
-      double totalDistance_walking_running = 0.0;
-      int totalHeart_rate_resting = 0;
-
-      //Récupère toutes les valeurs et les mets dans le bon format type.
-      for (var point in result) {
-        //Debug info
-        /*print(
-          '${point.type}-${point.value}-${point.dateFrom}-${point.dateTo}-${point.sourceName}',
-        );*/
-        if (point.value is NumericHealthValue) {
-          //On additionne toutes les valeurs que l'on récupère afin d'avoir les totaux.
-          switch (point.type) {
-            case HealthDataType.ACTIVE_ENERGY_BURNED:
-              totalActive_energy_burned +=
-                  (point.value as NumericHealthValue).numericValue
-                      ?.toDouble() ??
-                  0;
-              break;
-            case HealthDataType.DISTANCE_WALKING_RUNNING:
-              totalDistance_walking_running +=
-                  (point.value as NumericHealthValue).numericValue
-                      ?.toDouble() ??
-                  0.0;
-              break;
-            case HealthDataType.RESTING_HEART_RATE:
-              totalHeart_rate_resting +=
-                  (point.value as NumericHealthValue).numericValue?.toInt() ??
-                  0;
-              break;
-            default:
-              break;
-          }
-        }
-      }
-      //on met les valeurs disponible pour le reste de l'application
-      setState(() {
-        //steps = totalSteps;
-        active_energy_burned = totalActive_energy_burned;
-        //distance récupérée en mêtre on le passe en km
-        distance_walking_running = totalDistance_walking_running / 1000;
-        heart_rate_resting = totalHeart_rate_resting;
-      });
     }
   }
 
@@ -147,4 +110,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+/*
+Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
+  final directory =
+      await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
+  final filePath = '${directory.path}/health_data.json';
+  final file = File(filePath);
 
+  await file.writeAsString(jsonEncode(jsonData));
+  print('✅ Fichier sauvegardé : $filePath');
+  return filePath;
+}
+
+void shareHealthData(String filePath) {
+  Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
+}*/
