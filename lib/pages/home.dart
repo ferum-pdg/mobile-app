@@ -8,6 +8,7 @@ import '../pigeons/workout.g.dart';
 import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/infoCard.dart';
+import '../widgets/circularProgressBar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -72,35 +73,25 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Votre activité aujourd'hui",
+                "Votre résumé de la semaine",
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
               const SizedBox(height: 32),
-              // Les 4 "carrés"
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2, // 2 colonnes
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.2,
-                  children: [
-                    InfoCard(title: '$steps', subtitle: "Pas aujourd'hui"),
-                    InfoCard(
-                      //Convertit les calories en Int afin de pas avoir de chiffre après la virgule.
-                      title: '${active_energy_burned.toInt()}',
-                      subtitle: "Calories",
-                    ),
-                    InfoCard(
-                      //On affiche 1 digit après la virgule
-                      title: distance_walking_running.toStringAsFixed(1),
-                      subtitle: "Kilomètres",
-                    ),
-                    InfoCard(
-                      title: '$heart_rate_resting',
-                      subtitle: "BPM repos",
-                    ),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  circularPogressBar(
+                    totalDone: 3,
+                    total: 3,
+                    label: "Séances effectués",
+                  ),
+                  const SizedBox(width: 24),
+                  circularPogressBar(
+                    totalDone: 7,
+                    total: 25,
+                    label: "Km parcourus",
+                  ),
+                ],
               ),
             ],
           ),
