@@ -1,7 +1,28 @@
 # Ferum mobile app
 
-Afin de run l'application, ouvrir avec xcode le fichier [Runner.xcodeproj](ferum/ios/Runner.xcodeproj) et lancer le build.
+## Page accueil
+
+Compteur de nombre de séance pas semaine
+Compteur distance effectuée ?
+Séances de la semaine
+Score d’entrainement 
+
+## Page entrainement
+
+Le calendrier avec la séance du jour sélectionné comme dans Figma
+
+Créer son entrainement :
+Sélectionner Sport voir objectif dans docs entrainement.
+Mettre jours disponible pour les séances
+Sélectionner l’échéance
+
+Page qui va à mesure (avec barre progression)
+Sélection sport + distance
+Sélection jours
+Sélections tranche horaire
+Proposition mettre historique (entrée manuelle)
 
 
-Cela ne fonctionne pas chez moi de build directement dans Visual Studio Code.
+
+## Page profil
 
