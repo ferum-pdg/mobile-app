@@ -1,3 +1,5 @@
+import 'package:ferum/pages/signin_screen.dart';
+import 'package:ferum/pages/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/welcome_button.dart';
@@ -8,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
         child: Column(
           children: [
@@ -16,30 +18,15 @@ class WelcomeScreen extends StatelessWidget {
               flex: 8,
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  vertical: 90,
+                  vertical: 250,
                   horizontal: 40
                 ),
                 child: Center(
                   child: Column(
                     children: [
-                      RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Bienvenue !\n',
-                              style: TextStyle(
-                                fontSize: 45.0,
-                                fontWeight: FontWeight.w600,
-                                color: Color.fromARGB(255, 79, 54, 240),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                       Image.asset(
-                        'assets/img/f.png',
-                        width: 100,
+                        'assets/img/ferum-full.png',
+                        width: 300,
                         height: 90,
                         fit: BoxFit.contain,
                       ),
@@ -55,10 +42,20 @@ class WelcomeScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: WelcomeButton(buttonText: 'Sign in',),
+                      child: WelcomeButton(
+                        buttonText: 'Sign in',
+                        onTap: SignInScreen(),
+                        color: Colors.transparent,
+                        textColor: Colors.black
+                      ),
                     ),
                     Expanded(
-                      child: WelcomeButton(buttonText: 'Sign up',)
+                      child: WelcomeButton(
+                        buttonText: 'Sign up',
+                        onTap: SignUpScreen(),
+                        color: Colors.purple,
+                        textColor: Colors.black
+                      )
                     )
                   ],
                 ),
