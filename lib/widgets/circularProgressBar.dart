@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class circularPogressBar extends StatelessWidget {
-  final int totalDone;
-  final int total;
+  final double totalDone;
+  final double total;
   final String label;
   final double size;
+  final bool toInt;
 
   const circularPogressBar({
     super.key,
@@ -14,6 +15,7 @@ class circularPogressBar extends StatelessWidget {
     required this.total,
     this.label = "",
     this.size = 100.0,
+    this.toInt = false,
   });
 
   @override
@@ -37,20 +39,22 @@ class circularPogressBar extends StatelessWidget {
               CustomPaint(
                 size: Size(size, size),
                 painter: _GradientCircularProgressPainter(
-                  progress: (totalDone / total).toDouble(),
+                  progress: totalDone / total,
                   gradient: LinearGradient(
                     colors: [Colors.blue.shade900, Colors.purple],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.grey.shade400,
                   stroke: 10.0,
                 ),
                 child: Center(
                   child: Text(
-                    '$totalDone / $total',
-                    style: const TextStyle(
-                      fontSize: 14,
+                    toInt
+                        ? '${totalDone.toStringAsFixed(0)} / ${total.toStringAsFixed(0)}'
+                        : '$totalDone / $total',
+                    style: TextStyle(
+                      fontSize: toInt ? 14 : 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
