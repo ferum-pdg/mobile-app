@@ -1,3 +1,4 @@
+import 'package:ferum/widgets/workoutCard.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -9,6 +10,9 @@ import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/infoCard.dart';
 import '../widgets/circularProgressBar.dart';
+
+import '../models/workout.dart';
+import '../models/enum.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -93,6 +97,41 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: "Km parcourus",
                   ),
                 ],
+              ),
+              const SizedBox(height: 60),
+              Text(
+                "Séances de la semaine",
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 25),
+              workoutCard(
+                title: "Test",
+                subtitle: "test subtitle",
+                workout: WorkoutClass(
+                  id: 1,
+                  name: "EF matin",
+                  done: false,
+                  Date: DateTime(2025, 1, 12),
+                  workoutType: workoutType.EF,
+                  workoutSport: workoutSport.RUNNING,
+                ),
+              ),
+              const SizedBox(height: 15),
+              workoutCard(
+                title: "Test",
+                subtitle: "test subtitle",
+                workout: WorkoutClass(
+                  id: 1,
+                  name: "EF matin",
+                  done: true,
+                  Date: DateTime(2025, 1, 10),
+                  workoutType: workoutType.EF,
+                  workoutSport: workoutSport.RUNNING,
+                ),
               ),
             ],
           ),
