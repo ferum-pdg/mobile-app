@@ -32,64 +32,112 @@ class workoutCard extends StatelessWidget {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (workout.workoutType == workoutType.EF)
-                      Text(
-                        "Endurance fondamentale",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: workout.done ? Colors.purple : Colors.black,
-                        ),
-                      )
-                    else if (workout.workoutType == workoutType.FRACTIONNE)
-                      Text(
-                        "Entrainement de fractionné",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: workout.done ? Colors.purple : Colors.black,
-                        ),
-                      )
-                    else if (workout.workoutType == workoutType.TEMPO)
-                      Text(
-                        "Entrainement temp",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: workout.done ? Colors.purple : Colors.black,
-                        ),
-                      ),
+                    Text(
+                      "${workout.day}",
+                      style: TextStyle(fontSize: 12, color: Colors.black),
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        if (workout.workoutType == workoutType.EF)
+                          Text(
+                            "Endurance fondamentale",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: workout.done
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          )
+                        else if (workout.workoutType == workoutType.FRACTIONNE)
+                          Text(
+                            "Entrainement de fractionné",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: workout.done
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          )
+                        else if (workout.workoutType == workoutType.TEMPO)
+                          Text(
+                            "Entrainement tempo",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: workout.done
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          ),
+                        if (workout.done) ...[
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.check_circle_outline_sharp,
+                            color: Colors.purple,
+                          ),
+                        ],
+                      ],
+                    ), //ici
                     const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            InfoCard(title: "5.3 \nkm"),
-                            SizedBox(width: 10),
-                            InfoCard(title: " 30 \nmin"),
-                          ],
-                        ),
-                        Text(
-                          "${workout.Date.day}.${workout.Date.month}.${workout.Date.year}",
-                          style: const TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12,
+                        if (workout.workoutSport == workoutSport.RUNNING)
+                          InfoCard(title: "${workout.distance} \nkm"),
+                        if (workout.workoutSport == workoutSport.CYCLING)
+                          InfoCard(
+                            title:
+                                "${workout.distance.toStringAsFixed(0)} \nkm",
                           ),
-                        ),
+                        if (workout.workoutSport == workoutSport.SWIMMING)
+                          InfoCard(
+                            title:
+                                "${workout.distance.toStringAsFixed(0)} \n  m",
+                          ),
+                        SizedBox(width: 10),
+                        if (workout.duration > 60)
+                          InfoCard(
+                            title: " ${formatDuration(workout.duration)}",
+                          ),
+                        if (workout.duration < 60)
+                          InfoCard(title: " ${workout.duration} \nmin"),
+                        SizedBox(width: 100),
                       ],
                     ),
                   ],
                 ),
-                const Icon(
-                  Icons.directions_run,
-                  size: 28,
-                  color: Colors.purple,
+                Column(
+                  children: [
+                    if (workout.workoutSport == workoutSport.RUNNING) ...[
+                      const Icon(
+                        Icons.directions_run,
+                        size: 28,
+                        color: Colors.purple,
+                      ),
+                    ],
+
+                    if (workout.workoutSport == workoutSport.CYCLING) ...[
+                      const Icon(
+                        Icons.directions_bike,
+                        size: 28,
+                        color: Colors.purple,
+                      ),
+                    ],
+                    if (workout.workoutSport == workoutSport.SWIMMING) ...[
+                      const Icon(Icons.pool, size: 28, color: Colors.purple),
+                    ],
+
+                    SizedBox(height: 10),
+                  ],
                 ),
               ],
             ),
@@ -98,4 +146,10 @@ class workoutCard extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatDuration(int totalMinutes) {
+  final hours = totalMinutes ~/ 60;
+  final minutes = totalMinutes % 60;
+  return '${hours}h${minutes.toString().padLeft(2, '0')}';
 }

@@ -22,14 +22,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int? steps = 0;
-  double active_energy_burned = 0;
-  double distance_walking_running = 0;
-  int heart_rate_resting = 0;
-
+  late final List<WorkoutClass> weeklyWokouts;
   @override
   void initState() {
     super.initState();
+    initWeeklyWorkouts();
 
     //Demande authorisation
     authHealthKit
@@ -61,79 +58,126 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> initWeeklyWorkouts() async {
+    weeklyWokouts = [
+      WorkoutClass(
+        id: 1,
+        name: "EF matin",
+        done: false,
+        Date: DateTime(2025, 1, 12),
+        workoutType: workoutType.EF,
+        workoutSport: workoutSport.RUNNING,
+        duration: 30,
+        distance: 5.3,
+        day: "Mercredi",
+      ),
+      WorkoutClass(
+        id: 2,
+        name: "Fractionné running matin",
+        done: true,
+        Date: DateTime(2025, 1, 10),
+        workoutType: workoutType.FRACTIONNE,
+        workoutSport: workoutSport.RUNNING,
+        duration: 45,
+        distance: 7.8,
+        day: "Mardi",
+      ),
+      WorkoutClass(
+        id: 3,
+        name: "Tempo natation soir",
+        done: true,
+        Date: DateTime(2025, 1, 10),
+        workoutType: workoutType.TEMPO,
+        workoutSport: workoutSport.SWIMMING,
+        duration: 40,
+        distance: 1000,
+        day: "Lundi",
+      ),
+      WorkoutClass(
+        id: 4,
+        name: "EF vélo soir",
+        done: false,
+        Date: DateTime(2025, 1, 10),
+        workoutType: workoutType.EF,
+        workoutSport: workoutSport.CYCLING,
+        duration: 110,
+        distance: 50,
+        day: "Vendredi",
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              const Text(
-                'Bonjour Alex',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Votre résumé de la semaine",
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  circularPogressBar(
-                    totalDone: 3,
-                    total: 3,
-                    label: "Séances effectués",
-                    toInt: true,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                const Text(
+                  'Bonjour Alex',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Votre résumé de la semaine",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    circularPogressBar(
+                      totalDone: 2,
+                      total: 4,
+                      label: "Séances effectués",
+                      toInt: true,
+                    ),
+                    const SizedBox(width: 24),
+                    circularPogressBar(
+                      totalDone: 7.3,
+                      total: 25.6,
+                      label: "Km parcourus",
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 60),
+                Text(
+                  "Séances de la semaine",
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(width: 24),
-                  circularPogressBar(
-                    totalDone: 7.3,
-                    total: 25.6,
-                    label: "Km parcourus",
-                  ),
+                ),
+                SizedBox(height: 25),
+                for (WorkoutClass w in weeklyWokouts) ...[
+                  if (!w.done) ...[
+                    workoutCard(
+                      title: "Test",
+                      subtitle: "test subtitle",
+                      workout: w,
+                    ),
+                    const SizedBox(height: 15),
+                  ],
                 ],
-              ),
-              const SizedBox(height: 60),
-              Text(
-                "Séances de la semaine",
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 25),
-              workoutCard(
-                title: "Test",
-                subtitle: "test subtitle",
-                workout: WorkoutClass(
-                  id: 1,
-                  name: "EF matin",
-                  done: false,
-                  Date: DateTime(2025, 1, 12),
-                  workoutType: workoutType.EF,
-                  workoutSport: workoutSport.RUNNING,
-                ),
-              ),
-              const SizedBox(height: 15),
-              workoutCard(
-                title: "Test",
-                subtitle: "test subtitle",
-                workout: WorkoutClass(
-                  id: 1,
-                  name: "EF matin",
-                  done: true,
-                  Date: DateTime(2025, 1, 10),
-                  workoutType: workoutType.EF,
-                  workoutSport: workoutSport.RUNNING,
-                ),
-              ),
-            ],
+
+                for (WorkoutClass w in weeklyWokouts) ...[
+                  if (w.done) ...[
+                    workoutCard(
+                      title: "Test",
+                      subtitle: "test subtitle",
+                      workout: w,
+                    ),
+                    const SizedBox(height: 15),
+                  ],
+                ],
+              ],
+            ),
           ),
         ),
       ),

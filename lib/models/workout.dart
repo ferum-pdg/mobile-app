@@ -7,6 +7,9 @@ class WorkoutClass {
   final DateTime Date;
   final workoutType;
   final workoutSport;
+  final int duration;
+  final double distance;
+  final String day;
 
   WorkoutClass({
     required this.id,
@@ -15,6 +18,9 @@ class WorkoutClass {
     required this.Date,
     required this.workoutType,
     required this.workoutSport,
+    required this.duration,
+    required this.distance,
+    required this.day,
   });
 
   factory WorkoutClass.fromJson(Map<String, dynamic> json) {
@@ -25,6 +31,9 @@ class WorkoutClass {
       Date: json['Date'],
       workoutType: json['workoutType'],
       workoutSport: json['workoutSport'],
+      duration: json['duration'],
+      distance: json['distance'],
+      day: json['day'],
     );
   }
 
