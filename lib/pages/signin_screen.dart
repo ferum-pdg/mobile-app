@@ -43,7 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      Text(                        
                         "Te revoilà !",
                         style: TextStyle(
                           fontSize: 30.0,
@@ -51,34 +51,75 @@ class _SignInScreenState extends State<SignInScreen> {
                           color: Colors.white
                         ),
                       ),
+                      const SizedBox(height: 30),
                       TextFormField(
+                        style: const TextStyle(color: Colors.white),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Svp entrer un email';
+                            return 'Veuillez entrer un email';
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           label: const Text('Email'),
+                          labelStyle: const TextStyle(
+                            color: Colors.white
+                          ),
+                          filled: true,
+                          fillColor: Colors.white12,                          
                           hintText: 'Entrer un email',
+                          hintStyle: const TextStyle(
+                            color: Colors.white70
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          )
+                        ),                      
+                      ),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        style: const TextStyle(color: Colors.white),
+                        obscureText: true,
+                        obscuringCharacter: '*',
+                        validator: (value) {
+                          if(value == null || value.isEmpty) {
+                            return 'Veuillez entrer un mot de passe.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('Password'),
+                          labelStyle: const TextStyle(
+                            color: Colors.white
+                          ),
+                          hintText: 'Entrer un mot de passe',
                           hintStyle: const TextStyle(
                             color: Colors.white
                           ),
+                          filled: true,
+                          fillColor: Colors.white12,
                           border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.white
-                            ),
-                            borderRadius: BorderRadius.circular(10)
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.white
-                            ),
-                            borderRadius: BorderRadius.circular(10)
-                          )
+                            borderSide: const BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),                       
                         ),
-                      )
-
+                      ),
+                      const SizedBox(width: 50),
                     ],
                   )
                 ),
