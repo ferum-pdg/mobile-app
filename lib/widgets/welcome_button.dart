@@ -6,17 +6,20 @@ class WelcomeButton extends StatelessWidget {
     super.key, 
     this.buttonText, 
     this.onTap, 
-    this.color,
+    this.colors,
     this.textColor
   });
   
   final String? buttonText;
   final Widget? onTap;
-  final Color? color;
+  final List<Color>? colors;
   final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
+    final hasSingleColor = colors != null && colors!.length == 1;
+    final hasGradient = colors != null && colors!.length >= 2;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -29,7 +32,12 @@ class WelcomeButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(30.0),
         decoration: BoxDecoration(
-          color: color!,
+          color: hasSingleColor ? colors!.first : null,          
+          gradient: hasGradient ? LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: colors!
+          ) : null,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(50)
           )
