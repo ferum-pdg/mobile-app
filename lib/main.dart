@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'models/sharedPreferences.dart';
 
 import './widgets/bottomNav.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

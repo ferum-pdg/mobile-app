@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pigeons/workout.g.dart';
 import '../pigeons/healthkit_authorization.g.dart';
@@ -13,6 +14,7 @@ import '../widgets/circularProgressBar.dart';
 
 import '../models/workout.dart';
 import '../models/enum.dart';
+import '../models/sharedPreferences.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -23,12 +25,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final List<WorkoutClass> weeklyWokouts;
+  SharedPreferences? prefs;
+  String? username;
   @override
   void initState() {
     super.initState();
     initWeeklyWorkouts();
+    initPrefs();
 
-    //Demande authorisation
+    // Demande authorisation
     authHealthKit
         .requestAuthorization()
         .then((isAuthorized) {
@@ -48,6 +53,22 @@ class _MyHomePageState extends State<MyHomePage> {
   final workoutsApi = Workouts(); // API Pigeon pour les workouts
 
   final authHealthKit = HealthKitAuthorization(); // ✅ classe générée Pigeon
+
+  Future<void> initPrefs() async {
+    SharedPreferences p = await SharedPreferences.getInstance();
+
+    // Only set default values on first launch
+    bool isFirstLaunch = p.getBool('isFirstLaunch') ?? true;
+    if (isFirstLaunch) {
+      defaultSharedPreferences(p);
+      await p.setBool('isFirstLaunch', false);
+    }
+
+    setState(() {
+      prefs = p;
+      username = p.getString('username');
+    });
+  }
 
   Future<void> loadWorkouts() async {
     final workoutList = await workoutsApi.getWorkouts();
@@ -118,10 +139,17 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                const Text(
-                  'Bonjour Alex',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
+                username == null
+                    ? const SizedBox(
+                        height: 38,
+                      ) // reserve space to avoid layout shift
+                    : Text(
+                        "Bonjour $username",
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                 const SizedBox(height: 8),
                 const Text(
                   "Votre résumé de la semaine",

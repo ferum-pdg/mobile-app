@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../pages/profile.dart';
 import '../pages/home.dart';
+import 'package:ferum/pages/workouts.dart';
 
 class BottomNav extends StatefulWidget {
   BottomNav({super.key});
@@ -27,7 +28,7 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: [MyHomePage(), ProfilePage()],
+        children: [MyHomePage(), WorkoutsPage(), ProfilePage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,

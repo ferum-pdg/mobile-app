@@ -7,6 +7,7 @@ import Flutter
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        GeneratedPluginRegistrant.register(with: self)
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         
         // setup pigeon for workouts
