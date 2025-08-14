@@ -7,39 +7,30 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/sharedPreferences.dart';
-import '../widgets/gradientButton.dart';
-import './createTrainingPlan/swimming.dart';
+import '../../models/sharedPreferences.dart';
+import '../workouts.dart';
+import '../../widgets/gradientButton.dart';
 
-class WorkoutsPage extends StatefulWidget {
-  const WorkoutsPage({super.key});
+class goalDatePage extends StatefulWidget {
+  const goalDatePage({super.key});
 
   @override
-  State<WorkoutsPage> createState() => _WorkoutsPageState();
+  State<goalDatePage> createState() => _goalDatePageState();
 }
 
-class _WorkoutsPageState extends State<WorkoutsPage> {
-  DateTime selectedDay = DateTime.now();
+class _goalDatePageState extends State<goalDatePage> {
+  DateTime selectedDay = DateTime.now().add(Duration(days: 84));
   SharedPreferences? prefs;
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting('fr_FR', null);
-    initPrefs();
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       selectedDay = day;
-    });
-  }
-
-  Future<void> initPrefs() async {
-    SharedPreferences p = await SharedPreferences.getInstance();
-
-    setState(() {
-      prefs = p;
     });
   }
 
@@ -55,7 +46,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               children: [
                 const SizedBox(height: 24),
                 const Text(
-                  'Entrainements',
+                  "Définir la date de l'objectif",
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 TableCalendar(
@@ -68,21 +59,10 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   availableGestures: AvailableGestures.all,
                   selectedDayPredicate: (day) => isSameDay(day, selectedDay),
                   focusedDay: selectedDay,
-                  firstDay: DateTime.utc(2020, 10, 10),
+                  firstDay: DateTime.now().add(Duration(days: 82)),
                   lastDay: DateTime.utc(2030, 10, 10),
                   onDaySelected: _onDaySelected,
                   calendarStyle: CalendarStyle(
-                    todayDecoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.purple.withValues(alpha: 0.7),
-                          Color(0xFF0D47A1).withValues(alpha: 0.7),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
                     selectedDecoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Color(0xFF0D47A1), Colors.purple],
@@ -98,12 +78,18 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   const SizedBox(height: 10),
                   GradientButton(
                     text: "Créer un plan d'entraînement",
-                    onTap: () {
+                    onTap: () async {
+                      final p = prefs ?? await SharedPreferences.getInstance();
+                      await p.setString(
+                        'selectedRunningGoal',
+                        selectedDay.toString(),
+                      );
+                      await p.setBool('hasTrainingPlan', true);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const swimmingPageTrainingPlan(),
+                          builder: (context) => const WorkoutsPage(),
                         ),
                       );
                     },
