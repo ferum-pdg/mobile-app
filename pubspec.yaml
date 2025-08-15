@@ -38,8 +38,14 @@ dependencies:
   # Add apple heath plugin
   health: ^13.1.1
 
-  # Add HTTP plugin
-  http: ^1.4.0
+  # For HTTP requests.
+  dio: ^5.9.0
+
+  # To store JWT locally
+  shared_preferences: ^2.5.3
+
+  # Decode and validate JWTs
+  jwt_decoder: ^2.0.1 
 
 dev_dependencies:
   flutter_test:

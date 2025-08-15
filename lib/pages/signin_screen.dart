@@ -1,5 +1,7 @@
+import 'package:ferum/pages/signup_screen.dart';
 import 'package:ferum/widgets/bottomNav.dart';
 import 'package:flutter/material.dart';
+import 'package:ferum/services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -11,6 +13,9 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _formSignInKey = GlobalKey<FormState>();
   bool rememberPassword = true;
+  final authService = AuthService();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: TextFormField(
+                            controller: _emailController,
                             style: const TextStyle(color: Colors.white),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -113,6 +119,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: TextFormField(
+                            controller: _passwordController,
                             style: const TextStyle(color: Colors.white),
                             obscureText: true,
                             obscuringCharacter: '*',
@@ -184,16 +191,54 @@ class _SignInScreenState extends State<SignInScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.push(
+
+                            if (_formSignInKey.currentState!.validate()) {                              
+                              try{
+                                AuthService().login(_emailController.text, _passwordController.text);
+                                Navigator.push(
                                 context, 
                                 MaterialPageRoute(
                                   builder: (e) => BottomNav(),
                                 ),
                               );
+                              } catch(e){
+                                print("login failed : $e");
+                              }
+                            }                          
                             },
                             child: const Text('Sign in'),
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Vous n\'avez pas de compte ?',
+                              style: TextStyle(
+                                  color: Colors.white,
+                              ),                              
+                            ),
+                            const SizedBox(width: 4),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (e) => const SignUpScreen()
+                                  )
+                                );
+                              },
+                              child: Text(
+                                'Sign up!',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),                                              
+                              ),
+                            )
+                          ],
+                        )
                       ],
                     ),
                   ),
