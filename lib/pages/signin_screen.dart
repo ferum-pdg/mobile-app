@@ -190,21 +190,29 @@ class _SignInScreenState extends State<SignInScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              if (_formSignInKey.currentState!.validate()) {
+                                try {
+                                  bool loginPass = await AuthService()
+                                      .login(_emailController.text, _passwordController.text);
 
-                            if (_formSignInKey.currentState!.validate()) {                              
-                              try{
-                                AuthService().login(_emailController.text, _passwordController.text);
-                                Navigator.push(
-                                context, 
-                                MaterialPageRoute(
-                                  builder: (e) => BottomNav(),
-                                ),
-                              );
-                              } catch(e){
-                                print("login failed : $e");
-                              }
-                            }                          
+                                  if (loginPass) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (e) => BottomNav()),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Email ou mot de passe incorrect")),
+                                    );
+                                  }
+                                } catch (e) {
+                                  print("login failed : $e");
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Erreur lors de la connexion : $e")),
+                                  );
+                                }
+                              }                      
                             },
                             child: const Text('Sign in'),
                           ),
