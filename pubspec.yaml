@@ -35,8 +35,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
-  # Add apple heath plugin
-  health: ^13.1.1
+  # Pour télécharge le json.
+  path_provider: ^2.1.0
+  share_plus: ^10.0.0
+  
+  pigeon: ^26.0.0
+
 
   # For HTTP requests.
   dio: ^5.9.0
