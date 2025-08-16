@@ -1,7 +1,9 @@
+import 'package:ferum/pages/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'models/sharedPreferences.dart';
 
 import './widgets/bottomNav.dart';
+import './pages/welcome_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: BottomNav(),
+      home: WelcomeScreen(),
     );
   }
 }
