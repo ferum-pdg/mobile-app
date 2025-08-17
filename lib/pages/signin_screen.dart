@@ -53,9 +53,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+                    colors: [Color(0xFF0D47A1), Colors.purple],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(40.0),
