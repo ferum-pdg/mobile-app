@@ -14,7 +14,7 @@ import '../widgets/circularProgressBar.dart';
 
 import '../models/workout.dart';
 import '../models/enum.dart';
-import '../models/sharedPreferences.dart';
+import '../utils/sharedPreferences.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

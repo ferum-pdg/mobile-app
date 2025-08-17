@@ -1,8 +1,9 @@
+import 'package:ferum/widgets/gradientButton.dart';
 import 'package:ferum/widgets/inforSectionCard.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/infoCard.dart';
-import '../widgets/elevButton.dart';
+import '../widgets/gradientButton.dart';
 
 class ProfilePage extends StatelessWidget {
 
@@ -10,26 +11,22 @@ class ProfilePage extends StatelessWidget {
 
   const ProfilePage({super.key});
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(30.0),        
+          padding: const EdgeInsets.all(24.0),        
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 24),
                 const Text(
                   'Bienvenue, Alex',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Résumé de votre activité et informations personnelles",
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
 
                 // Profile card.
                 Container(
@@ -63,40 +60,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
 
-                const Text(
-                  'Statistiques',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 12),
-                
-                GridView.count(
-                  crossAxisCount: 2, // 2 colonnes
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    InfoCard(
-                      title: "156", 
-                      subtitle: "Séances"
-                    ),
-                    InfoCard(
-                      title: "1247",
-                      subtitle: "Kilomètres",
-                    ),
-                    InfoCard(
-                      title: "89",
-                      subtitle: "Jours actifs",
-                    ),
-                    InfoCard(
-                      title: "85%",
-                      subtitle: "Progression",
-                    ),
-                  ],
-                ),                
-
                 const SizedBox(height: 12),
 
                 const Text(
@@ -127,36 +90,12 @@ class ProfilePage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 12),
-
-                const Text(
-                  'Appareils connectés',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 12),
-
-                GridView.count(
-                  crossAxisCount: 2, // 2 colonnes
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    InfoCard(
-                      title: "Garmin", 
-                      subtitle: "Forerunner 255"
-                    ),
-                    InfoCard(
-                      title: "Apple",
-                      subtitle: "Watch Series 9",
-                    ),                                    
-                  ],
-                ),
-
                 const SizedBox(height: 18),
 
-                ElevButton(title: "Modifier le profil")
+                GradientButton(
+                  text: "Modifier le profil", 
+                  onTap: null
+                )
               ],
           ),
         )

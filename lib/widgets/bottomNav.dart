@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../pages/profile.dart';
+import '../pages/profile_screen.dart';
 import '../pages/home.dart';
 import 'package:ferum/pages/workouts.dart';
 
