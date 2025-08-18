@@ -1,13 +1,19 @@
 import HealthKit
 import Foundation
+import Flutter
 
 
-class WorkoutsImpl: NSObject, Workouts {
+final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
   let healthStore = HKHealthStore()
 
-  func getWorkouts() throws -> [WorkoutData] {
+  func getWorkouts() throws -> [HKWorkoutData?] {
+    return try buildWorkouts().map { Optional($0) }
+  }
 
-    var workoutsData: [WorkoutData] = []
+
+  private func buildWorkouts() throws -> [HKWorkoutData] {
+
+    var workoutsData: [HKWorkoutData] = []
     let semaphore = DispatchSemaphore(value: 0)
     var queryError: Error?
 
@@ -18,7 +24,7 @@ class WorkoutsImpl: NSObject, Workouts {
     )
     let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
     let query = HKSampleQuery(
-      sampleType: .workoutType(), predicate: predicate, limit: 4, sortDescriptors: [sortDescriptor]
+      sampleType: .workoutType(), predicate: predicate, limit: 1, sortDescriptors: [sortDescriptor]
     ) { _, samples, error in
 
       if let err = error {
@@ -34,28 +40,73 @@ class WorkoutsImpl: NSObject, Workouts {
       let group = DispatchGroup()
 
       for w in workouts {
-        var data = WorkoutData()
-        data.type = w.workoutActivityType.name
-        data.totalDistance = w.totalDistance?.doubleValue(for: .meter())
-        data.totalEnergyBurned = w.totalEnergyBurned?.doubleValue(for: .kilocalorie())
-        data.duration = w.duration
-        data.startDate = ISO8601DateFormatter().string(from: w.startDate)
-        data.endDate = ISO8601DateFormatter().string(from: w.endDate)
+        var data = HKWorkoutData()
+        let iso = ISO8601DateFormatter()
+        data.uuid = w.uuid.uuidString
+        data.start = iso.string(from: w.startDate)
+        data.end = iso.string(from: w.endDate)
+        let distanceMeters = w.totalDistance?.doubleValue(for: .meter()) ?? 0
+        data.distance = distanceMeters
+        let durationSec = w.duration
+        data.avgSpeed = durationSec > 0 ? (distanceMeters / durationSec) * 3.6 : 0
 
-        // Calcul allure
-        if let distance = data.totalDistance, distance > 0 {
-          let pace = (w.duration / 60) / (distance / 1000) // minutes par km
-          data.avgPace = Double(round(pace * 100) / 100)   // arrondi à 2 décimales
+        // We'll fill avgBPM, maxBPM, bpmDataPoints, speedDataPoints below
+
+        // Per-workout dispatch group
+        group.enter()
+        let wg = DispatchGroup()
+
+        var bpmPoints: [BPMDataPoint] = []
+        var speedPoints: [SpeedDataPoint] = []
+
+        // HR stats (avg / max)
+        wg.enter()
+        self.fetchHeartRateStats(for: w) { avg, max in
+          data.avgBPM = avg
+          data.maxBPM = max
+          wg.leave()
         }
 
-        // HR Query
-        group.enter()
-        self.fetchHeartRateStats(for: w) { avg, max in
-          var completedData = data
-          completedData.avgHeartRate = avg
-          completedData.maxHeartRate = max
-          workoutsData.append(completedData)  // ✅ Ajout après avoir rempli
-          print("✅ Ajout workout avec HR: \(String(describing: avg))")
+        // HR series (all points)
+        wg.enter()
+        self.fetchHeartRateSamples(for: w) { points in
+          bpmPoints = points.map { (ts, bpm) in
+            BPMDataPoint(ts: iso.string(from: ts), bpm: bpm)
+          }
+          wg.leave()
+        }
+
+        // Running speed / pace series (with fallback via distance samples)
+        wg.enter()
+        self.fetchRunningSpeedSamples(for: w) { points in
+          if points.count > 0 {
+            speedPoints = points.map { (ts, mps) in
+              let kmh = mps * 3.6
+              let paceMinPerKm = mps > 0 ? (1000.0 / mps) / 60.0 : Double.infinity
+              return SpeedDataPoint(ts: iso.string(from: ts), kmh: kmh, paceMinPerKm: paceMinPerKm)
+            }
+            wg.leave()
+          } else {
+            self.fetchDistanceSegments(for: w) { segments in
+              speedPoints = segments.compactMap { (start, end, meters) in
+                let dt = end.timeIntervalSince(start)
+                guard dt > 0, meters >= 0 else { return nil }
+                let mps = meters / dt
+                let kmh = mps * 3.6
+                let paceMinPerKm = mps > 0 ? (1000.0 / mps) / 60.0 : Double.infinity
+                let mid = start.addingTimeInterval(dt / 2.0)
+                return SpeedDataPoint(ts: iso.string(from: mid), kmh: kmh, paceMinPerKm: paceMinPerKm)
+              }
+              wg.leave()
+            }
+          }
+        }
+
+        // When the 3 async parts are done, finalize and append
+        wg.notify(queue: .global()) {
+          data.bpmDataPoints = bpmPoints
+          data.speedDataPoints = speedPoints
+          workoutsData.append(data)
           group.leave()
         }
       }
@@ -88,6 +139,7 @@ class WorkoutsImpl: NSObject, Workouts {
 
     return workoutsData
   }
+
 
   func fetchHeartRateStats(for workout: HKWorkout, completion: @escaping (Double?, Double?) -> Void)
   {
@@ -132,6 +184,89 @@ class WorkoutsImpl: NSObject, Workouts {
     }
 
     healthStore.execute(query)
+  }
+
+  // Fetch every heart-rate sample within the workout window, sorted by time (ascending)
+  func fetchHeartRateSamples(for workout: HKWorkout, completion: @escaping ([(Date, Double)]) -> Void) {
+    guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
+      completion([])
+      return
+    }
+
+    // Constrain samples to the workout timeframe
+    let predicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [])
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+
+    let q = HKSampleQuery(sampleType: hrType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { [weak self] (_, samples, error) in
+      guard error == nil, let samples = samples as? [HKQuantitySample] else {
+        completion([])
+        return
+      }
+
+      let unit = HKUnit(from: "count/min")
+      let points: [(Date, Double)] = samples.map { s in
+        (s.startDate, s.quantity.doubleValue(for: unit))
+      }
+      completion(points)
+    }
+
+    healthStore.execute(q)
+  }
+
+  // Fallback: build speed/pace from DistanceWalkingRunning samples (segment distance / segment duration)
+  func fetchDistanceSegments(for workout: HKWorkout, completion: @escaping ([(Date, Date, Double)]) -> Void) {
+    guard let distType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) else {
+      completion([])
+      return
+    }
+
+    let predicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [])
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+
+    let q = HKSampleQuery(sampleType: distType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { (_, samples, error) in
+      guard error == nil, let samples = samples as? [HKQuantitySample] else {
+        completion([])
+        return
+      }
+
+      let unit = HKUnit.meter()
+      let segments: [(Date, Date, Double)] = samples.map { s in
+        (s.startDate, s.endDate, s.quantity.doubleValue(for: unit))
+      }
+      completion(segments)
+    }
+
+    healthStore.execute(q)
+  }
+
+  // Fetch every running-speed sample within the workout window (iOS 16+), return tuples of (date, m/s)
+  func fetchRunningSpeedSamples(for workout: HKWorkout, completion: @escaping ([(Date, Double)]) -> Void) {
+    guard #available(iOS 16.0, *) else {
+      completion([])
+      return
+    }
+    guard let speedType = HKObjectType.quantityType(forIdentifier: .runningSpeed) else {
+      completion([])
+      return
+    }
+
+    let predicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [])
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+
+    let q = HKSampleQuery(sampleType: speedType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { (_, samples, error) in
+      guard error == nil, let samples = samples as? [HKQuantitySample] else {
+        completion([])
+        return
+      }
+
+      let unit = HKUnit(from: "m/s")
+      let points: [(Date, Double)] = samples.map { s in
+        (s.startDate, s.quantity.doubleValue(for: unit))
+      }
+      completion(points)
+    }
+
+    healthStore.execute(q)
   }
 
 }
