@@ -45,14 +45,17 @@ dependencies:
   # For HTTP requests.
   dio: ^5.9.0
 
-  # To store JWT locally
+  # To store JWT locally.
   shared_preferences: ^2.5.3
 
-  # Decode and validate JWTs
+  # Decode and validate JWTs.
   jwt_decoder: ^2.0.1 
 
   table_calendar: ^3.2.0
   intl: ^0.20.2
+
+  # Pick image.
+  image_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:

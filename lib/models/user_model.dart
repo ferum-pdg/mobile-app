@@ -1,21 +1,34 @@
 class User {
   final int id;
-  final String name;
+  final String email;
+  final String firstName;
+  final String lastName;
+  final int fcMax;
+
 
   User({
     required this.id,
-    required this.name
+    required this.email,
+    required this.firstName,
+    required this.lastName,
+    required this.fcMax
   });
 
   factory User.fromJson(Map<String, dynamic> json){
     return User(
       id: json['id'], 
-      name: json['name']
+      email: json['email'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      fcMax: json['fcMax']
     );
   }
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'name': name
+    'email': email,
+    'firstName': firstName,
+    'lastName': lastName,
+    'fcMax': fcMax    
   };
 }

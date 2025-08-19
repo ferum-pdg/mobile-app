@@ -1,105 +1,124 @@
 import 'package:ferum/widgets/gradientButton.dart';
-import 'package:ferum/widgets/inforSectionCard.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/infoCard.dart';
-import '../widgets/gradientButton.dart';
 
 class ProfilePage extends StatelessWidget {
 
-  static const routeName = '/profilePage';
-
   const ProfilePage({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),        
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [          
+          Container(
+            height: 290,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0D47A1), Colors.purple],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 24),
-                const Text(
-                  'Bienvenue, Alex',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                const SizedBox(height: 40),
+                const CircleAvatar(
+                  radius: 50,
+                  //backgroundImage: AssetImage("assets/images/profile.jpg"),
                 ),
-                const SizedBox(height: 8),
-
-                // Profile card.
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
+                const SizedBox(height: 10),
+                const Text(
+                  "Alex",
+                  style: TextStyle(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 1.5),                                
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue,
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.person, color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-                      const Text(
-                        'Alex Dupont',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                const SizedBox(height: 12),
-
                 const Text(
-                  'Informations personnelles',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  "alex@email.com",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: [
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: const Icon(Icons.person, color: Colors.purple),
+                    title: const Text("Nom complet"),
+                    subtitle: const Text("John Doe"),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: const Icon(Icons.fitness_center, color: Colors.purple),
+                    title: const Text("Poids"),
+                    subtitle: const Text("75 kg"),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: const Icon(Icons.height, color: Colors.purple),
+                    title: const Text("Taille"),
+                    subtitle: const Text("180 cm"),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: const Icon(Icons.favorite, color: Colors.purple),
+                    title: const Text("Fréquence Cardiaque Max"),
+                    subtitle: const Text("190 bpm"),
+                  ),
                 ),
 
-                const InfoSectionCard(
-                  fields: [
-                    MapEntry("Âge", "28 ans"),
-                    MapEntry("Poids", "72 kg"),
-                    MapEntry("Taille", "175 cm"),
-                    MapEntry("Niveau", "Intermédiaire"),
-                  ]              
-                ),
-
-                const Text(
-                  'Objectifs',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                const InfoSectionCard(
-                  fields: [
-                    MapEntry("Poids", "70 kg"),
-                    MapEntry("Dist hebdo", "30 km"),
-                    MapEntry("Fréquence", "5 par sem"),
-                  ]              
-                ),
-
-                const SizedBox(height: 12),
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
 
                 GradientButton(
                   text: "Modifier le profil", 
-                  onTap: null
+                  height: 30,
+                  onTap: null,
                 )
+                
               ],
-          ),
-        )
-      )
+            ),
+          )
+        ],
+      ),
     );
   }
 }
