@@ -24,8 +24,9 @@ class UserService {
         )
       );
 
-      if (response.statusCode == 200) {      
-        await prefs.setString('user', jsonEncode(response.data));
+      if (response.statusCode == 200) {
+        final user = User.fromJson(response.data);
+        await prefs.setString('user', jsonEncode(user.toJson()));
       }
     } catch (e) {
       print("User storage failed: $e");

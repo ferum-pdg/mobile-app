@@ -1,4 +1,5 @@
 import 'package:ferum/pages/signup_screen.dart';
+import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/bottomNav.dart';
 import 'package:flutter/material.dart';
 import 'package:ferum/services/auth_service.dart';
@@ -197,6 +198,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       .login(_emailController.text, _passwordController.text);
 
                                   if (loginPass) {
+                                    await UserService().saveUser();
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(builder: (e) => BottomNav()),

@@ -1,10 +1,32 @@
-import 'package:ferum/services/user_service.dart';
+import 'dart:convert';
+
+import 'package:ferum/models/user_model.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
 
-  const ProfilePage({super.key});
+  const ProfilePage({super.key});  
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  User? _user;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('user');
+    final user = User.fromJson(jsonDecode(userJson));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +135,7 @@ class ProfilePage extends StatelessWidget {
                   text: "Modifier le profil", 
                   height: 30,
                   onTap: () {
-                    UserService().saveUser();
+                    
                   },
                 )
                 
