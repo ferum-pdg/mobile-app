@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:ferum/services/auth_service.dart';
 
@@ -11,22 +12,23 @@ class UserService {
   final String baseUrl = "http://localhost:8080";
   SharedPreferences? prefs;
 
-  Future<void> getUser() async {
+  Future<void> saveUser() async {
     try {
-      SharedPreferences p = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       final response = await _dio.get(
         "$baseUrl/auth/me",
-        data: {"Authorization": AuthService().getToken()}
+        options: Options(
+          headers: {
+            "Authorization": "Bearer ${await AuthService().getToken()}"
+          }
+        )
       );
 
-      if (response.statusCode == 200) {
-        String user = response.data;
-        //await saveToken(token);
-        //return User(id: , name: name, email: email, imagePath: imagePath);
+      if (response.statusCode == 200) {      
+        await prefs.setString('user', jsonEncode(response.data));
       }
     } catch (e) {
-      print("Login failed: $e");
+      print("User storage failed: $e");
     }
-    //return false;
   }
 }

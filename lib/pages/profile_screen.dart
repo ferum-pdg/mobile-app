@@ -1,3 +1,4 @@
+import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 
@@ -111,7 +112,9 @@ class ProfilePage extends StatelessWidget {
                 GradientButton(
                   text: "Modifier le profil", 
                   height: 30,
-                  onTap: null,
+                  onTap: () {
+                    UserService().saveUser();
+                  },
                 )
                 
               ],
