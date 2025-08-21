@@ -120,8 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 12),
         workoutType: workoutType.EF,
         workoutSport: workoutSport.RUNNING,
-        duration: 30,
-        distance: 5.3,
+        durationSec: 30,
+        distanceMeters: 5.3,
         day: "Mercredi",
       ),
       WorkoutClass(
@@ -131,8 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.FRACTIONNE,
         workoutSport: workoutSport.RUNNING,
-        duration: 45,
-        distance: 7.8,
+        durationSec: 45,
+        distanceMeters: 7.8,
         day: "Mardi",
       ),
       WorkoutClass(
@@ -142,8 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.TEMPO,
         workoutSport: workoutSport.SWIMMING,
-        duration: 40,
-        distance: 1000,
+        durationSec: 40,
+        distanceMeters: 1000,
         day: "Lundi",
       ),
       WorkoutClass(
@@ -153,8 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.EF,
         workoutSport: workoutSport.CYCLING,
-        duration: 110,
-        distance: 50,
+        durationSec: 110,
+        distanceMeters: 50,
         day: "Vendredi",
       ),
     ];
