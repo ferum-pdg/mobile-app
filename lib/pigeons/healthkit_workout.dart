@@ -1,18 +1,17 @@
 import 'package:pigeon/pigeon.dart';
 
 class BPMDataPoint {
-  String? ts; // ISO8601 timestamp
+  String? timestamp; // ISO8601 timestamp
   double? bpm;
 }
 
 class SpeedDataPoint {
-  String? ts; // ISO8601 timestamp
+  String? timestamp; // ISO8601 timestamp
   double? kmh;
   double? paceMinPerKm; // minutes per km
 }
 
 class HKWorkoutData {
-  String? uuid;
   String? start; // ISO8601
   String? end; // ISO8601
   double? distance;
@@ -21,6 +20,9 @@ class HKWorkoutData {
   double? maxBPM;
   List<BPMDataPoint?>? bpmDataPoints;
   List<SpeedDataPoint?>? speedDataPoints;
+  String? sport;
+  double? caloriesKcal;
+  String? source;
 }
 
 @HostApi()

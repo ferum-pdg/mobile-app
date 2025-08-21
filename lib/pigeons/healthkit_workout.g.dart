@@ -31,17 +31,17 @@ bool _deepEquals(Object? a, Object? b) {
 
 class BPMDataPoint {
   BPMDataPoint({
-    this.ts,
+    this.timestamp,
     this.bpm,
   });
 
-  String? ts;
+  String? timestamp;
 
   double? bpm;
 
   List<Object?> _toList() {
     return <Object?>[
-      ts,
+      timestamp,
       bpm,
     ];
   }
@@ -52,7 +52,7 @@ class BPMDataPoint {
   static BPMDataPoint decode(Object result) {
     result as List<Object?>;
     return BPMDataPoint(
-      ts: result[0] as String?,
+      timestamp: result[0] as String?,
       bpm: result[1] as double?,
     );
   }
@@ -77,12 +77,12 @@ class BPMDataPoint {
 
 class SpeedDataPoint {
   SpeedDataPoint({
-    this.ts,
+    this.timestamp,
     this.kmh,
     this.paceMinPerKm,
   });
 
-  String? ts;
+  String? timestamp;
 
   double? kmh;
 
@@ -90,7 +90,7 @@ class SpeedDataPoint {
 
   List<Object?> _toList() {
     return <Object?>[
-      ts,
+      timestamp,
       kmh,
       paceMinPerKm,
     ];
@@ -102,7 +102,7 @@ class SpeedDataPoint {
   static SpeedDataPoint decode(Object result) {
     result as List<Object?>;
     return SpeedDataPoint(
-      ts: result[0] as String?,
+      timestamp: result[0] as String?,
       kmh: result[1] as double?,
       paceMinPerKm: result[2] as double?,
     );
@@ -128,7 +128,6 @@ class SpeedDataPoint {
 
 class HKWorkoutData {
   HKWorkoutData({
-    this.uuid,
     this.start,
     this.end,
     this.distance,
@@ -137,9 +136,10 @@ class HKWorkoutData {
     this.maxBPM,
     this.bpmDataPoints,
     this.speedDataPoints,
+    this.sport,
+    this.caloriesKcal,
+    this.source,
   });
-
-  String? uuid;
 
   String? start;
 
@@ -157,9 +157,14 @@ class HKWorkoutData {
 
   List<SpeedDataPoint?>? speedDataPoints;
 
+  String? sport;
+
+  double? caloriesKcal;
+
+  String? source;
+
   List<Object?> _toList() {
     return <Object?>[
-      uuid,
       start,
       end,
       distance,
@@ -168,6 +173,9 @@ class HKWorkoutData {
       maxBPM,
       bpmDataPoints,
       speedDataPoints,
+      sport,
+      caloriesKcal,
+      source,
     ];
   }
 
@@ -177,15 +185,17 @@ class HKWorkoutData {
   static HKWorkoutData decode(Object result) {
     result as List<Object?>;
     return HKWorkoutData(
-      uuid: result[0] as String?,
-      start: result[1] as String?,
-      end: result[2] as String?,
-      distance: result[3] as double?,
-      avgSpeed: result[4] as double?,
-      avgBPM: result[5] as double?,
-      maxBPM: result[6] as double?,
-      bpmDataPoints: (result[7] as List<Object?>?)?.cast<BPMDataPoint?>(),
-      speedDataPoints: (result[8] as List<Object?>?)?.cast<SpeedDataPoint?>(),
+      start: result[0] as String?,
+      end: result[1] as String?,
+      distance: result[2] as double?,
+      avgSpeed: result[3] as double?,
+      avgBPM: result[4] as double?,
+      maxBPM: result[5] as double?,
+      bpmDataPoints: (result[6] as List<Object?>?)?.cast<BPMDataPoint?>(),
+      speedDataPoints: (result[7] as List<Object?>?)?.cast<SpeedDataPoint?>(),
+      sport: result[8] as String?,
+      caloriesKcal: result[9] as double?,
+      source: result[10] as String?,
     );
   }
 

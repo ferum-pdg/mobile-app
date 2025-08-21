@@ -45,8 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
               // Délègue l'envoi au service dédié
               final svc = HKWorkoutService();
               for (HKWorkoutData? w in HKWorkouts) {
-                final HKWorkoutJson = hkWorkoutToJson(w!);
-                await svc.sendWorkout(HKWorkoutJson);
+                if (w?.sport == "running" ||
+                    w?.sport == "cycling" ||
+                    w?.sport == "swimming") {
+                  final HKWorkoutJson = hkWorkoutToJson(w!);
+                  await svc.sendWorkout(HKWorkoutJson);
+                }
               }
             });
           } else {
@@ -79,10 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
   late final HKWorkoutAPI = HealthKitWorkoutApi();
 
   Future<void> loadWorkouts() async {
-    HKWorkouts = await HKWorkoutAPI.getWorkouts();
+    HKWorkouts = await HKWorkoutAPI.getWorkouts(); /*
     for (var w in HKWorkouts) {
       print(
-        "Workout UUID=${w?.uuid}, start=${w?.start}, end=${w?.end}, distance=${w?.distance}, avgSpeed=${w?.avgSpeed}, avgBPM=${w?.avgBPM}, maxBPM=${w?.maxBPM}",
+        "Workout start=${w?.start}, end=${w?.end}, distance=${w?.distance}, avgSpeed=${w?.avgSpeed}, avgBPM=${w?.avgBPM}, maxBPM=${w?.maxBPM}",
       );
 
       final bpm = w?.bpmDataPoints ?? const <BPMDataPoint?>[];
@@ -91,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // Print HR datapoints: ["ts: bpm", ...]
       final bpmList = bpm
           .where((p) => p != null)
-          .map((p) => "${p!.ts}: ${p.bpm?.toStringAsFixed(0)} bpm")
+          .map((p) => "${p!.timestamp}: ${p.bpm?.toStringAsFixed(0)} bpm")
           .toList();
       print("  BPMDataPoints (${bpmList.length}): $bpmList");
 
@@ -100,11 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
           .where((p) => p != null)
           .map(
             (p) =>
-                "${p!.ts}: ${p.kmh?.toStringAsFixed(2)} km/h, ${p.paceMinPerKm?.toStringAsFixed(2)} min/km",
+                "${p!.timestamp}: ${p.kmh?.toStringAsFixed(2)} km/h, ${p.paceMinPerKm?.toStringAsFixed(2)} min/km",
           )
           .toList();
       print("  SpeedDataPoints (${spdList.length}): $spdList");
-    }
+    }*/
   }
 
   Future<void> initWeeklyWorkouts() async {
@@ -241,8 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/*
-Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
+Future<String> saveJsonToFile(Map<String, dynamic> jsonData) async {
   final directory =
       await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
   final filePath = '${directory.path}/health_data.json';
@@ -255,4 +258,4 @@ Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
 
 void shareHealthData(String filePath) {
   Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
-}*/
+}

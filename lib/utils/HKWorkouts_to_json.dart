@@ -3,7 +3,6 @@ import 'package:ferum/pigeons/healthkit_workout.g.dart';
 
 Map<String, dynamic> hkWorkoutToJson(HKWorkoutData w) {
   return {
-    "UUID": w.uuid,
     "start": w.start,
     "end": w.end,
     "distance": w.distance,
@@ -13,7 +12,7 @@ Map<String, dynamic> hkWorkoutToJson(HKWorkoutData w) {
     "BPMDataPoints":
         w.bpmDataPoints
             ?.where((p) => p != null)
-            .map((p) => {"ts": p!.ts, "bpm": p.bpm})
+            .map((p) => {"ts": p!.timestamp, "bpm": p.bpm})
             .toList() ??
         [],
     "SpeedDataPoints":
@@ -21,12 +20,15 @@ Map<String, dynamic> hkWorkoutToJson(HKWorkoutData w) {
             ?.where((p) => p != null)
             .map(
               (p) => {
-                "ts": p!.ts,
+                "ts": p!.timestamp,
                 "kmh": p.kmh,
                 "pace_min_per_km": p.paceMinPerKm,
               },
             )
             .toList() ??
         [],
+    "sport": w.sport,
+    "caloriesKcal": w.caloriesKcal,
+    "source": w.source,
   };
 }

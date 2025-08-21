@@ -3,12 +3,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HKWorkoutService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://localhost:8080";
+  final String baseUrl = "http://172.22.22.240:8080";
 
   Future<bool> sendWorkout(Map<String, dynamic> workout) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("jwt_token");
+      String? token = prefs.getString("jwt_token");
 
       if (token == null) {
         throw Exception("Token manquant, utilisateur non connecté");

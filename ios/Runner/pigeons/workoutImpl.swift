@@ -24,7 +24,7 @@ final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
     )
     let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
     let query = HKSampleQuery(
-      sampleType: .workoutType(), predicate: predicate, limit: 1, sortDescriptors: [sortDescriptor]
+      sampleType: .workoutType(), predicate: predicate, limit: 3, sortDescriptors: [sortDescriptor]
     ) { _, samples, error in
 
       if let err = error {
@@ -42,13 +42,20 @@ final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
       for w in workouts {
         var data = HKWorkoutData()
         let iso = ISO8601DateFormatter()
-        data.uuid = w.uuid.uuidString
         data.start = iso.string(from: w.startDate)
         data.end = iso.string(from: w.endDate)
+        data.sport = w.workoutActivityType.name
+        if #available(iOS 11.0, *) {
+          data.source = w.sourceRevision.source.name
+        } else {
+          data.source = nil
+        }
         let distanceMeters = w.totalDistance?.doubleValue(for: .meter()) ?? 0
         data.distance = distanceMeters
         let durationSec = w.duration
         data.avgSpeed = durationSec > 0 ? (distanceMeters / durationSec) * 3.6 : 0
+        let calories = w.totalEnergyBurned?.doubleValue(for: .kilocalorie()) ?? 0
+        data.caloriesKcal = calories
 
         // We'll fill avgBPM, maxBPM, bpmDataPoints, speedDataPoints below
 
@@ -71,7 +78,7 @@ final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
         wg.enter()
         self.fetchHeartRateSamples(for: w) { points in
           bpmPoints = points.map { (ts, bpm) in
-            BPMDataPoint(ts: iso.string(from: ts), bpm: bpm)
+            BPMDataPoint(timestamp: iso.string(from: ts), bpm: bpm)
           }
           wg.leave()
         }
@@ -83,7 +90,7 @@ final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
             speedPoints = points.map { (ts, mps) in
               let kmh = mps * 3.6
               let paceMinPerKm = mps > 0 ? (1000.0 / mps) / 60.0 : Double.infinity
-              return SpeedDataPoint(ts: iso.string(from: ts), kmh: kmh, paceMinPerKm: paceMinPerKm)
+              return SpeedDataPoint(timestamp: iso.string(from: ts), kmh: kmh, paceMinPerKm: paceMinPerKm)
             }
             wg.leave()
           } else {
@@ -95,7 +102,7 @@ final class WorkoutsImpl: NSObject, HealthKitWorkoutApi {
                 let kmh = mps * 3.6
                 let paceMinPerKm = mps > 0 ? (1000.0 / mps) / 60.0 : Double.infinity
                 let mid = start.addingTimeInterval(dt / 2.0)
-                return SpeedDataPoint(ts: iso.string(from: mid), kmh: kmh, paceMinPerKm: paceMinPerKm)
+                return SpeedDataPoint(timestamp: iso.string(from: mid), kmh: kmh, paceMinPerKm: paceMinPerKm)
               }
               wg.leave()
             }

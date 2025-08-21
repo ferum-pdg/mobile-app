@@ -130,23 +130,23 @@ func deepHashHealthKitWorkout(value: Any?, hasher: inout Hasher) {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct BPMDataPoint: Hashable {
-  var ts: String? = nil
+  var timestamp: String? = nil
   var bpm: Double? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> BPMDataPoint? {
-    let ts: String? = nilOrValue(pigeonVar_list[0])
+    let timestamp: String? = nilOrValue(pigeonVar_list[0])
     let bpm: Double? = nilOrValue(pigeonVar_list[1])
 
     return BPMDataPoint(
-      ts: ts,
+      timestamp: timestamp,
       bpm: bpm
     )
   }
   func toList() -> [Any?] {
     return [
-      ts,
+      timestamp,
       bpm,
     ]
   }
@@ -159,26 +159,26 @@ struct BPMDataPoint: Hashable {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct SpeedDataPoint: Hashable {
-  var ts: String? = nil
+  var timestamp: String? = nil
   var kmh: Double? = nil
   var paceMinPerKm: Double? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> SpeedDataPoint? {
-    let ts: String? = nilOrValue(pigeonVar_list[0])
+    let timestamp: String? = nilOrValue(pigeonVar_list[0])
     let kmh: Double? = nilOrValue(pigeonVar_list[1])
     let paceMinPerKm: Double? = nilOrValue(pigeonVar_list[2])
 
     return SpeedDataPoint(
-      ts: ts,
+      timestamp: timestamp,
       kmh: kmh,
       paceMinPerKm: paceMinPerKm
     )
   }
   func toList() -> [Any?] {
     return [
-      ts,
+      timestamp,
       kmh,
       paceMinPerKm,
     ]
@@ -192,7 +192,6 @@ struct SpeedDataPoint: Hashable {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct HKWorkoutData: Hashable {
-  var uuid: String? = nil
   var start: String? = nil
   var end: String? = nil
   var distance: Double? = nil
@@ -201,22 +200,26 @@ struct HKWorkoutData: Hashable {
   var maxBPM: Double? = nil
   var bpmDataPoints: [BPMDataPoint?]? = nil
   var speedDataPoints: [SpeedDataPoint?]? = nil
+  var sport: String? = nil
+  var caloriesKcal: Double? = nil
+  var source: String? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
   static func fromList(_ pigeonVar_list: [Any?]) -> HKWorkoutData? {
-    let uuid: String? = nilOrValue(pigeonVar_list[0])
-    let start: String? = nilOrValue(pigeonVar_list[1])
-    let end: String? = nilOrValue(pigeonVar_list[2])
-    let distance: Double? = nilOrValue(pigeonVar_list[3])
-    let avgSpeed: Double? = nilOrValue(pigeonVar_list[4])
-    let avgBPM: Double? = nilOrValue(pigeonVar_list[5])
-    let maxBPM: Double? = nilOrValue(pigeonVar_list[6])
-    let bpmDataPoints: [BPMDataPoint?]? = nilOrValue(pigeonVar_list[7])
-    let speedDataPoints: [SpeedDataPoint?]? = nilOrValue(pigeonVar_list[8])
+    let start: String? = nilOrValue(pigeonVar_list[0])
+    let end: String? = nilOrValue(pigeonVar_list[1])
+    let distance: Double? = nilOrValue(pigeonVar_list[2])
+    let avgSpeed: Double? = nilOrValue(pigeonVar_list[3])
+    let avgBPM: Double? = nilOrValue(pigeonVar_list[4])
+    let maxBPM: Double? = nilOrValue(pigeonVar_list[5])
+    let bpmDataPoints: [BPMDataPoint?]? = nilOrValue(pigeonVar_list[6])
+    let speedDataPoints: [SpeedDataPoint?]? = nilOrValue(pigeonVar_list[7])
+    let sport: String? = nilOrValue(pigeonVar_list[8])
+    let caloriesKcal: Double? = nilOrValue(pigeonVar_list[9])
+    let source: String? = nilOrValue(pigeonVar_list[10])
 
     return HKWorkoutData(
-      uuid: uuid,
       start: start,
       end: end,
       distance: distance,
@@ -224,12 +227,14 @@ struct HKWorkoutData: Hashable {
       avgBPM: avgBPM,
       maxBPM: maxBPM,
       bpmDataPoints: bpmDataPoints,
-      speedDataPoints: speedDataPoints
+      speedDataPoints: speedDataPoints,
+      sport: sport,
+      caloriesKcal: caloriesKcal,
+      source: source
     )
   }
   func toList() -> [Any?] {
     return [
-      uuid,
       start,
       end,
       distance,
@@ -238,6 +243,9 @@ struct HKWorkoutData: Hashable {
       maxBPM,
       bpmDataPoints,
       speedDataPoints,
+      sport,
+      caloriesKcal,
+      source,
     ]
   }
   static func == (lhs: HKWorkoutData, rhs: HKWorkoutData) -> Bool {
