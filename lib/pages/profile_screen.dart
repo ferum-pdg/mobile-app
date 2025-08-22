@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
-
-  const ProfilePage({super.key});  
+  final User? user;
+  const ProfilePage({
+    super.key,
+    required this.user
+  });  
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -19,13 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState(){
     super.initState();
-    _loadUser();
-  }
-
-  Future<void> _loadUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString('user');
-    final user = User.fromJson(jsonDecode(userJson));
+    _user = widget.user;
   }
 
   @override
@@ -53,19 +50,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 40),
                 const CircleAvatar(
                   radius: 50,
-                  //backgroundImage: AssetImage("assets/images/profile.jpg"),
+                  backgroundImage: AssetImage("assets/img/profile.png"),
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  "Alex",
+                Text(
+                  "${_user!.firstName}",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  "alex@email.com",
+                Text(
+                  "${_user!.email}",
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -89,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.person, color: Colors.purple),
                     title: const Text("Nom complet"),
-                    subtitle: const Text("John Doe"),
+                    subtitle: Text("${_user!.firstName} ${_user!.lastName}"),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -101,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.fitness_center, color: Colors.purple),
                     title: const Text("Poids"),
-                    subtitle: const Text("75 kg"),
+                    subtitle: Text("${_user!.weight}"),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -113,7 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.height, color: Colors.purple),
                     title: const Text("Taille"),
-                    subtitle: const Text("180 cm"),
+                    subtitle: Text("${_user!.height}"),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -125,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.favorite, color: Colors.purple),
                     title: const Text("Fréquence Cardiaque Max"),
-                    subtitle: const Text("190 bpm"),
+                    subtitle: Text("${_user!.fcMax}"),
                   ),
                 ),
 

@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../pages/profile_screen.dart';
 import '../pages/home.dart';
+import '../models/user_model.dart';
 import 'package:ferum/pages/workouts.dart';
 
 class BottomNav extends StatefulWidget {
-  BottomNav({super.key});
+  final User? user;
+
+  const BottomNav({
+    super.key,
+    required this.user
+  });
 
   @override
   State<BottomNav> createState() => _BottomNavState();
@@ -28,7 +34,7 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: [MyHomePage(), WorkoutsPage(), ProfilePage()],
+        children: [MyHomePage(), WorkoutsPage(), ProfilePage(user: widget.user)],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,

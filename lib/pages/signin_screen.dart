@@ -198,10 +198,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                       .login(_emailController.text, _passwordController.text);
 
                                   if (loginPass) {
-                                    await UserService().saveUser();
+                                    // Gets the user logged in.
+                                    final loggedInUser = await UserService().getUser();                                    
                                     Navigator.pushReplacement(
                                       context,
-                                      MaterialPageRoute(builder: (e) => BottomNav()),
+                                      MaterialPageRoute(builder: (e) => BottomNav(user: loggedInUser)),
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
