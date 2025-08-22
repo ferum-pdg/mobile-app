@@ -1,4 +1,6 @@
+import 'package:ferum/pages/home.dart';
 import 'package:ferum/pages/welcome_screen.dart';
+import 'package:ferum/pages/workoutDetailPage.dart';
 import 'package:flutter/material.dart';
 import 'models/sharedPreferences.dart';
 
