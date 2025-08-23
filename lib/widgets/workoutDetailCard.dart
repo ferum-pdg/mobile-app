@@ -109,7 +109,10 @@ class CircleNumber extends StatelessWidget {
     return Container(
       width: 28,
       height: 28,
-      decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade900,
+        shape: BoxShape.circle,
+      ),
       alignment: Alignment.center,
       child: Text(
         '$number',

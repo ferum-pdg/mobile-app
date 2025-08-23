@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/workout.dart';
 
 import '../widgets/workoutDetailCard.dart';
+import '../widgets/infoCard.dart';
 
 const kBlue = Color(0xFF3B82F6); // App primary blue
 const kPurple = Color(0xFF8B5CF6); // App accent purple
@@ -81,7 +82,7 @@ class WorkoutDetailPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         const Icon(
@@ -117,6 +118,50 @@ class WorkoutDetailPage extends StatelessWidget {
               const Divider(),
               const SizedBox(height: 16),
 
+              if (workout.done) ...[
+                Text(
+                  "Résulats",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InfoCard(
+                      title: "${workout.distanceMeters} km",
+                      size: 100,
+                      fontSize: 16,
+                      useGradient: true,
+                    ),
+                    SizedBox(width: 10),
+                    InfoCard(
+                      title:
+                          "Moyenne ${workout.avgBPM?.toStringAsFixed(0)} BPM",
+                      size: 100,
+                      fontSize: 16,
+                      useGradient: true,
+                    ),
+                    SizedBox(width: 10),
+                    InfoCard(
+                      title: "${workout.kcal?.toStringAsFixed(0)} kcal",
+                      size: 100,
+                      fontSize: 16,
+                      useGradient: true,
+                    ),
+                    SizedBox(width: 10),
+                  ],
+                ),
+                SizedBox(height: 10),
+                const Divider(),
+                const SizedBox(height: 16),
+              ],
+
+              Text(
+                "Programme",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+
               // --- Étapes (aperçu statique) ---
               //échauffement
               StepBlock(
@@ -125,7 +170,7 @@ class WorkoutDetailPage extends StatelessWidget {
                   workoutDetailCard(
                     title: '15 min à 6:34 - 7:04\'/km',
                     tag: 'EF',
-                    tagColor: kBlue,
+                    tagColor: Colors.blue.shade900,
                     transparentBorder: true,
                   ),
                 ],
@@ -157,7 +202,7 @@ class WorkoutDetailPage extends StatelessWidget {
                   workoutDetailCard(
                     title: '5 min de récup. à 6:34 - 7:04\'/km',
                     tag: 'EF',
-                    tagColor: kBlue,
+                    tagColor: Colors.blue.shade900,
                     transparentBorder: true,
                   ),
                 ],

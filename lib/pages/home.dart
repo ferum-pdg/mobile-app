@@ -133,8 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
         workoutType: workoutType.FRACTIONNE,
         workoutSport: workoutSport.RUNNING,
         durationSec: 45,
-        distanceMeters: 7.8,
+        distanceMeters: 15.5,
         day: "Mardi",
+        kcal: 1500,
+        avgBPM: 156,
       ),
       WorkoutClass(
         id: 3,
