@@ -20,9 +20,9 @@ class StepBlock extends StatelessWidget {
         border: Border.all(color: Colors.black12),
         borderRadius: BorderRadius.circular(12),
       ),
-      //padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(width: 12),
 
@@ -36,11 +36,17 @@ class StepBlock extends StatelessWidget {
           ),
           if (sideBadges != null && sideBadges!.isNotEmpty) ...[
             const SizedBox(width: 12),
-            Column(children: sideBadges!),
+            Align(
+              alignment: Alignment.center,
+              child: Column(children: sideBadges!),
+            ),
           ],
           if (nbRepetition != -1) ...[
             SizedBox(width: 10),
-            SideBadge(text: '7x', color: Colors.purple),
+            Align(
+              alignment: Alignment.center,
+              child: SideBadge(text: '7x', color: Colors.purple),
+            ),
           ],
         ],
       ),
