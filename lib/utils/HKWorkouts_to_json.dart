@@ -9,13 +9,13 @@ Map<String, dynamic> hkWorkoutToJson(HKWorkoutData w) {
     "avgSpeed": w.avgSpeed,
     "avgBPM": w.avgBPM,
     "maxBPM": w.maxBPM,
-    "BPMDataPoints":
+    "bpmDataPoints":
         w.bpmDataPoints
             ?.where((p) => p != null)
             .map((p) => {"ts": p!.timestamp, "bpm": p.bpm})
             .toList() ??
         [],
-    "SpeedDataPoints":
+    "speedDataPoints":
         w.speedDataPoints
             ?.where((p) => p != null)
             .map(
