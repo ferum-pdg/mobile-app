@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ferum/models/user_model.dart';
+import 'package:ferum/pages/edit_profile_screen.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -132,7 +133,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   text: "Modifier le profil", 
                   height: 30,
                   onTap: () {
-                    
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (e) => EditProfilePage(user: _user)),
+                    );
                   },
                 )
                 

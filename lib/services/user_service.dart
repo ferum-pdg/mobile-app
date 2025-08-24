@@ -41,4 +41,30 @@ class UserService {
       print("User storage failed: $e");
     }
   }
+
+  Future<void> setUser(User user) async {
+     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('jwt_token');
+
+      if (token == null){
+        print("Pas de token trouvé");
+        return;
+      }
+
+      final response = await _dio.put(
+        "$baseUrl/auth/me",
+        data: {user.toJson()},
+      );
+
+      if (response.statusCode == 200) {
+        // Save the new user with the updated information.
+        final newUser = User.fromJson(user.toJson());
+        await prefs.setString('user', jsonEncode(newUser.toJson()));  
+      }
+
+    } catch (e) {
+      print("User storage failed: $e");
+    }    
+  }
 }
