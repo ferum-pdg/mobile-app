@@ -131,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 GradientButton(
                   text: "Modifier le profil", 
-                  height: 30,
+                  height: 60,
                   onTap: () {
                     Navigator.pushReplacement(
                       context,

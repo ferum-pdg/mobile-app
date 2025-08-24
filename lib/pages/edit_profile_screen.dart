@@ -19,7 +19,6 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   User? _user;
-  final _emailController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _weightController = TextEditingController();
@@ -86,7 +85,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           const SizedBox(height: 20),
 
-          
+
 
 
 
