@@ -1,15 +1,10 @@
 import 'package:ferum/pigeons/healthkit_workout.g.dart';
 import 'package:ferum/widgets/workoutCard.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pigeons/healthkit_authorization.g.dart';
 
-import '../widgets/infoCard.dart';
 import '../widgets/circularProgressBar.dart';
 
 import '../models/workout.dart';
@@ -84,32 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late final HKWorkoutAPI = HealthKitWorkoutApi();
 
   Future<void> loadWorkouts() async {
-    HKWorkouts = await HKWorkoutAPI.getWorkouts(); /*
-    for (var w in HKWorkouts) {
-      print(
-        "Workout start=${w?.start}, end=${w?.end}, distance=${w?.distance}, avgSpeed=${w?.avgSpeed}, avgBPM=${w?.avgBPM}, maxBPM=${w?.maxBPM}",
-      );
-
-      final bpm = w?.bpmDataPoints ?? const <BPMDataPoint?>[];
-      final spd = w?.speedDataPoints ?? const <SpeedDataPoint?>[];
-
-      // Print HR datapoints: ["ts: bpm", ...]
-      final bpmList = bpm
-          .where((p) => p != null)
-          .map((p) => "${p!.timestamp}: ${p.bpm?.toStringAsFixed(0)} bpm")
-          .toList();
-      print("  BPMDataPoints (${bpmList.length}): $bpmList");
-
-      // Print Speed datapoints: ["ts: kmh km/h, pace min/km", ...]
-      final spdList = spd
-          .where((p) => p != null)
-          .map(
-            (p) =>
-                "${p!.timestamp}: ${p.kmh?.toStringAsFixed(2)} km/h, ${p.paceMinPerKm?.toStringAsFixed(2)} min/km",
-          )
-          .toList();
-      print("  SpeedDataPoints (${spdList.length}): $spdList");
-    }*/
+    HKWorkouts = await HKWorkoutAPI.getWorkouts();
   }
 
   Future<void> initWeeklyWorkouts() async {
@@ -258,19 +228,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-Future<String> saveJsonToFile(Map<String, dynamic> jsonData) async {
-  final directory =
-      await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
-  final filePath = '${directory.path}/health_data.json';
-  final file = File(filePath);
-
-  await file.writeAsString(jsonEncode(jsonData));
-  print('✅ Fichier sauvegardé : $filePath');
-  return filePath;
-}
-
-void shareHealthData(String filePath) {
-  Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
 }
