@@ -44,7 +44,7 @@ class workoutCard extends StatelessWidget {
                     SizedBox(height: 5),
                     Row(
                       children: [
-                        if (workout.workoutType == workoutType.EF)
+                        if (workout.workoutType == WorkoutType.EF)
                           Text(
                             "Endurance fondamentale",
                             style: TextStyle(
@@ -55,7 +55,7 @@ class workoutCard extends StatelessWidget {
                                   : Colors.black,
                             ),
                           )
-                        else if (workout.workoutType == workoutType.FRACTIONNE)
+                        else if (workout.workoutType == WorkoutType.FRACTIONNE)
                           Text(
                             "Entrainement de fractionné",
                             style: TextStyle(
@@ -66,7 +66,7 @@ class workoutCard extends StatelessWidget {
                                   : Colors.black,
                             ),
                           )
-                        else if (workout.workoutType == workoutType.TEMPO)
+                        else if (workout.workoutType == WorkoutType.TEMPO)
                           Text(
                             "Entrainement tempo",
                             style: TextStyle(
@@ -91,14 +91,14 @@ class workoutCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (workout.workoutSport == workoutSport.RUNNING)
+                        if (workout.workoutSport == WorkoutSport.RUNNING)
                           InfoCard(title: "${workout.distanceMeters} \nkm"),
-                        if (workout.workoutSport == workoutSport.CYCLING)
+                        if (workout.workoutSport == WorkoutSport.CYCLING)
                           InfoCard(
                             title:
                                 "${workout.distanceMeters.toStringAsFixed(0)} \nkm",
                           ),
-                        if (workout.workoutSport == workoutSport.SWIMMING)
+                        if (workout.workoutSport == WorkoutSport.SWIMMING)
                           InfoCard(
                             title:
                                 "${workout.distanceMeters.toStringAsFixed(0)} \n  m",
@@ -117,7 +117,7 @@ class workoutCard extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    if (workout.workoutSport == workoutSport.RUNNING) ...[
+                    if (workout.workoutSport == WorkoutSport.RUNNING) ...[
                       const Icon(
                         Icons.directions_run,
                         size: 28,
@@ -125,14 +125,14 @@ class workoutCard extends StatelessWidget {
                       ),
                     ],
 
-                    if (workout.workoutSport == workoutSport.CYCLING) ...[
+                    if (workout.workoutSport == WorkoutSport.CYCLING) ...[
                       const Icon(
                         Icons.directions_bike,
                         size: 28,
                         color: Colors.purple,
                       ),
                     ],
-                    if (workout.workoutSport == workoutSport.SWIMMING) ...[
+                    if (workout.workoutSport == WorkoutSport.SWIMMING) ...[
                       const Icon(Icons.pool, size: 28, color: Colors.purple),
                     ],
 

@@ -21,10 +21,10 @@ class WorkoutDetailPage extends StatelessWidget {
     return '${m}min';
   }
 
-  String _formatDistance(num? value, workoutSport sport) {
+  String _formatDistance(num? value, WorkoutSport sport) {
     if (value == null) return '-';
     // Heuristic: swimming shown in meters, others in km
-    if (sport == workoutSport.SWIMMING) {
+    if (sport == WorkoutSport.SWIMMING) {
       return '${value.toStringAsFixed(0)} m';
     }
     final km = value.toDouble();
@@ -43,11 +43,11 @@ class WorkoutDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            if (workout.workoutSport == workoutSport.RUNNING)
+            if (workout.workoutSport == WorkoutSport.RUNNING)
               const Icon(Icons.directions_run, size: 35, color: Colors.purple),
-            if (workout.workoutSport == workoutSport.CYCLING)
+            if (workout.workoutSport == WorkoutSport.CYCLING)
               const Icon(Icons.directions_bike, size: 35, color: Colors.purple),
-            if (workout.workoutSport == workoutSport.SWIMMING)
+            if (workout.workoutSport == WorkoutSport.SWIMMING)
               const Icon(Icons.pool, size: 35, color: Colors.purple),
             const SizedBox(width: 8),
             Text(
