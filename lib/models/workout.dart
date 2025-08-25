@@ -10,6 +10,8 @@ class WorkoutClass {
   final int durationSec;
   final double distanceMeters;
   final String day;
+  final double? kcal;
+  final double? avgBPM;
 
   WorkoutClass({
     required this.id,
@@ -21,6 +23,8 @@ class WorkoutClass {
     required this.durationSec,
     required this.distanceMeters,
     required this.day,
+    this.kcal,
+    this.avgBPM,
   });
 
   factory WorkoutClass.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,8 @@ class WorkoutClass {
       durationSec: json['duration'],
       distanceMeters: json['distance'],
       day: json['day'],
+      kcal: json['kcal'],
+      avgBPM: json['avgBPM'],
     );
   }
 

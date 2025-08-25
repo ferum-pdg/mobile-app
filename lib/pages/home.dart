@@ -17,6 +17,7 @@ import '../models/enum.dart';
 import '../models/sharedPreferences.dart';
 import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
+import 'workoutDetailPage.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -132,8 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
         workoutType: workoutType.FRACTIONNE,
         workoutSport: workoutSport.RUNNING,
         durationSec: 45,
-        distanceMeters: 7.8,
+        distanceMeters: 15.5,
         day: "Mardi",
+        kcal: 1500,
+        avgBPM: 156,
       ),
       WorkoutClass(
         id: 3,
@@ -158,6 +161,12 @@ class _MyHomePageState extends State<MyHomePage> {
         day: "Vendredi",
       ),
     ];
+  }
+
+  void _openWorkoutDetail(WorkoutClass w) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(workout: w)));
   }
 
   @override
@@ -217,10 +226,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(height: 25),
                 for (WorkoutClass w in weeklyWokouts) ...[
                   if (!w.done) ...[
-                    workoutCard(
-                      title: "Test",
-                      subtitle: "test subtitle",
-                      workout: w,
+                    InkWell(
+                      onTap: () => _openWorkoutDetail(w),
+                      child: workoutCard(
+                        title: "Test",
+                        subtitle: "test subtitle",
+                        workout: w,
+                      ),
                     ),
                     const SizedBox(height: 15),
                   ],
@@ -228,10 +240,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 for (WorkoutClass w in weeklyWokouts) ...[
                   if (w.done) ...[
-                    workoutCard(
-                      title: "Test",
-                      subtitle: "test subtitle",
-                      workout: w,
+                    InkWell(
+                      onTap: () => _openWorkoutDetail(w),
+                      child: workoutCard(
+                        title: "Test",
+                        subtitle: "test subtitle",
+                        workout: w,
+                      ),
                     ),
                     const SizedBox(height: 15),
                   ],
