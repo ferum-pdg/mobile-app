@@ -135,10 +135,7 @@ class _swimmingPageTrainingPlanState extends State<swimmingPageTrainingPlan> {
                             decoration: BoxDecoration(
                               gradient: selectedCardTitle == "1800m"
                                   ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
+                                      colors: [Colors.blue, Colors.purple],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     )

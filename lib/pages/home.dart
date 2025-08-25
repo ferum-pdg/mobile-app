@@ -1,3 +1,4 @@
+import 'package:ferum/pigeons/healthkit_workout.g.dart';
 import 'package:ferum/widgets/workoutCard.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -6,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../pigeons/workout.g.dart';
 import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/infoCard.dart';
@@ -14,7 +14,11 @@ import '../widgets/circularProgressBar.dart';
 
 import '../models/workout.dart';
 import '../models/enum.dart';
-import '../utils/sharedPreferences.dart';
+
+import '../models/sharedPreferences.dart';
+import '../services/HKWorkouts_service.dart';
+import '../utils/HKWorkouts_to_json.dart';
+import 'workoutDetailPage.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -25,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final List<WorkoutClass> weeklyWokouts;
+  late final List<HKWorkoutData?> HKWorkouts;
   SharedPreferences? prefs;
   String? username;
   @override
@@ -38,7 +43,18 @@ class _MyHomePageState extends State<MyHomePage> {
         .requestAuthorization()
         .then((isAuthorized) {
           if (isAuthorized == true) {
-            loadWorkouts();
+            loadWorkouts().then((_) async {
+              // Délègue l'envoi au service dédié
+              final svc = HKWorkoutService();
+              for (HKWorkoutData? w in HKWorkouts) {
+                if (w?.sport == "running" ||
+                    w?.sport == "cycling" ||
+                    w?.sport == "swimming") {
+                  final HKWorkoutJson = hkWorkoutToJson(w!);
+                  await svc.sendWorkout(HKWorkoutJson);
+                }
+              }
+            });
           } else {
             print("⚠️ Accès Apple Health refusé par l'utilisateur");
           }
@@ -48,11 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  final workouts = Workouts();
-
-  final workoutsApi = Workouts(); // API Pigeon pour les workouts
-
-  final authHealthKit = HealthKitAuthorization(); // ✅ classe générée Pigeon
+  final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
 
   Future<void> initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
@@ -70,13 +82,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  late final HKWorkoutAPI = HealthKitWorkoutApi();
+
   Future<void> loadWorkouts() async {
-    final workoutList = await workoutsApi.getWorkouts();
-    for (var w in workoutList) {
+    HKWorkouts = await HKWorkoutAPI.getWorkouts(); /*
+    for (var w in HKWorkouts) {
       print(
-        "🏃 Workout: ${w.type}, Start ${w.startDate}, End ${w.endDate}, Durée ${w.duration}, Distance ${w.totalDistance}, EnergyBurned ${w.totalEnergyBurned} FC moyenne: ${w.avgHeartRate}, FC max: ${w.maxHeartRate}, Allure: ${w.avgPace}",
+        "Workout start=${w?.start}, end=${w?.end}, distance=${w?.distance}, avgSpeed=${w?.avgSpeed}, avgBPM=${w?.avgBPM}, maxBPM=${w?.maxBPM}",
       );
-    }
+
+      final bpm = w?.bpmDataPoints ?? const <BPMDataPoint?>[];
+      final spd = w?.speedDataPoints ?? const <SpeedDataPoint?>[];
+
+      // Print HR datapoints: ["ts: bpm", ...]
+      final bpmList = bpm
+          .where((p) => p != null)
+          .map((p) => "${p!.timestamp}: ${p.bpm?.toStringAsFixed(0)} bpm")
+          .toList();
+      print("  BPMDataPoints (${bpmList.length}): $bpmList");
+
+      // Print Speed datapoints: ["ts: kmh km/h, pace min/km", ...]
+      final spdList = spd
+          .where((p) => p != null)
+          .map(
+            (p) =>
+                "${p!.timestamp}: ${p.kmh?.toStringAsFixed(2)} km/h, ${p.paceMinPerKm?.toStringAsFixed(2)} min/km",
+          )
+          .toList();
+      print("  SpeedDataPoints (${spdList.length}): $spdList");
+    }*/
   }
 
   Future<void> initWeeklyWorkouts() async {
@@ -88,8 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 12),
         workoutType: workoutType.EF,
         workoutSport: workoutSport.RUNNING,
-        duration: 30,
-        distance: 5.3,
+        durationSec: 30,
+        distanceMeters: 5.3,
         day: "Mercredi",
       ),
       WorkoutClass(
@@ -99,9 +133,11 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.FRACTIONNE,
         workoutSport: workoutSport.RUNNING,
-        duration: 45,
-        distance: 7.8,
+        durationSec: 45,
+        distanceMeters: 15.5,
         day: "Mardi",
+        kcal: 1500,
+        avgBPM: 156,
       ),
       WorkoutClass(
         id: 3,
@@ -110,8 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.TEMPO,
         workoutSport: workoutSport.SWIMMING,
-        duration: 40,
-        distance: 1000,
+        durationSec: 40,
+        distanceMeters: 1000,
         day: "Lundi",
       ),
       WorkoutClass(
@@ -121,11 +157,17 @@ class _MyHomePageState extends State<MyHomePage> {
         Date: DateTime(2025, 1, 10),
         workoutType: workoutType.EF,
         workoutSport: workoutSport.CYCLING,
-        duration: 110,
-        distance: 50,
+        durationSec: 110,
+        distanceMeters: 50,
         day: "Vendredi",
       ),
     ];
+  }
+
+  void _openWorkoutDetail(WorkoutClass w) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(workout: w)));
   }
 
   @override
@@ -185,10 +227,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(height: 25),
                 for (WorkoutClass w in weeklyWokouts) ...[
                   if (!w.done) ...[
-                    workoutCard(
-                      title: "Test",
-                      subtitle: "test subtitle",
-                      workout: w,
+                    InkWell(
+                      onTap: () => _openWorkoutDetail(w),
+                      child: workoutCard(
+                        title: "Test",
+                        subtitle: "test subtitle",
+                        workout: w,
+                      ),
                     ),
                     const SizedBox(height: 15),
                   ],
@@ -196,10 +241,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 for (WorkoutClass w in weeklyWokouts) ...[
                   if (w.done) ...[
-                    workoutCard(
-                      title: "Test",
-                      subtitle: "test subtitle",
-                      workout: w,
+                    InkWell(
+                      onTap: () => _openWorkoutDetail(w),
+                      child: workoutCard(
+                        title: "Test",
+                        subtitle: "test subtitle",
+                        workout: w,
+                      ),
                     ),
                     const SizedBox(height: 15),
                   ],
@@ -213,8 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/*
-Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
+Future<String> saveJsonToFile(Map<String, dynamic> jsonData) async {
   final directory =
       await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
   final filePath = '${directory.path}/health_data.json';
@@ -227,4 +274,4 @@ Future<String> saveJsonToFile(List<Map<String, dynamic>> jsonData) async {
 
 void shareHealthData(String filePath) {
   Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
-}*/
+}

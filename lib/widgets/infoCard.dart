@@ -4,12 +4,16 @@ class InfoCard extends StatelessWidget {
   final String title;
   final String? subtitle;
   final double size;
+  final double fontSize;
+  final bool useGradient;
 
   const InfoCard({
     super.key,
     required this.title,
     this.subtitle,
     this.size = 55,
+    this.fontSize = 11,
+    this.useGradient = false,
   });
 
   @override
@@ -18,8 +22,16 @@ class InfoCard extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
+        gradient: useGradient
+            ? LinearGradient(
+                colors: [Colors.blue.shade900, Colors.purple],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: useGradient ? null : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
+        border: useGradient ? null : Border.all(color: Colors.black12),
       ),
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -27,7 +39,11 @@ class InfoCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: useGradient ? Colors.white : Colors.black,
+            ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 8),

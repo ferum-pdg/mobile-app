@@ -2,14 +2,16 @@ import 'package:ferum/models/enum.dart';
 
 class WorkoutClass {
   final int id;
+  final workoutSport;
   final String name;
   final bool done;
   final DateTime Date;
   final workoutType;
-  final workoutSport;
-  final int duration;
-  final double distance;
+  final int durationSec;
+  final double distanceMeters;
   final String day;
+  final double? kcal;
+  final double? avgBPM;
 
   WorkoutClass({
     required this.id,
@@ -18,9 +20,11 @@ class WorkoutClass {
     required this.Date,
     required this.workoutType,
     required this.workoutSport,
-    required this.duration,
-    required this.distance,
+    required this.durationSec,
+    required this.distanceMeters,
     required this.day,
+    this.kcal,
+    this.avgBPM,
   });
 
   factory WorkoutClass.fromJson(Map<String, dynamic> json) {
@@ -31,9 +35,11 @@ class WorkoutClass {
       Date: json['Date'],
       workoutType: json['workoutType'],
       workoutSport: json['workoutSport'],
-      duration: json['duration'],
-      distance: json['distance'],
+      durationSec: json['duration'],
+      distanceMeters: json['distance'],
       day: json['day'],
+      kcal: json['kcal'],
+      avgBPM: json['avgBPM'],
     );
   }
 

@@ -92,24 +92,24 @@ class workoutCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if (workout.workoutSport == workoutSport.RUNNING)
-                          InfoCard(title: "${workout.distance} \nkm"),
+                          InfoCard(title: "${workout.distanceMeters} \nkm"),
                         if (workout.workoutSport == workoutSport.CYCLING)
                           InfoCard(
                             title:
-                                "${workout.distance.toStringAsFixed(0)} \nkm",
+                                "${workout.distanceMeters.toStringAsFixed(0)} \nkm",
                           ),
                         if (workout.workoutSport == workoutSport.SWIMMING)
                           InfoCard(
                             title:
-                                "${workout.distance.toStringAsFixed(0)} \n  m",
+                                "${workout.distanceMeters.toStringAsFixed(0)} \n  m",
                           ),
                         SizedBox(width: 10),
-                        if (workout.duration > 60)
+                        if (workout.durationSec > 60)
                           InfoCard(
-                            title: " ${formatDuration(workout.duration)}",
+                            title: " ${formatDuration(workout.durationSec)}",
                           ),
-                        if (workout.duration < 60)
-                          InfoCard(title: " ${workout.duration} \nmin"),
+                        if (workout.durationSec < 60)
+                          InfoCard(title: " ${workout.durationSec} \nmin"),
                         SizedBox(width: 100),
                       ],
                     ),

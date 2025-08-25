@@ -10,11 +10,11 @@ import Flutter
         GeneratedPluginRegistrant.register(with: self)
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         
-        // setup pigeon for workouts
-        WorkoutsSetup.setUp(binaryMessenger: controller.binaryMessenger, api: WorkoutsImpl())
 
         //setup pigeon for HealthKit authorization
         HealthKitAuthorizationSetup.setUp(binaryMessenger: controller.binaryMessenger, api: HealthKitAuthorizationImpl())
+        HealthKitWorkoutApiSetup.setUp(binaryMessenger: controller.binaryMessenger,
+                                 api: WorkoutsImpl())
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

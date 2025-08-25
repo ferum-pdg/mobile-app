@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://localhost:8080";
+  final String baseUrl = "http://127.0.0.1:8080";
 
   Future<bool> login(String email, String password) async {
     try {
