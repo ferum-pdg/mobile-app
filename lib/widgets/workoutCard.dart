@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../models/enum.dart';
-import '../models/workout.dart';
+import '../models/workoutLight_model.dart';
 
 import 'infoCard.dart';
 
-class workoutCard extends StatelessWidget {
+class workoutLightCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final WorkoutClass workout;
+  final WorkoutLightClass workout;
 
-  const workoutCard({
+  const workoutLightCard({
     super.key,
     required this.title,
     required this.subtitle,
@@ -24,7 +24,9 @@ class workoutCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: workout.done ? Colors.purple : Colors.black12,
+            color: (workout.statut == WorkoutStatut.DONE)
+                ? Colors.purple
+                : Colors.black12,
           ),
           borderRadius: BorderRadius.circular(16),
         ),
@@ -44,40 +46,40 @@ class workoutCard extends StatelessWidget {
                     SizedBox(height: 5),
                     Row(
                       children: [
-                        if (workout.workoutType == WorkoutType.EF)
+                        if (workout.type == WorkoutType.EF)
                           Text(
                             "Endurance fondamentale",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: workout.done
+                              color: (workout.statut == WorkoutStatut.DONE)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           )
-                        else if (workout.workoutType == WorkoutType.FRACTIONNE)
+                        else if (workout.type == WorkoutType.INTERVAL)
                           Text(
                             "Entrainement de fractionné",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: workout.done
+                              color: (workout.statut == WorkoutStatut.DONE)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           )
-                        else if (workout.workoutType == WorkoutType.TEMPO)
+                        else if (workout.type == WorkoutType.LACTATE)
                           Text(
                             "Entrainement tempo",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: workout.done
+                              color: (workout.statut == WorkoutStatut.DONE)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           ),
-                        if (workout.done) ...[
+                        if (workout.statut == WorkoutStatut.DONE) ...[
                           SizedBox(width: 10),
                           Icon(
                             Icons.check_circle_outline_sharp,
@@ -91,25 +93,13 @@ class workoutCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (workout.workoutSport == WorkoutSport.RUNNING)
-                          InfoCard(title: "${workout.distanceMeters} \nkm"),
-                        if (workout.workoutSport == WorkoutSport.CYCLING)
-                          InfoCard(
-                            title:
-                                "${workout.distanceMeters.toStringAsFixed(0)} \nkm",
-                          ),
-                        if (workout.workoutSport == WorkoutSport.SWIMMING)
-                          InfoCard(
-                            title:
-                                "${workout.distanceMeters.toStringAsFixed(0)} \n  m",
-                          ),
                         SizedBox(width: 10),
-                        if (workout.durationSec > 60)
+                        if (workout.duration > 60)
                           InfoCard(
-                            title: " ${formatDuration(workout.durationSec)}",
+                            title: " ${formatDuration(workout.duration)}",
                           ),
-                        if (workout.durationSec < 60)
-                          InfoCard(title: " ${workout.durationSec} \nmin"),
+                        if (workout.duration < 60)
+                          InfoCard(title: " ${workout.duration} \nmin"),
                         SizedBox(width: 100),
                       ],
                     ),
@@ -117,7 +107,7 @@ class workoutCard extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    if (workout.workoutSport == WorkoutSport.RUNNING) ...[
+                    if (workout.sport == WorkoutSport.RUNNING) ...[
                       const Icon(
                         Icons.directions_run,
                         size: 28,
@@ -125,14 +115,14 @@ class workoutCard extends StatelessWidget {
                       ),
                     ],
 
-                    if (workout.workoutSport == WorkoutSport.CYCLING) ...[
+                    if (workout.sport == WorkoutSport.CYCLING) ...[
                       const Icon(
                         Icons.directions_bike,
                         size: 28,
                         color: Colors.purple,
                       ),
                     ],
-                    if (workout.workoutSport == WorkoutSport.SWIMMING) ...[
+                    if (workout.sport == WorkoutSport.SWIMMING) ...[
                       const Icon(Icons.pool, size: 28, color: Colors.purple),
                     ],
 

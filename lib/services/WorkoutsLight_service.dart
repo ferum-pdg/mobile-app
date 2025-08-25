@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ferum/models/workoutLight_model.dart';
 
-class HKWorkoutService {
+class WorkoutLightService {
   final Dio _dio = Dio();
   final String baseUrl = "http://127.0.0.1:8080";
 

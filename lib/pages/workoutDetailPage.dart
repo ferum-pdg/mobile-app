@@ -1,7 +1,7 @@
 import 'package:ferum/models/enum.dart';
 import 'package:flutter/material.dart';
 
-import '../models/workout.dart';
+import '../models/workout_model.dart';
 
 import '../widgets/workoutDetailCard.dart';
 import '../widgets/infoCard.dart';
@@ -10,8 +10,8 @@ const kBlue = Color(0xFF3B82F6); // App primary blue
 const kPurple = Color(0xFF8B5CF6); // App accent purple
 
 class WorkoutDetailPage extends StatelessWidget {
-  final WorkoutClass workout;
-  const WorkoutDetailPage({super.key, required this.workout});
+  final String id;
+  const WorkoutDetailPage({super.key, required this.id});
 
   String _formatDuration(int minutes) {
     final h = minutes ~/ 60;

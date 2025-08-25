@@ -7,12 +7,14 @@ import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/circularProgressBar.dart';
 
-import '../models/workout.dart';
+import '../models/workout_model.dart';
 import '../models/enum.dart';
 import '../models/sharedPreferences.dart';
 import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
+import '../models/workoutLight_model.dart';
+import '../services/WorkoutsLight_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final List<WorkoutClass> weeklyWokouts;
+  late final List<WorkoutLightClass> weeklyWokouts;
   late final List<HKWorkoutData?> HKWorkouts;
   SharedPreferences? prefs;
   String? username;
@@ -59,6 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
+  late final HKWorkoutAPI = HealthKitWorkoutApi();
+  final workoutLightService = WorkoutLightService();
 
   Future<void> initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
@@ -76,67 +80,18 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  late final HKWorkoutAPI = HealthKitWorkoutApi();
-
   Future<void> loadWorkouts() async {
     HKWorkouts = await HKWorkoutAPI.getWorkouts();
   }
 
   Future<void> initWeeklyWorkouts() async {
-    weeklyWokouts = [
-      WorkoutClass(
-        id: 1,
-        name: "EF matin",
-        done: false,
-        Date: DateTime(2025, 1, 12),
-        workoutType: WorkoutType.EF,
-        workoutSport: WorkoutSport.RUNNING,
-        durationSec: 30,
-        distanceMeters: 5.3,
-        day: "Mercredi",
-      ),
-      WorkoutClass(
-        id: 2,
-        name: "Fractionné running matin",
-        done: true,
-        Date: DateTime(2025, 1, 10),
-        workoutType: WorkoutType.FRACTIONNE,
-        workoutSport: WorkoutSport.RUNNING,
-        durationSec: 45,
-        distanceMeters: 15.5,
-        day: "Mardi",
-        kcal: 1500,
-        avgBPM: 156,
-      ),
-      WorkoutClass(
-        id: 3,
-        name: "Tempo natation soir",
-        done: true,
-        Date: DateTime(2025, 1, 10),
-        workoutType: WorkoutType.TEMPO,
-        workoutSport: WorkoutSport.SWIMMING,
-        durationSec: 40,
-        distanceMeters: 1000,
-        day: "Lundi",
-      ),
-      WorkoutClass(
-        id: 4,
-        name: "EF vélo soir",
-        done: false,
-        Date: DateTime(2025, 1, 10),
-        workoutType: WorkoutType.EF,
-        workoutSport: WorkoutSport.CYCLING,
-        durationSec: 110,
-        distanceMeters: 50,
-        day: "Vendredi",
-      ),
-    ];
+    weeklyWokouts = await workoutLightService.fetchWorkoutsLight();
   }
 
-  void _openWorkoutDetail(WorkoutClass w) {
+  void _openWorkoutDetail(WorkoutLightClass w) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(workout: w)));
+    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
   @override
@@ -194,11 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 SizedBox(height: 25),
-                for (WorkoutClass w in weeklyWokouts) ...[
-                  if (!w.done) ...[
+                for (WorkoutLightClass w in weeklyWokouts) ...[
+                  if (!(w.statut == WorkoutStatut.DONE)) ...[
                     InkWell(
                       onTap: () => _openWorkoutDetail(w),
-                      child: workoutCard(
+                      child: workoutLightCard(
                         title: "Test",
                         subtitle: "test subtitle",
                         workout: w,
@@ -208,11 +163,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ],
 
-                for (WorkoutClass w in weeklyWokouts) ...[
-                  if (w.done) ...[
+                for (WorkoutLightClass w in weeklyWokouts) ...[
+                  if (w.statut == WorkoutStatut.DONE) ...[
                     InkWell(
                       onTap: () => _openWorkoutDetail(w),
-                      child: workoutCard(
+                      child: workoutLightCard(
                         title: "Test",
                         subtitle: "test subtitle",
                         workout: w,
