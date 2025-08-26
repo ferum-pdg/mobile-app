@@ -5,15 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../widgets/gradientButton.dart';
 import 'goalDate.dart';
 
-class runningPageTrainingPlan extends StatefulWidget {
-  const runningPageTrainingPlan({super.key});
+class RunningScreen extends StatefulWidget {
+  const RunningScreen({super.key});
 
   @override
-  State<runningPageTrainingPlan> createState() =>
-      _runningPageTrainingPlanState();
+  State<RunningScreen> createState() =>
+      _RunningScreenState();
 }
 
-class _runningPageTrainingPlanState extends State<runningPageTrainingPlan> {
+class _RunningScreenState extends State<RunningScreen> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
   String? selectedCardTitle;
@@ -186,29 +186,7 @@ class _runningPageTrainingPlanState extends State<runningPageTrainingPlan> {
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: GradientButton(
-                text: "Suivant",
-                onTap: () async {
-                  if (selectedCardTitle != null) {
-                    final p = prefs ?? await SharedPreferences.getInstance();
-                    await p.setString(
-                      'selectedRunningGoal',
-                      selectedCardTitle!,
-                    );
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const goalDatePage(),
-                    ),
-                  );
-                },
-                height: 60,
-              ),
-            ),
+            ),          
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:ferum/pages/training_plan/createTrainingPlan/running.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
 import 'package:ferum/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';

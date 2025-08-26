@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../widgets/gradientButton.dart';
-import 'cycling.dart';
+import 'cycling_screen.dart';
 
-class swimmingPageTrainingPlan extends StatefulWidget {
-  const swimmingPageTrainingPlan({super.key});
+class SwimmingScreen extends StatefulWidget {
+  const SwimmingScreen({super.key});
 
   @override
-  State<swimmingPageTrainingPlan> createState() =>
-      _swimmingPageTrainingPlanState();
+  State<SwimmingScreen> createState() =>
+      _SwimmingScreenState();
 }
 
-class _swimmingPageTrainingPlanState extends State<swimmingPageTrainingPlan> {
+class _SwimmingScreenState extends State<SwimmingScreen> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
   String? selectedCardTitle;
@@ -199,7 +199,7 @@ class _swimmingPageTrainingPlanState extends State<swimmingPageTrainingPlan> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const cyclingPageTrainingPlan(),
+                      builder: (context) => const CyclingScreen(),
                     ),
                   );
                 },

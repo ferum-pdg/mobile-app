@@ -1,3 +1,4 @@
+import 'package:ferum/pages/training_plan/training_plan_wrapper.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/profile_screen.dart';
@@ -34,7 +35,7 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: [MyHomePage(), WorkoutsPage(), ProfilePage(user: widget.user)],
+        children: [MyHomePage(), TrainingPlanWrapper(), ProfilePage(user: widget.user)],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
