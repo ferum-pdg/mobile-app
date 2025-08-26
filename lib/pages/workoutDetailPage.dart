@@ -1,7 +1,7 @@
 import 'package:ferum/models/enum.dart';
 import 'package:flutter/material.dart';
 
-import '../models/workout.dart';
+import '../models/workout_model.dart';
 
 import '../widgets/workoutDetailCard.dart';
 import '../widgets/infoCard.dart';
@@ -10,8 +10,9 @@ const kBlue = Color(0xFF3B82F6); // App primary blue
 const kPurple = Color(0xFF8B5CF6); // App accent purple
 
 class WorkoutDetailPage extends StatelessWidget {
+  final String id;
   final WorkoutClass workout;
-  const WorkoutDetailPage({super.key, required this.workout});
+  const WorkoutDetailPage({super.key, required this.id, required this.workout});
 
   String _formatDuration(int minutes) {
     final h = minutes ~/ 60;
@@ -21,10 +22,10 @@ class WorkoutDetailPage extends StatelessWidget {
     return '${m}min';
   }
 
-  String _formatDistance(num? value, workoutSport sport) {
+  String _formatDistance(num? value, WorkoutSport sport) {
     if (value == null) return '-';
     // Heuristic: swimming shown in meters, others in km
-    if (sport == workoutSport.SWIMMING) {
+    if (sport == WorkoutSport.SWIMMING) {
       return '${value.toStringAsFixed(0)} m';
     }
     final km = value.toDouble();
@@ -43,11 +44,11 @@ class WorkoutDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            if (workout.workoutSport == workoutSport.RUNNING)
+            if (workout.workoutSport == WorkoutSport.RUNNING)
               const Icon(Icons.directions_run, size: 35, color: Colors.purple),
-            if (workout.workoutSport == workoutSport.CYCLING)
+            if (workout.workoutSport == WorkoutSport.CYCLING)
               const Icon(Icons.directions_bike, size: 35, color: Colors.purple),
-            if (workout.workoutSport == workoutSport.SWIMMING)
+            if (workout.workoutSport == WorkoutSport.SWIMMING)
               const Icon(Icons.pool, size: 35, color: Colors.purple),
             const SizedBox(width: 8),
             Text(

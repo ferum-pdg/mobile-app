@@ -1,3 +1,5 @@
-enum workoutSport { RUNNING, CYCLING, SWIMMING }
+enum WorkoutSport { RUNNING, CYCLING, SWIMMING }
 
-enum workoutType { EF, TEMPO, FRACTIONNE }
+enum WorkoutType { EF, EA, LACTATE, INTERVAL, TECHNIC, RA }
+
+enum WorkoutStatut { PLANNED, GENERATED, COMPLETED }
