@@ -7,7 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/sharedPreferences.dart';
+import '../utils/sharedPreferences.dart';
 import '../widgets/gradientButton.dart';
 import './createTrainingPlan/swimming.dart';
 
