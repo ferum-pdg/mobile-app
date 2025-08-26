@@ -4,6 +4,28 @@ import '../models/enum.dart';
 import '../models/workoutLight_model.dart';
 
 import 'infoCard.dart';
+import 'tagBadge.dart';
+
+String getFrenchDay(String englishDay) {
+  switch (englishDay.toUpperCase()) {
+    case "MONDAY":
+      return "Lundi";
+    case "TUESDAY":
+      return "Mardi";
+    case "WEDNESDAY":
+      return "Mercredi";
+    case "THURSDAY":
+      return "Jeudi";
+    case "FRIDAY":
+      return "Vendredi";
+    case "SATURDAY":
+      return "Samedi";
+    case "SUNDAY":
+      return "Dimanche";
+    default:
+      return englishDay;
+  }
+}
 
 class workoutLightCard extends StatelessWidget {
   final String title;
@@ -24,7 +46,7 @@ class workoutLightCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: (workout.statut == WorkoutStatut.DONE)
+            color: (workout.status == WorkoutStatut.COMPLETED)
                 ? Colors.purple
                 : Colors.black12,
           ),
@@ -40,7 +62,7 @@ class workoutLightCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${workout.day}",
+                      getFrenchDay(workout.day),
                       style: TextStyle(fontSize: 12, color: Colors.black),
                     ),
                     SizedBox(height: 5),
@@ -52,34 +74,68 @@ class workoutLightCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: (workout.statut == WorkoutStatut.DONE)
+                              color: (workout.status == WorkoutStatut.COMPLETED)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           )
-                        else if (workout.type == WorkoutType.INTERVAL)
+                        else if (workout.type == WorkoutType.EA)
                           Text(
-                            "Entrainement de fractionné",
+                            "Tempo",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: (workout.statut == WorkoutStatut.DONE)
+                              color: (workout.status == WorkoutStatut.COMPLETED)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           )
                         else if (workout.type == WorkoutType.LACTATE)
                           Text(
-                            "Entrainement tempo",
+                            "Endurance active",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: (workout.statut == WorkoutStatut.DONE)
+                              color: (workout.status == WorkoutStatut.COMPLETED)
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          )
+                        else if (workout.type == WorkoutType.INTERVAL)
+                          Text(
+                            "Intervalles",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: (workout.status == WorkoutStatut.COMPLETED)
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          )
+                        else if (workout.type == WorkoutType.TECHNIC)
+                          Text(
+                            "Technique",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: (workout.status == WorkoutStatut.COMPLETED)
+                                  ? Colors.purple
+                                  : Colors.black,
+                            ),
+                          )
+                        else if (workout.type == WorkoutType.RA)
+                          Text(
+                            "Récupération active",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: (workout.status == WorkoutStatut.COMPLETED)
                                   ? Colors.purple
                                   : Colors.black,
                             ),
                           ),
-                        if (workout.statut == WorkoutStatut.DONE) ...[
+
+                        if (workout.status == WorkoutStatut.COMPLETED) ...[
                           SizedBox(width: 10),
                           Icon(
                             Icons.check_circle_outline_sharp,
@@ -94,13 +150,22 @@ class workoutLightCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(width: 10),
-                        if (workout.duration > 60)
+                        if (workout.duration > 3600)
                           InfoCard(
-                            title: " ${formatDuration(workout.duration)}",
+                            title:
+                                " ${formatDuration((workout.duration / 60).toInt())}",
                           ),
-                        if (workout.duration < 60)
-                          InfoCard(title: " ${workout.duration} \nmin"),
-                        SizedBox(width: 100),
+                        if (workout.duration <= 3600)
+                          InfoCard(
+                            title: " ${(workout.duration / 60).toInt()} \nmin",
+                          ),
+                        SizedBox(width: 15),
+                        if (workout.sport == WorkoutSport.RUNNING)
+                          TagBadge(text: "RUNNING", color: Colors.purple)
+                        else if (workout.sport == WorkoutSport.CYCLING)
+                          TagBadge(text: "CYCLISME", color: Colors.green)
+                        else if (workout.sport == WorkoutSport.SWIMMING)
+                          TagBadge(text: "NATATION", color: Colors.blue),
                       ],
                     ),
                   ],

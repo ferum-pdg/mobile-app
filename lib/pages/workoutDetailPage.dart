@@ -11,7 +11,8 @@ const kPurple = Color(0xFF8B5CF6); // App accent purple
 
 class WorkoutDetailPage extends StatelessWidget {
   final String id;
-  const WorkoutDetailPage({super.key, required this.id});
+  final WorkoutClass workout;
+  const WorkoutDetailPage({super.key, required this.id, required this.workout});
 
   String _formatDuration(int minutes) {
     final h = minutes ~/ 60;

@@ -32,6 +32,7 @@ class WorkoutLightService {
       }
 
       final data = response.data;
+      print(data);
 
       if (data is List) {
         // data attendu: List<Map<String, dynamic>>
