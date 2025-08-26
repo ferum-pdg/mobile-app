@@ -66,7 +66,7 @@ class _IntroScreenState extends State<IntroScreen> {
           const SizedBox(height: 20),
           const Text(
             "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!"
-          ),
+          ),          
         ],
       ),
     );

@@ -184,28 +184,6 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: GradientButton(
-                text: "Suivant",
-                onTap: () async {
-                  if (selectedCardTitle != null) {
-                    final p = prefs ?? await SharedPreferences.getInstance();
-                    await p.setString(
-                      'selectedSwimmingGoal',
-                      selectedCardTitle!,
-                    );
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CyclingScreen(),
-                    ),
-                  );
-                },
-                height: 60,
-              ),
-            ),
           ],
         ),
       ),

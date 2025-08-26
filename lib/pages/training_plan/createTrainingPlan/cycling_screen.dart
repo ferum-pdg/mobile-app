@@ -292,32 +292,6 @@ class _CyclingScreenState extends State<CyclingScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: GradientButton(
-                text: "Suivant",
-                onTap: () async {
-                  if (selectedCardTitle != null) {
-                    final p = prefs ?? await SharedPreferences.getInstance();
-                    await p.setString(
-                      'selectedRunningGoal',
-                      selectedCardTitle!,
-                    );
-                    await p.setString(
-                      'selectedCyclingDenivele',
-                      selectedCardDenivele!,
-                    );
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RunningScreen(),
-                    ),
-                  );
-                },
-                height: 60,
-              ),
-            ),
           ],
         ),
       ),
