@@ -15,7 +15,7 @@ import '../widgets/circularProgressBar.dart';
 import '../models/workout.dart';
 import '../models/enum.dart';
 
-import '../models/sharedPreferences.dart';
+import '../utils/sharedPreferences.dart';
 import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
