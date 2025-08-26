@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:ferum/pages/createTrainingPlan/running.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/running.dart';
 import 'package:ferum/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/sharedPreferences.dart';
 import '../widgets/gradientButton.dart';
-import './createTrainingPlan/swimming.dart';
+import 'training_plan/createTrainingPlan/swimming.dart';
 
 class WorkoutsPage extends StatefulWidget {
   const WorkoutsPage({super.key});

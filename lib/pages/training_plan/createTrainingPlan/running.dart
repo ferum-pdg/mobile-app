@@ -2,22 +2,21 @@ import 'package:ferum/widgets/infoCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../widgets/gradientButton.dart';
-import 'running.dart';
+import '../../../widgets/gradientButton.dart';
+import 'goalDate.dart';
 
-class cyclingPageTrainingPlan extends StatefulWidget {
-  const cyclingPageTrainingPlan({super.key});
+class runningPageTrainingPlan extends StatefulWidget {
+  const runningPageTrainingPlan({super.key});
 
   @override
-  State<cyclingPageTrainingPlan> createState() =>
-      _cyclingPageTrainingPlanState();
+  State<runningPageTrainingPlan> createState() =>
+      _runningPageTrainingPlanState();
 }
 
-class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
+class _runningPageTrainingPlanState extends State<runningPageTrainingPlan> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
   String? selectedCardTitle;
-  String? selectedCardDenivele;
 
   @override
   void initState() {
@@ -46,7 +45,7 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                   children: [
                     const SizedBox(height: 24),
                     const Text(
-                      'Objectif Vélo',
+                      'Objectif Running',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -59,16 +58,16 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (selectedCardTitle == "20km") {
+                              if (selectedCardTitle == "5km") {
                                 selectedCardTitle = null;
                               } else {
-                                selectedCardTitle = "20km";
+                                selectedCardTitle = "5km";
                               }
                             });
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "20km"
+                              gradient: selectedCardTitle == "5km"
                                   ? const LinearGradient(
                                       colors: [
                                         Color(0xFF0D47A1),
@@ -78,27 +77,27 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                                       end: Alignment.bottomRight,
                                     )
                                   : null,
-                              border: selectedCardTitle == "20km"
+                              border: selectedCardTitle == "5km"
                                   ? null
                                   : Border.all(color: Colors.transparent),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: InfoCard(title: "20km", size: 110),
+                            child: InfoCard(title: "5km", size: 110),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (selectedCardTitle == "40km") {
+                              if (selectedCardTitle == "10km") {
                                 selectedCardTitle = null;
                               } else {
-                                selectedCardTitle = "40km";
+                                selectedCardTitle = "10km";
                               }
                             });
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "40km"
+                              gradient: selectedCardTitle == "10km"
                                   ? const LinearGradient(
                                       colors: [
                                         Color(0xFF0D47A1),
@@ -108,12 +107,12 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                                       end: Alignment.bottomRight,
                                     )
                                   : null,
-                              border: selectedCardTitle == "40km"
+                              border: selectedCardTitle == "10km"
                                   ? null
                                   : Border.all(color: Colors.transparent),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: InfoCard(title: "40km", size: 110),
+                            child: InfoCard(title: "10km", size: 110),
                           ),
                         ),
                       ],
@@ -125,16 +124,16 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (selectedCardTitle == "100km") {
+                              if (selectedCardTitle == "21km") {
                                 selectedCardTitle = null;
                               } else {
-                                selectedCardTitle = "100km";
+                                selectedCardTitle = "21km";
                               }
                             });
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "100km"
+                              gradient: selectedCardTitle == "21km"
                                   ? const LinearGradient(
                                       colors: [
                                         Color(0xFF0D47A1),
@@ -144,27 +143,27 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                                       end: Alignment.bottomRight,
                                     )
                                   : null,
-                              border: selectedCardTitle == "100km"
+                              border: selectedCardTitle == "21km"
                                   ? null
                                   : Border.all(color: Colors.transparent),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: InfoCard(title: "100km", size: 110),
+                            child: InfoCard(title: "21km", size: 110),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (selectedCardTitle == "180km") {
+                              if (selectedCardTitle == "42") {
                                 selectedCardTitle = null;
                               } else {
-                                selectedCardTitle = "180km";
+                                selectedCardTitle = "42";
                               }
                             });
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "180km"
+                              gradient: selectedCardTitle == "42"
                                   ? const LinearGradient(
                                       colors: [
                                         Color(0xFF0D47A1),
@@ -174,116 +173,12 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                                       end: Alignment.bottomRight,
                                     )
                                   : null,
-                              border: selectedCardTitle == "180km"
+                              border: selectedCardTitle == "42"
                                   ? null
                                   : Border.all(color: Colors.transparent),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: InfoCard(title: "180km", size: 110),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Dénivelé',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardDenivele == "faible") {
-                                selectedCardDenivele = null;
-                              } else {
-                                selectedCardDenivele = "faible";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardDenivele == "faible"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardDenivele == "faible"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "faible", size: 90),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardDenivele == "moyen") {
-                                selectedCardDenivele = null;
-                              } else {
-                                selectedCardDenivele = "moyen";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardDenivele == "moyen"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardDenivele == "moyen"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "moyen", size: 90),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardDenivele == "élevé") {
-                                selectedCardDenivele = null;
-                              } else {
-                                selectedCardDenivele = "élevé";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardDenivele == "élevé"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardDenivele == "élevé"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "élevé", size: 90),
+                            child: InfoCard(title: "42km", size: 110),
                           ),
                         ),
                       ],
@@ -303,15 +198,11 @@ class _cyclingPageTrainingPlanState extends State<cyclingPageTrainingPlan> {
                       'selectedRunningGoal',
                       selectedCardTitle!,
                     );
-                    await p.setString(
-                      'selectedCyclingDenivele',
-                      selectedCardDenivele!,
-                    );
                   }
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const runningPageTrainingPlan(),
+                      builder: (context) => const goalDatePage(),
                     ),
                   );
                 },
