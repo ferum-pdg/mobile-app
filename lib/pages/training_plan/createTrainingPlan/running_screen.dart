@@ -1,3 +1,6 @@
+import 'package:ferum/models/goal_model.dart';
+import 'package:ferum/services/goal_service.dart';
+import 'package:ferum/widgets/goalCard.dart';
 import 'package:ferum/widgets/infoCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,12 +19,21 @@ class RunningScreen extends StatefulWidget {
 class _RunningScreenState extends State<RunningScreen> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
-  String? selectedCardTitle;
+  String? selectedGoalUID;
+  GoalsList? runningGoalsList;
 
   @override
   void initState() {
     super.initState();
     initPrefs();
+    getRunningGoals();
+  }
+
+  Future<void> getRunningGoals() async {
+    GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
+    setState(() {      
+      runningGoalsList = list;
+    });
   }
 
   Future<void> initPrefs() async {
@@ -38,155 +50,61 @@ class _RunningScreenState extends State<RunningScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Objectif Running',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.directions_run,
+                    size: 32,
+                    color: Color(0xFF0D47A1)
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Objectif Running",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                      letterSpacing: 1.2
                     ),
-                    const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "5km") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "5km";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "5km"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "5km"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "5km", size: 110),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "10km") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "10km";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "10km"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "10km"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "10km", size: 110),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "21km") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "21km";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "21km"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "21km"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "21km", size: 110),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "42") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "42";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "42"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "42"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "42km", size: 110),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  )
+                ],
               ),
-            ),          
+            ),
+            if (runningGoalsList != null)...[
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: runningGoalsList?.goals.length,                        
+                  itemBuilder: (context, index) {                    
+                    final goal = runningGoalsList?.goals[index];
+                    final isSelected = goal!.id == prefs!.getString('selectedRunningGoal');
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected){
+                            prefs!.remove('selectedRunningGoal');
+                          } else {                            
+                            prefs!.setString('selectedRunningGoal', goal!.id);
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: GoalCard(
+                          name: goal!.name, 
+                          icon: Icons.directions_run,
+                          isSelected: isSelected,
+                        ),
+                      ),
+                    );
+                  }
+                )
+              ),
+            ]        
           ],
         ),
       ),

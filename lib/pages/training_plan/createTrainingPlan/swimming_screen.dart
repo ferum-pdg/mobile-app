@@ -1,9 +1,9 @@
-import 'package:ferum/widgets/infoCard.dart';
+import 'package:ferum/models/goal_model.dart';
+import 'package:ferum/services/goal_service.dart';
+import 'package:ferum/widgets/goalCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../widgets/gradientButton.dart';
-import 'cycling_screen.dart';
 
 class SwimmingScreen extends StatefulWidget {
   const SwimmingScreen({super.key});
@@ -16,12 +16,20 @@ class SwimmingScreen extends StatefulWidget {
 class _SwimmingScreenState extends State<SwimmingScreen> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
-  String? selectedCardTitle;
+  GoalsList? swimmingGoalsList;
 
   @override
   void initState() {
     super.initState();
     initPrefs();
+    getSwimmingGoals();
+  }
+
+  Future<void> getSwimmingGoals() async {
+    GoalsList? list = await GoalService().getGoalsBySport("SWIMMING");
+    setState(() {      
+      swimmingGoalsList = list;
+    });
   }
 
   Future<void> initPrefs() async {
@@ -38,152 +46,61 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Objectif natation',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.pool,
+                    size: 32,
+                    color: Color(0xFF0D47A1)
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Objectif Swimming",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                      letterSpacing: 1.2
                     ),
-                    const SizedBox(height: 50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "500m") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "500m";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "500m"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "500m"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "500m", size: 110),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "1000m") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "1000m";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "1000m"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "1000m"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "1000m", size: 110),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "1800m") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "1800m";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "1800m"
-                                  ? const LinearGradient(
-                                      colors: [Colors.blue, Colors.purple],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "1800m"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "1800m", size: 110),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (selectedCardTitle == "3900m") {
-                                selectedCardTitle = null;
-                              } else {
-                                selectedCardTitle = "3900m";
-                              }
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: selectedCardTitle == "3900m"
-                                  ? const LinearGradient(
-                                      colors: [
-                                        Color(0xFF0D47A1),
-                                        Colors.purple,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    )
-                                  : null,
-                              border: selectedCardTitle == "3900m"
-                                  ? null
-                                  : Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: InfoCard(title: "3900m", size: 110),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
+            if (swimmingGoalsList != null)...[
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: swimmingGoalsList?.goals.length,                        
+                  itemBuilder: (context, index) {                    
+                    final goal = swimmingGoalsList?.goals[index];
+                    final isSelected = goal!.id == prefs!.getString('selectedSwimmingGoal');
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected){
+                            prefs!.remove('selectedSwimmingGoal');
+                          } else {                            
+                            prefs!.setString('selectedSwimmingGoal', goal!.id);
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: GoalCard(
+                          name: goal!.name, 
+                          icon: Icons.pool,
+                          isSelected: isSelected,
+                        ),
+                      ),
+                    );
+                  }
+                )
+              ),
+            ]        
           ],
         ),
       ),

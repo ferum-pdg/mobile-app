@@ -30,8 +30,7 @@ class GoalService {
       );
 
       if (response.statusCode == 200) {        
-        final goals = jsonDecode(response.data);           
-        return GoalsList.fromJson(goals);
+        return GoalsList.fromJson(response.data);
       }
 
       return null;

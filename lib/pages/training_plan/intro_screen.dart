@@ -93,7 +93,7 @@ class _IntroScreenState extends State<IntroScreen> {
             child: GradientButton(
               text: _currentPage < _pages.length - 1 ? "Suivant" : "Je crée mon plan", 
               onTap: _nextPage,
-              height: 40.0,
+              height: 60.0,
             ),
           )
         ],

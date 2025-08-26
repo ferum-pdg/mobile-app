@@ -21,8 +21,8 @@ class Goal {
   final String name;
   final int nbOfWorkoutsPerWeek;
   final int nbOfWeek;
-  final int targetDistance;
-  final int elevationGain;
+  final double targetDistance;
+  final double elevationGain;
 
   Goal({
     required this.id,
