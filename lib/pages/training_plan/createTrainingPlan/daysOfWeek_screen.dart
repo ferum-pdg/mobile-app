@@ -71,7 +71,7 @@ class _DaysOfWeekScreenState extends State<DaysOfWeekScreen> {
                         if (isSelected){
                           selectedDay.remove(day.toUpperCase());
                         } else {                            
-                          selectedDay.add(day.toLowerCase());
+                          selectedDay.add(day.toUpperCase());
                         }
                         prefs?.setStringList('selectedDays', selectedDay.toList());
                       });
