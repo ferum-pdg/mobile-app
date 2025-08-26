@@ -19,7 +19,6 @@ class RunningScreen extends StatefulWidget {
 class _RunningScreenState extends State<RunningScreen> {
   DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
-  String? selectedGoalUID;
   GoalsList? runningGoalsList;
 
   @override

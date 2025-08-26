@@ -1,6 +1,7 @@
 import 'package:ferum/pages/training_plan/createTrainingPlan/cycling_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/daysOfWeek_screen.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,8 @@ class _IntroScreenState extends State<IntroScreen> {
       _welcomePage(),
       RunningScreen(),
       SwimmingScreen(),
-      CyclingScreen()
+      CyclingScreen(),
+      DaysOfWeekScreen()
     ];
   }
 
