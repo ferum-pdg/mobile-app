@@ -1,4 +1,5 @@
 import 'package:ferum/widgets/goalCard.dart';
+import 'package:ferum/widgets/goalHeader.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,28 +35,11 @@ class _DaysOfWeekScreenState extends State<DaysOfWeekScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.calendar_month,
-                    size: 32,
-                    color: Color(0xFF0D47A1)
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    "Jours de la semaine",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
-                      letterSpacing: 1.2
-                    ),
-                  ),
-                ],
-              ),              
+            GoalHeader(
+              title: "Jours", 
+              subTitle: "Semaine", 
+              icon: Icons.calendar_month, 
+              gradientColors: [Color(0xFF0D47A1), Colors.purple]
             ),
             Expanded(
               child: ListView.builder(

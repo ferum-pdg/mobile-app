@@ -1,6 +1,7 @@
 import 'package:ferum/models/goal_model.dart';
 import 'package:ferum/services/goal_service.dart';
 import 'package:ferum/widgets/goalCard.dart';
+import 'package:ferum/widgets/goalHeader.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,28 +47,11 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.pool,
-                    size: 32,
-                    color: Color(0xFF0D47A1)
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    "Objectif Swimming",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
-                      letterSpacing: 1.2
-                    ),
-                  )
-                ],
-              ),
+            GoalHeader(
+              title: "Objectif", 
+              subTitle: "Swimming", 
+              icon: Icons.pool, 
+              gradientColors: [Color(0xFF0D47A1), Colors.purple]
             ),
             if (swimmingGoalsList != null)...[
               Expanded(
