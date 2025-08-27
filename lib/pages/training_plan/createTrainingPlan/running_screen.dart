@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../widgets/gradientButton.dart';
-import 'goalDate.dart';
+import 'endDate_screen.dart';
 
 class RunningScreen extends StatefulWidget {
   const RunningScreen({super.key});

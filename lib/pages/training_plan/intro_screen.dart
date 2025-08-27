@@ -1,4 +1,5 @@
 import 'package:ferum/pages/training_plan/createTrainingPlan/cycling_screen.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/endDate_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/daysOfWeek_screen.dart';
@@ -26,11 +27,12 @@ class _IntroScreenState extends State<IntroScreen> {
   void initState() {    
     super.initState();
     _pages = [
-      _welcomePage(),
+      _welcomeScreen(),
       RunningScreen(),
       SwimmingScreen(),
       CyclingScreen(),
-      DaysOfWeekScreen()
+      DaysOfWeekScreen(),
+      EndDateScreen()
     ];
   }
 
@@ -46,7 +48,7 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
-  Widget _welcomePage(){
+  Widget _welcomeScreen(){
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
