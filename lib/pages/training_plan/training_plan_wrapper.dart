@@ -1,5 +1,6 @@
 import 'package:ferum/pages/training_plan/intro_screen.dart';
 import 'package:ferum/pages/training_plan/training_plan_screen.dart';
+import 'package:ferum/services/training_plan_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +38,7 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
     } else {
       return IntroScreen(
         onPlanCreated: () {
+          TrainingPlanService().createTrainingPlan();
           prefs?.setBool('hasTrainingPlan', true);
           setState(() {
             hasTrainingPlan = true;
