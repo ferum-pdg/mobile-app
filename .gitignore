@@ -45,6 +45,6 @@ app.*.map.json
 /android/app/release
 
 # Linux, Macos and Windows folders
-macos/
-linux/
-windows/
+/macos/*
+/linux/*
+/windows/*
