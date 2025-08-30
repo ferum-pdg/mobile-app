@@ -63,7 +63,14 @@ class _RunningScreenState extends State<RunningScreen> {
                   itemCount: runningGoalsList?.goals.length,                        
                   itemBuilder: (context, index) {                                        
                     final goal = runningGoalsList?.goals[index];
-                    final isSelected = goal!.id == prefs!.getString('selectedRunningGoal');
+                    final selectedGoalString = prefs!.getString('selectedRunningGoal');
+                    Goal? selectedGoal;
+
+                    if (selectedGoalString != null){
+                      selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
+                    }
+
+                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
 
                     return GestureDetector(
                       onTap: () {

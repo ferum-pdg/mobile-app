@@ -45,7 +45,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   children: [
                     Expanded(
                       child: ProgressPieChart(
-                        current: 2, 
+                        current: widget.trainingPlan!.currentWeekNb, 
                         total: 8, 
                         title: "Semaines", 
                       )

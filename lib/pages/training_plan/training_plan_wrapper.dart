@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ferum/models/training_plan_model.dart';
 import 'package:ferum/pages/training_plan/intro_screen.dart';
 import 'package:ferum/pages/training_plan/training_plan_screen.dart';
@@ -14,34 +16,42 @@ class TrainingPlanWrapper extends StatefulWidget {
 
 class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
   SharedPreferences? prefs;
-  bool? hasTrainingPlan;
+  bool hasTrainingPlan = false;
   TrainingPlan? trainingPlan;
 
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    _loadTrainingPlan();
   }
 
-  Future<void> initPrefs() async {
-    SharedPreferences p = await SharedPreferences.getInstance();
 
-    bool? plan = p.getBool('hasTrainingPlan');
-    setState(() {
-      prefs = p;
-      hasTrainingPlan = false ?? false;
-    });
+  Future<void> _loadTrainingPlan() async {
+  final prefs = await SharedPreferences.getInstance();
+  final hasPlan = prefs.getBool('hasTrainingPlan') ?? false;
+
+  if (hasPlan) {
+    final trainingPlanString = prefs.getString('trainingPlan');
+    if (trainingPlanString != null) {
+      trainingPlan = TrainingPlan.fromJson(jsonDecode(trainingPlanString));
+    }
   }
+
+  setState(() {
+    hasTrainingPlan = hasPlan;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
-    if (hasTrainingPlan == true || trainingPlan != null){
+    if (hasTrainingPlan){
       return TrainingPlanScreen(trainingPlan: trainingPlan);
     } else {
       return IntroScreen(
         onPlanCreated: () async {
+          final prefs = await SharedPreferences.getInstance();
           trainingPlan = await TrainingPlanService().createTrainingPlan();
-          prefs?.setBool('hasTrainingPlan', true);
+          prefs.setBool('hasTrainingPlan', true);
           setState(() {
             hasTrainingPlan = true;
           });

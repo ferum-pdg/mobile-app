@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:ferum/models/goal_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/training_plan_model.dart';
@@ -22,20 +23,23 @@ class TrainingPlanService {
     // Gets goals
     final List<String> goals = [];
     
-    final String? selectedRunningGoal = prefs.getString('selectedRunningGoal');
-    final String? selectedSwimmingGoal = prefs.getString('selectedSwimmingGoal');
-    final String? selectedCyclingGoal = prefs.getString('selectedCyclingGoal');
+    final String? selectedRunningGoalString = prefs.getString('selectedRunningGoal');
+    final String? selectedSwimmingGoalString = prefs.getString('selectedSwimmingGoal');
+    final String? selectedCyclingGoalString = prefs.getString('selectedCyclingGoal');
 
-    if (selectedRunningGoal != null){
-      goals.add(selectedRunningGoal);
+    if (selectedRunningGoalString != null){
+      final selectedRunningGoal = Goal.fromJson(jsonDecode(selectedRunningGoalString));
+      goals.add(selectedRunningGoal.id);
     }
 
-    if (selectedSwimmingGoal != null){
-      goals.add(selectedSwimmingGoal);
+    if (selectedSwimmingGoalString != null){
+      final selectedSwimmingGoal = Goal.fromJson(jsonDecode(selectedSwimmingGoalString));
+      goals.add(selectedSwimmingGoal.id);
     }
 
-    if (selectedCyclingGoal != null){
-      goals.add(selectedCyclingGoal);
+    if (selectedCyclingGoalString != null){
+      final selectedCyclingGoal = Goal.fromJson(jsonDecode(selectedCyclingGoalString));
+      goals.add(selectedCyclingGoal.id);
     }
 
     return {
@@ -66,13 +70,12 @@ class TrainingPlanService {
 
       if (response.statusCode == 200) {
         final trainingPlan = TrainingPlan.fromJson(response.data);
-        await prefs.setString('trainingPlan', jsonEncode(trainingPlan.toJson()));     
         return trainingPlan;
       }
 
       return null;
     } catch (e) {
-      print("TrainingPlan storage failed: $e");
+      print("Training plan storage failed: $e");
     }
   }
 
@@ -100,7 +103,8 @@ class TrainingPlanService {
       );
 
       if(response.statusCode == 201){
-        final trainingPlan = await getTrainingPlan();        
+        final trainingPlan = await getTrainingPlan();    
+        await prefs.setString('trainingPlan', jsonEncode(trainingPlan?.toJson()));    
         return trainingPlan;
       }
       

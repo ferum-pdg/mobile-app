@@ -63,7 +63,14 @@ class _CyclingScreenState extends State<CyclingScreen> {
                   itemCount: cyclingGoalsList?.goals.length,                        
                   itemBuilder: (context, index) {                    
                     final goal = cyclingGoalsList?.goals[index];
-                    final isSelected = goal!.id == prefs!.getString('selectedCyclingGoal');
+                    final selectedGoalString = prefs!.getString('selectedCyclingGoal');
+                    Goal? selectedGoal;
+
+                    if (selectedGoalString != null){
+                      selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
+                    }
+
+                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
 
                     return GestureDetector(
                       onTap: () {
