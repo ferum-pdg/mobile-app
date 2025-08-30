@@ -18,6 +18,7 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
   SharedPreferences? prefs;
   bool hasTrainingPlan = false;
   TrainingPlan? trainingPlan;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,31 +28,37 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
 
 
   Future<void> _loadTrainingPlan() async {
-  final prefs = await SharedPreferences.getInstance();
-  final hasPlan = prefs.getBool('hasTrainingPlan') ?? false;
+  prefs = await SharedPreferences.getInstance();
+  final hasPlan = prefs!.getBool('hasTrainingPlan') ?? false;
 
+  TrainingPlan? plan;
   if (hasPlan) {
-    final trainingPlanString = prefs.getString('trainingPlan');
+    final trainingPlanString = prefs!.getString('trainingPlan');
     if (trainingPlanString != null) {
-      trainingPlan = TrainingPlan.fromJson(jsonDecode(trainingPlanString));
+      plan = TrainingPlan.fromJson(jsonDecode(trainingPlanString));
     }
   }
 
   setState(() {
     hasTrainingPlan = hasPlan;
+    trainingPlan = plan;
+    isLoading = false;
   });
 }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading){
+      return const Center(child: CircularProgressIndicator());
+    }
+
     if (hasTrainingPlan){
       return TrainingPlanScreen(trainingPlan: trainingPlan);
     } else {
       return IntroScreen(
         onPlanCreated: () async {
-          final prefs = await SharedPreferences.getInstance();
           trainingPlan = await TrainingPlanService().createTrainingPlan();
-          prefs.setBool('hasTrainingPlan', true);
+          prefs!.setBool('hasTrainingPlan', true);
           setState(() {
             hasTrainingPlan = true;
           });
