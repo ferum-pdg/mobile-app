@@ -1,3 +1,4 @@
+import 'package:ferum/models/training_plan_model.dart';
 import 'package:ferum/pages/training_plan/intro_screen.dart';
 import 'package:ferum/pages/training_plan/training_plan_screen.dart';
 import 'package:ferum/services/training_plan_service.dart';
@@ -14,6 +15,7 @@ class TrainingPlanWrapper extends StatefulWidget {
 class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
   SharedPreferences? prefs;
   bool? hasTrainingPlan;
+  TrainingPlan? trainingPlan;
 
   @override
   void initState() {
@@ -27,18 +29,18 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
     bool? plan = p.getBool('hasTrainingPlan');
     setState(() {
       prefs = p;
-      hasTrainingPlan = false ?? false;
+      hasTrainingPlan = true ?? false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (hasTrainingPlan == true){
-      return TrainingPlanScreen();
+    if (hasTrainingPlan == true || trainingPlan != null){
+      return TrainingPlanScreen(trainingPlan: trainingPlan);
     } else {
       return IntroScreen(
-        onPlanCreated: () {
-          TrainingPlanService().createTrainingPlan();
+        onPlanCreated: () async {
+          trainingPlan = await TrainingPlanService().createTrainingPlan();
           prefs?.setBool('hasTrainingPlan', true);
           setState(() {
             hasTrainingPlan = true;

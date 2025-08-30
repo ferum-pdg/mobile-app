@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/goal_model.dart';
+import '../models/training_plan_model.dart';
 
 class TrainingPlanService {
   final Dio _dio = Dio();
@@ -45,13 +45,13 @@ class TrainingPlanService {
     };
   }
 
-  Future<void> createTrainingPlan() async {
+  Future<TrainingPlan?> createTrainingPlan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
+        print("No token found.");
         return null;
       }
 
@@ -68,10 +68,10 @@ class TrainingPlanService {
         data: trainingPlanInfo,
       );
 
-      print(response.data);
+      return TrainingPlan.fromJson(response.data);
 
     } catch (e) {
-      print("User storage failed: $e");
+      print("Training plan creation failed: $e");
     }
   }
 }
