@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ferum/models/goal_model.dart';
 import 'package:ferum/services/goal_service.dart';
 import 'package:ferum/widgets/goalCard.dart';
@@ -69,7 +71,7 @@ class _CyclingScreenState extends State<CyclingScreen> {
                           if (isSelected){
                             prefs!.remove('selectedCyclingGoal');
                           } else {                            
-                            prefs!.setString('selectedCyclingGoal', goal!.id);
+                            prefs!.setString('selectedCyclingGoal', jsonEncode(goal.toJson()));
                           }
                         });
                       },

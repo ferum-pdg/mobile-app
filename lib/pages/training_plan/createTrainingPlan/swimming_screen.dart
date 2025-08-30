@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ferum/models/goal_model.dart';
 import 'package:ferum/services/goal_service.dart';
 import 'package:ferum/widgets/goalCard.dart';
@@ -68,7 +70,7 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                           if (isSelected){
                             prefs!.remove('selectedSwimmingGoal');
                           } else {                            
-                            prefs!.setString('selectedSwimmingGoal', goal!.id);
+                            prefs!.setString('selectedSwimmingGoal', jsonEncode(goal.toJson()));
                           }
                         });
                       },
