@@ -2,12 +2,9 @@ import 'package:ferum/models/goal_model.dart';
 import 'package:ferum/services/goal_service.dart';
 import 'package:ferum/widgets/goalCard.dart';
 import 'package:ferum/widgets/goalHeader.dart';
-import 'package:ferum/widgets/infoCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../widgets/gradientButton.dart';
-import 'endDate_screen.dart';
 
 class CyclingScreen extends StatefulWidget {
   const CyclingScreen({super.key});

@@ -45,6 +45,37 @@ class TrainingPlanService {
     };
   }
 
+  Future<TrainingPlan?> getTrainingPlan() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('jwt_token');
+
+      if (token == null){
+        print("Pas de token trouvé");
+        return null;
+      }
+
+      final response = await _dio.get(
+        "$baseUrl/training-plan",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token"
+          }
+        )
+      );
+
+      if (response.statusCode == 200) {
+        final trainingPlan = TrainingPlan.fromJson(response.data);
+        await prefs.setString('trainingPlan', jsonEncode(trainingPlan.toJson()));     
+        return trainingPlan;
+      }
+
+      return null;
+    } catch (e) {
+      print("TrainingPlan storage failed: $e");
+    }
+  }
+
   Future<TrainingPlan?> createTrainingPlan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -68,7 +99,11 @@ class TrainingPlanService {
         data: trainingPlanInfo,
       );
 
-      return TrainingPlan.fromJson(response.data);
+      if(response.statusCode == 201){
+        final trainingPlan = await getTrainingPlan();        
+        return trainingPlan;
+      }
+      
 
     } catch (e) {
       print("Training plan creation failed: $e");

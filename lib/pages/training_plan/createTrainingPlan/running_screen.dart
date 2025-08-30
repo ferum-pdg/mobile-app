@@ -1,13 +1,13 @@
+import 'dart:convert';
+
 import 'package:ferum/models/goal_model.dart';
 import 'package:ferum/services/goal_service.dart';
 import 'package:ferum/widgets/goalCard.dart';
 import 'package:ferum/widgets/goalHeader.dart';
-import 'package:ferum/widgets/infoCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../widgets/gradientButton.dart';
-import 'endDate_screen.dart';
 
 class RunningScreen extends StatefulWidget {
   const RunningScreen({super.key});
@@ -61,7 +61,7 @@ class _RunningScreenState extends State<RunningScreen> {
                 child: ListView.builder(
                   padding: const EdgeInsets.all(24.0),
                   itemCount: runningGoalsList?.goals.length,                        
-                  itemBuilder: (context, index) {                    
+                  itemBuilder: (context, index) {                                        
                     final goal = runningGoalsList?.goals[index];
                     final isSelected = goal!.id == prefs!.getString('selectedRunningGoal');
 
@@ -71,7 +71,7 @@ class _RunningScreenState extends State<RunningScreen> {
                           if (isSelected){
                             prefs!.remove('selectedRunningGoal');
                           } else {                            
-                            prefs!.setString('selectedRunningGoal', goal!.id);
+                            prefs!.setString('selectedRunningGoal', jsonEncode(goal.toJson()));
                           }
                         });
                       },

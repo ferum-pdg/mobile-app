@@ -29,7 +29,7 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
     bool? plan = p.getBool('hasTrainingPlan');
     setState(() {
       prefs = p;
-      hasTrainingPlan = true ?? false;
+      hasTrainingPlan = false ?? false;
     });
   }
 
