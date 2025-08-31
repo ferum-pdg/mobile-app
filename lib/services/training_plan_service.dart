@@ -109,12 +109,17 @@ class TrainingPlanService {
         final trainingPlan = await getTrainingPlan();          
         return trainingPlan;
       } else {
-        final message = response.data['message'] ?? "Impossible de créer le plan. Réessayez.";
-        throw Exception(message);
+        
+        
       }          
 
     } catch (e) {
       print("Training plan creation failed: $e");
+      if (e is DioException){
+        final response = e.response;
+        final message = response?.data['details'] ?? "Impossible de créer le plan. Réessayez.";
+        throw Exception(message);
+      }
       throw e;
     }
   }
