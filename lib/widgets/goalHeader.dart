@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GoalHeader extends StatelessWidget {
   final String title;
@@ -45,21 +46,21 @@ class GoalHeader extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.volkhov(
               fontSize: 18,
               color: Colors.white70,
               letterSpacing: 1.2,
-            ),
+            ),            
           ),
           const SizedBox(height: 4),
           Text(
             subTitle,
-            style: TextStyle(
+            style: GoogleFonts.volkhov(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              letterSpacing: 1.5,
-            ),
+              letterSpacing: 1.2,
+            ),                
           ),
           const SizedBox(height: 8),
           Container(

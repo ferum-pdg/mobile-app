@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GoalCard extends StatelessWidget {
   final String name;
@@ -39,9 +40,10 @@ class GoalCard extends StatelessWidget {
                 children: [
                   Text(
                     name, // goal.name
-                    style: TextStyle(
+                    style: GoogleFonts.volkhov(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                   )
                 ],

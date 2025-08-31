@@ -7,6 +7,7 @@ import 'package:ferum/pages/training_plan/createTrainingPlan/daysOfWeek_screen.d
 import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class IntroScreen extends StatefulWidget {
   final Function(TrainingPlan) onPlanCreated;
@@ -67,20 +68,38 @@ class _IntroScreenState extends State<IntroScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          const Text(
+          Text(
             "Bienvenue !",
+            style: GoogleFonts.volkhov(
+              fontSize: 32,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!"
+          Text(
+            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
+            style: GoogleFonts.volkhov(
+              fontSize: 32,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
           Image.asset(
             "assets/img/icon-tp.png",
             height: 400,
           ),
           const SizedBox(height: 20),
-          const Text(
-            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!"
+          Text(
+            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
+            style: GoogleFonts.volkhov(
+              fontSize: 32,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),            
           ),          
         ],
       ),

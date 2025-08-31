@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:ferum/models/training_plan_model.dart';
 import 'package:ferum/widgets/daily_plan_card.dart';
-import 'package:ferum/widgets/gradientButton.dart';
+
 import 'package:ferum/widgets/progress_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

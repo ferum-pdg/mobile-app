@@ -72,15 +72,13 @@ class TrainingPlanService {
       if (response.statusCode == 200) {
         final trainingPlan = TrainingPlan.fromJson(response.data);
         await prefs.setString('trainingPlan', jsonEncode(trainingPlan.toJson()));    
+        print(response.data);
         return trainingPlan;
       }
 
       return null;
     } catch (e) {
       print("Training plan storage failed: $e");
-      if (e is DioException) {
-        print(e.response?.data);
-      }
     }
   }
 
@@ -108,7 +106,7 @@ class TrainingPlanService {
       );
 
       if(response.statusCode == 201){
-        final trainingPlan = await getTrainingPlan();    
+        final trainingPlan = await getTrainingPlan();          
         return trainingPlan;
       }
       
