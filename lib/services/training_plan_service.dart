@@ -62,23 +62,30 @@ class TrainingPlanService {
       final response = await _dio.get(
         "$baseUrl/training-plan",
         options: Options(
+          responseType: ResponseType.plain,
           headers: {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
-          }
+          },
+          validateStatus: (status) => status! < 500,          
         )
       );
 
       if (response.statusCode == 200) {
-        final trainingPlan = TrainingPlan.fromJson(response.data);
+        if (response.data == null || response.data.toString().isEmpty) {
+          return null;
+        }
+        final trainingPlan = TrainingPlan.fromJson(jsonDecode(response.data));
         await prefs.setString('trainingPlan', jsonEncode(trainingPlan.toJson()));    
         print(response.data);
         return trainingPlan;
+      } else if (response.statusCode == 404){
+        return null;
+      } else {
+        throw Exception("Erreur lors de la récupération du plan : ${response.data}");
       }
-
-      return null;
     } catch (e) {
-      print("Training plan storage failed: $e");
+      print("Training plan fetch failed: $e");
     }
   }
 
@@ -108,10 +115,7 @@ class TrainingPlanService {
       if(response.statusCode == 201){
         final trainingPlan = await getTrainingPlan();          
         return trainingPlan;
-      } else {
-        
-        
-      }          
+      }    
 
     } catch (e) {
       print("Training plan creation failed: $e");

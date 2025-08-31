@@ -40,7 +40,7 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
         trainingPlan = plan;
         isLoading = false;
       });
-    } catch (e) {
+    } catch (e) {      
       setState(() {
         isLoading = false;
       });
