@@ -52,6 +52,9 @@ dependencies:
 
   # Pick image.
   image_picker: ^1.2.0
+  fl_chart: ^1.0.0
+
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
