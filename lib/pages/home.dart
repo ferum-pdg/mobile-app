@@ -1,24 +1,21 @@
 import 'package:ferum/pigeons/healthkit_workout.g.dart';
 import 'package:ferum/widgets/workoutCard.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pigeons/healthkit_authorization.g.dart';
 
-import '../widgets/infoCard.dart';
 import '../widgets/circularProgressBar.dart';
 
-import '../models/workout.dart';
+import '../models/workout_model.dart';
 import '../models/enum.dart';
 
 import '../utils/sharedPreferences.dart';
 import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
+import '../models/workoutLight_model.dart';
+import '../services/WorkoutsLight_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -28,7 +25,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final List<WorkoutClass> weeklyWokouts;
+  List<WorkoutLightClass>? weeklyWokouts;
   late final List<HKWorkoutData?> HKWorkouts;
   SharedPreferences? prefs;
   String? username;
@@ -65,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
+  late final HKWorkoutAPI = HealthKitWorkoutApi();
+  final workoutLightService = WorkoutLightService();
 
   Future<void> initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
@@ -82,96 +81,34 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  late final HKWorkoutAPI = HealthKitWorkoutApi();
-
   Future<void> loadWorkouts() async {
-    HKWorkouts = await HKWorkoutAPI.getWorkouts(); /*
-    for (var w in HKWorkouts) {
-      print(
-        "Workout start=${w?.start}, end=${w?.end}, distance=${w?.distance}, avgSpeed=${w?.avgSpeed}, avgBPM=${w?.avgBPM}, maxBPM=${w?.maxBPM}",
-      );
-
-      final bpm = w?.bpmDataPoints ?? const <BPMDataPoint?>[];
-      final spd = w?.speedDataPoints ?? const <SpeedDataPoint?>[];
-
-      // Print HR datapoints: ["ts: bpm", ...]
-      final bpmList = bpm
-          .where((p) => p != null)
-          .map((p) => "${p!.timestamp}: ${p.bpm?.toStringAsFixed(0)} bpm")
-          .toList();
-      print("  BPMDataPoints (${bpmList.length}): $bpmList");
-
-      // Print Speed datapoints: ["ts: kmh km/h, pace min/km", ...]
-      final spdList = spd
-          .where((p) => p != null)
-          .map(
-            (p) =>
-                "${p!.timestamp}: ${p.kmh?.toStringAsFixed(2)} km/h, ${p.paceMinPerKm?.toStringAsFixed(2)} min/km",
-          )
-          .toList();
-      print("  SpeedDataPoints (${spdList.length}): $spdList");
-    }*/
+    HKWorkouts = await HKWorkoutAPI.getWorkouts();
   }
 
   Future<void> initWeeklyWorkouts() async {
-    weeklyWokouts = [
-      WorkoutClass(
-        id: 1,
-        name: "EF matin",
-        done: false,
-        Date: DateTime(2025, 1, 12),
-        workoutType: workoutType.EF,
-        workoutSport: workoutSport.RUNNING,
-        durationSec: 30,
-        distanceMeters: 5.3,
-        day: "Mercredi",
-      ),
-      WorkoutClass(
-        id: 2,
-        name: "Fractionné running matin",
-        done: true,
-        Date: DateTime(2025, 1, 10),
-        workoutType: workoutType.FRACTIONNE,
-        workoutSport: workoutSport.RUNNING,
-        durationSec: 45,
-        distanceMeters: 15.5,
-        day: "Mardi",
-        kcal: 1500,
-        avgBPM: 156,
-      ),
-      WorkoutClass(
-        id: 3,
-        name: "Tempo natation soir",
-        done: true,
-        Date: DateTime(2025, 1, 10),
-        workoutType: workoutType.TEMPO,
-        workoutSport: workoutSport.SWIMMING,
-        durationSec: 40,
-        distanceMeters: 1000,
-        day: "Lundi",
-      ),
-      WorkoutClass(
-        id: 4,
-        name: "EF vélo soir",
-        done: false,
-        Date: DateTime(2025, 1, 10),
-        workoutType: workoutType.EF,
-        workoutSport: workoutSport.CYCLING,
-        durationSec: 110,
-        distanceMeters: 50,
-        day: "Vendredi",
-      ),
-    ];
+    final fetched = await workoutLightService.fetchWorkoutsLight();
+    setState(() {
+      weeklyWokouts = fetched;
+    });
   }
 
-  void _openWorkoutDetail(WorkoutClass w) {
+  void _openWorkoutDetail(WorkoutLightClass w) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(workout: w)));
+    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
   @override
   Widget build(BuildContext context) {
+    int? currentWeek;
+    int? nextWeek;
+    if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) {
+      final weeks = weeklyWokouts!.map((w) => w.week).toSet().toList()..sort();
+      currentWeek = weeks.first;
+      if (weeks.length > 1) {
+        nextWeek = weeks.last;
+      }
+    }
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -216,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
                 const SizedBox(height: 60),
+                // Section: Semaine actuelle
                 Text(
                   "Séances de la semaine",
                   style: TextStyle(
@@ -225,31 +163,102 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 SizedBox(height: 25),
-                for (WorkoutClass w in weeklyWokouts) ...[
-                  if (!w.done) ...[
-                    InkWell(
-                      onTap: () => _openWorkoutDetail(w),
-                      child: workoutCard(
-                        title: "Test",
-                        subtitle: "test subtitle",
-                        workout: w,
+                if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) ...[
+                  // Liste des séances NON terminées de la semaine actuelle
+                  for (WorkoutLightClass w in weeklyWokouts!) ...[
+                    if ((currentWeek != null && w.week == currentWeek) &&
+                        (w.status != WorkoutStatut.COMPLETED)) ...[
+                      InkWell(
+                        onTap: () => _openWorkoutDetail(w),
+                        child: workoutLightCard(
+                          title: "Test",
+                          subtitle: "test subtitle",
+                          workout: w,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 15),
+                      const SizedBox(height: 15),
+                    ],
                   ],
+
+                  // Liste des séances terminées de la semaine actuelle
+                  for (WorkoutLightClass w in weeklyWokouts!) ...[
+                    if ((currentWeek != null && w.week == currentWeek) &&
+                        (w.status == WorkoutStatut.COMPLETED)) ...[
+                      InkWell(
+                        onTap: () => _openWorkoutDetail(w),
+                        child: workoutLightCard(
+                          title: "Test",
+                          subtitle: "test subtitle",
+                          workout: w,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ],
+                ] else ...[
+                  Text.rich(
+                    TextSpan(
+                      text:
+                          "Vous n'avez pas encore de séance planifiée.\nCréez un plan d'entraînement depuis la page ",
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "Entraînement",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(text: " pour commencer."),
+                      ],
+                    ),
+                  ),
                 ],
 
-                for (WorkoutClass w in weeklyWokouts) ...[
-                  if (w.done) ...[
-                    InkWell(
-                      onTap: () => _openWorkoutDetail(w),
-                      child: workoutCard(
-                        title: "Test",
-                        subtitle: "test subtitle",
-                        workout: w,
-                      ),
+                // Section: Semaine prochaine (si présente)
+                if (nextWeek != null) ...[
+                  const SizedBox(height: 32),
+                  Text(
+                    "Semaine prochaine",
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 15),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Liste des séances NON terminées de la semaine prochaine
+                  for (WorkoutLightClass w in weeklyWokouts!) ...[
+                    if (w.week == nextWeek &&
+                        (w.status != WorkoutStatut.COMPLETED)) ...[
+                      InkWell(
+                        onTap: () => _openWorkoutDetail(w),
+                        child: workoutLightCard(
+                          title: "Test",
+                          subtitle: "test subtitle",
+                          workout: w,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ],
+
+                  // Liste des séances terminées de la semaine prochaine
+                  for (WorkoutLightClass w in weeklyWokouts!) ...[
+                    if (w.week == nextWeek &&
+                        (w.status == WorkoutStatut.COMPLETED)) ...[
+                      InkWell(
+                        onTap: () => _openWorkoutDetail(w),
+                        child: workoutLightCard(
+                          title: "Test",
+                          subtitle: "test subtitle",
+                          workout: w,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
                   ],
                 ],
               ],
@@ -259,19 +268,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-Future<String> saveJsonToFile(Map<String, dynamic> jsonData) async {
-  final directory =
-      await getTemporaryDirectory(); // ou getApplicationDocumentsDirectory()
-  final filePath = '${directory.path}/health_data.json';
-  final file = File(filePath);
-
-  await file.writeAsString(jsonEncode(jsonData));
-  print('✅ Fichier sauvegardé : $filePath');
-  return filePath;
-}
-
-void shareHealthData(String filePath) {
-  Share.shareXFiles([XFile(filePath)], text: 'Voici mes données Apple Santé');
 }
