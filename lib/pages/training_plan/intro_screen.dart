@@ -1,13 +1,16 @@
+import 'package:ferum/models/training_plan_model.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/cycling_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/endDate_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/daysOfWeek_screen.dart';
+import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 
 class IntroScreen extends StatefulWidget {
-  final VoidCallback onPlanCreated;
+  final Function(TrainingPlan) onPlanCreated;
+  
   const IntroScreen({
     super.key,
     required this.onPlanCreated,
@@ -36,7 +39,7 @@ class _IntroScreenState extends State<IntroScreen> {
     ];
   }
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _pages.length - 1){
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300), 
@@ -44,7 +47,15 @@ class _IntroScreenState extends State<IntroScreen> {
       );
     } else {
       // Last page : plan is created.
-      widget.onPlanCreated();
+      final plan = await TrainingPlanService().createTrainingPlan();
+
+      if (plan != null){
+        widget.onPlanCreated(plan);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Impossible de créer le plan. Réessayez.")),
+        );
+      }      
     }
   }
 

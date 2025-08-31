@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class DailyPlanCard extends StatelessWidget {
   final String dayOfWeek;
   final String sport;
-  final String workoutType;
 
   const DailyPlanCard({
     super.key,
     required this.dayOfWeek,
     required this.sport,
-    required this.workoutType,
   });
 
   @override
@@ -41,7 +39,7 @@ class DailyPlanCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          "$sport - $workoutType",
+          "$sport",
           style: TextStyle(
             fontSize: 14,
             color: Colors.white.withOpacity(0.9),

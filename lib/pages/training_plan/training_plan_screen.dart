@@ -46,15 +46,15 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                     Expanded(
                       child: ProgressPieChart(
                         current: widget.trainingPlan!.currentWeekNb, 
-                        total: 8, 
+                        total: widget.trainingPlan!.totalNbOfWeeks, 
                         title: "Semaines", 
                       )
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: ProgressPieChart(
-                        current: 45, 
-                        total: 51, 
+                        current: widget.trainingPlan!.currentNbOfWorkouts, 
+                        total: widget.trainingPlan!.totalNbOfWorkouts, 
                         title: "Séances", 
                       )
                     ),
@@ -71,18 +71,22 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                DailyPlanCard(
-                  dayOfWeek: "Monday",
-                  sport: "Running",
-                  workoutType: "EF"
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: widget.trainingPlan!.currentWeeklyPlan.dailyPlans.length,
+                  itemBuilder: (context, index) {
+                    final plan = widget.trainingPlan!.currentWeeklyPlan.dailyPlans[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: DailyPlanCard(
+                        dayOfWeek: plan.dayOfWeek,
+                        sport: plan.sport,
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 10),
-                DailyPlanCard(
-                  dayOfWeek: "Tuesday",
-                  sport: "Repos",
-                  workoutType: "Rest"
-                ),                
-                
               ],
             ),
           ),          

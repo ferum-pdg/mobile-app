@@ -28,23 +28,24 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
 
 
   Future<void> _loadTrainingPlan() async {
-  prefs = await SharedPreferences.getInstance();
-  final hasPlan = prefs!.getBool('hasTrainingPlan') ?? false;
+    // Sets that the training plan is in loading process.
+    setState(() {
+      isLoading = true;
+    });
 
-  TrainingPlan? plan;
-  if (hasPlan) {
-    final trainingPlanString = prefs!.getString('trainingPlan');
-    if (trainingPlanString != null) {
-      plan = TrainingPlan.fromJson(jsonDecode(trainingPlanString));
+    try{
+      final plan = await TrainingPlanService().getTrainingPlan();
+      setState(() {
+        // HTTP Code 200 = trainingPlan, sinon null.
+        trainingPlan = plan;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
-
-  setState(() {
-    hasTrainingPlan = hasPlan;
-    trainingPlan = plan;
-    isLoading = false;
-  });
-}
 
   @override
   Widget build(BuildContext context) {
@@ -52,18 +53,16 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (hasTrainingPlan){
-      return TrainingPlanScreen(trainingPlan: trainingPlan);
-    } else {
+    if (trainingPlan == null){      
       return IntroScreen(
-        onPlanCreated: () async {
-          trainingPlan = await TrainingPlanService().createTrainingPlan();
-          prefs!.setBool('hasTrainingPlan', true);
+        onPlanCreated: (plan) {
           setState(() {
-            hasTrainingPlan = true;
+            trainingPlan = plan;
           });
         },
       );
-    }
+    } 
+
+    return TrainingPlanScreen(trainingPlan: trainingPlan!);
   }
 }

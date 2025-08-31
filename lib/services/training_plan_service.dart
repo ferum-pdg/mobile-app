@@ -63,19 +63,24 @@ class TrainingPlanService {
         "$baseUrl/training-plan",
         options: Options(
           headers: {
-            "Authorization": "Bearer $token"
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json"
           }
         )
       );
 
       if (response.statusCode == 200) {
         final trainingPlan = TrainingPlan.fromJson(response.data);
+        await prefs.setString('trainingPlan', jsonEncode(trainingPlan.toJson()));    
         return trainingPlan;
       }
 
       return null;
     } catch (e) {
       print("Training plan storage failed: $e");
+      if (e is DioException) {
+        print(e.response?.data);
+      }
     }
   }
 
@@ -104,10 +109,10 @@ class TrainingPlanService {
 
       if(response.statusCode == 201){
         final trainingPlan = await getTrainingPlan();    
-        await prefs.setString('trainingPlan', jsonEncode(trainingPlan?.toJson()));    
         return trainingPlan;
       }
       
+      return null;
 
     } catch (e) {
       print("Training plan creation failed: $e");

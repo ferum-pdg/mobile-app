@@ -70,21 +70,18 @@ class DailyPlan {
   final String id;
   final String dayOfWeek;
   final String sport;
-  final String workoutType;
 
   DailyPlan({
     required this.id,
     required this.dayOfWeek,
     required this.sport,
-    required this.workoutType,
   });
 
   factory DailyPlan.fromJson(Map<String, dynamic> json){
     return DailyPlan(
       id: json['id'], 
       dayOfWeek: json['dayOfWeek'],
-      sport: json['sport'],
-      workoutType: json['workoutType'],   
+      sport: json['sport'], 
     );
   }
 
@@ -92,6 +89,5 @@ class DailyPlan {
     'id': id,
     'dayOfWeek': dayOfWeek,
     'sport': sport,
-    'workoutType': workoutType,
   };
 }
