@@ -93,24 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _openWorkoutDetail(WorkoutLightClass w) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => WorkoutDetailPage(
-          id: w.id,
-          workout: WorkoutClass(
-            id: 1,
-            name: "EF matin",
-            done: false,
-            Date: DateTime(2025, 1, 12),
-            workoutType: WorkoutType.EF,
-            workoutSport: WorkoutSport.RUNNING,
-            durationSec: 30,
-            distanceMeters: 5.3,
-            day: "Mercredi",
-          ),
-        ),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
   @override
