@@ -108,12 +108,14 @@ class TrainingPlanService {
       if(response.statusCode == 201){
         final trainingPlan = await getTrainingPlan();          
         return trainingPlan;
-      }
-      
-      return null;
+      } else {
+        final message = response.data['message'] ?? "Impossible de créer le plan. Réessayez.";
+        throw Exception(message);
+      }          
 
     } catch (e) {
       print("Training plan creation failed: $e");
+      throw e;
     }
   }
 }

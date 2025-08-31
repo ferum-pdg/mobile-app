@@ -47,17 +47,19 @@ class _IntroScreenState extends State<IntroScreen> {
         curve: Curves.easeOut,
       );
     } else {
-      // Last page : plan is created.
+    // Last page : plan is created
+    try {
       final plan = await TrainingPlanService().createTrainingPlan();
 
-      if (plan != null){
+      if (plan != null) {
         widget.onPlanCreated(plan);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Impossible de créer le plan. Réessayez.")),
-        );
-      }      
+      } 
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
+  }
   }
 
   Widget _welcomeScreen(){
@@ -71,7 +73,7 @@ class _IntroScreenState extends State<IntroScreen> {
           Text(
             "Bienvenue !",
             style: GoogleFonts.volkhov(
-              fontSize: 32,
+              fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -81,7 +83,7 @@ class _IntroScreenState extends State<IntroScreen> {
           Text(
             "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
             style: GoogleFonts.volkhov(
-              fontSize: 32,
+              fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -93,9 +95,9 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
+            "Rejoins des centaines d'utilisateur-ices satisfait-e-s!",
             style: GoogleFonts.volkhov(
-              fontSize: 32,
+              fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,

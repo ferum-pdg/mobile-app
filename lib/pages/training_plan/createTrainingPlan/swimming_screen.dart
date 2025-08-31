@@ -65,11 +65,12 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                     final selectedGoalString = prefs!.getString('selectedSwimmingGoal');
                     Goal? selectedGoal;
 
-                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
-
                     if (selectedGoalString != null){
                       selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
                     }
+
+                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
+
                     return GestureDetector(
                       onTap: () {
                         setState(() {
