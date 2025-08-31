@@ -17,10 +17,12 @@ class EndDateScreen extends StatefulWidget {
 
 class _EndDateScreenState extends State<EndDateScreen> {
   DateTime endDateDay = DateTime.now();
-  // Default value.
-  int minWeeksRequired = 12;
   SharedPreferences? prefs;
   bool isLoading = true;
+
+  // Default value.
+  int minWeeksRequired = 12;
+
 
   @override
   void initState() {

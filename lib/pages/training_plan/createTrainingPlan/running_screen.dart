@@ -26,10 +26,10 @@ class _RunningScreenState extends State<RunningScreen> {
   void initState() {
     super.initState();
     initPrefs();
-    getRunningGoals();
+    _getRunningGoals();
   }
 
-  Future<void> getRunningGoals() async {
+  Future<void> _getRunningGoals() async {
     GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
     setState(() {      
       runningGoalsList = list;

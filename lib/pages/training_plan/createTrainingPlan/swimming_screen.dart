@@ -25,10 +25,10 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
   void initState() {
     super.initState();
     initPrefs();
-    getSwimmingGoals();
+    _getSwimmingGoals();
   }
 
-  Future<void> getSwimmingGoals() async {
+  Future<void> _getSwimmingGoals() async {
     GoalsList? list = await GoalService().getGoalsBySport("SWIMMING");
     setState(() {      
       swimmingGoalsList = list;
