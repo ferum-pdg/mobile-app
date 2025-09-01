@@ -26,7 +26,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<WorkoutLightClass>? weeklyWokouts;
-  late final List<HKWorkoutData?> HKWorkouts;
+  List<HKWorkoutData?> hkWorkouts = [];
   SharedPreferences? prefs;
   String? username;
   @override
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
             loadWorkouts().then((_) async {
               // Délègue l'envoi au service dédié
               final svc = HKWorkoutService();
-              for (HKWorkoutData? w in HKWorkouts) {
+              for (HKWorkoutData? w in hkWorkouts) {
                 if (w?.sport == "running" ||
                     w?.sport == "cycling" ||
                     w?.sport == "swimming") {
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> loadWorkouts() async {
-    HKWorkouts = await HKWorkoutAPI.getWorkouts();
+    hkWorkouts = await HKWorkoutAPI.getWorkouts();
   }
 
   Future<void> initWeeklyWorkouts() async {
@@ -90,6 +90,38 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       weeklyWokouts = fetched;
     });
+  }
+
+  Future<void> _refreshAll() async {
+    try {
+      // Recharge les workouts Apple Health
+      await loadWorkouts();
+
+      // Renvoie les workouts éligibles au backend
+      final svc = HKWorkoutService();
+      for (final w in hkWorkouts) {
+        if (w != null &&
+            (w.sport == "running" ||
+                w.sport == "cycling" ||
+                w.sport == "swimming")) {
+          final hkWorkoutJson = hkWorkoutToJson(w);
+          await svc.sendWorkout(hkWorkoutJson);
+        }
+      }
+
+      // Recharge les workouts "light" depuis l'API et met à jour l'affichage
+      await initWeeklyWorkouts();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Données synchronisées')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la synchronisation : $e')),
+      );
+    }
   }
 
   void _openWorkoutDetail(WorkoutLightClass w) {
@@ -111,157 +143,161 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                username == null
-                    ? const SizedBox(
-                        height: 38,
-                      ) // reserve space to avoid layout shift
-                    : Text(
-                        "Bonjour $username",
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Votre résumé de la semaine",
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    circularPogressBar(
-                      totalDone: 2,
-                      total: 4,
-                      label: "Séances effectués",
-                      toInt: true,
-                    ),
-                    const SizedBox(width: 24),
-                    circularPogressBar(
-                      totalDone: 7.3,
-                      total: 25.6,
-                      label: "Km parcourus",
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 60),
-                // Section: Semaine actuelle
-                Text(
-                  "Séances de la semaine",
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 25),
-                if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) ...[
-                  // Liste des séances NON terminées de la semaine actuelle
-                  for (WorkoutLightClass w in weeklyWokouts!) ...[
-                    if ((currentWeek != null && w.week == currentWeek) &&
-                        (w.status != WorkoutStatut.COMPLETED)) ...[
-                      InkWell(
-                        onTap: () => _openWorkoutDetail(w),
-                        child: workoutLightCard(
-                          title: "Test",
-                          subtitle: "test subtitle",
-                          workout: w,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
-                  ],
-
-                  // Liste des séances terminées de la semaine actuelle
-                  for (WorkoutLightClass w in weeklyWokouts!) ...[
-                    if ((currentWeek != null && w.week == currentWeek) &&
-                        (w.status == WorkoutStatut.COMPLETED)) ...[
-                      InkWell(
-                        onTap: () => _openWorkoutDetail(w),
-                        child: workoutLightCard(
-                          title: "Test",
-                          subtitle: "test subtitle",
-                          workout: w,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
-                  ],
-                ] else ...[
-                  Text.rich(
-                    TextSpan(
-                      text:
-                          "Vous n'avez pas encore de séance planifiée.\nCréez un plan d'entraînement depuis la page ",
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: "Entraînement",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.purple,
+        child: RefreshIndicator(
+          onRefresh: _refreshAll,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
+                  username == null
+                      ? const SizedBox(
+                          height: 38,
+                        ) // reserve space to avoid layout shift
+                      : Text(
+                          "Bonjour $username",
+                          style: const TextStyle(
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        TextSpan(text: " pour commencer."),
-                      ],
-                    ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Votre résumé de la semaine",
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
-                ],
-
-                // Section: Semaine prochaine (si présente)
-                if (nextWeek != null) ...[
                   const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      circularPogressBar(
+                        totalDone: 2,
+                        total: 4,
+                        label: "Séances effectués",
+                        toInt: true,
+                      ),
+                      const SizedBox(width: 24),
+                      circularPogressBar(
+                        totalDone: 7.3,
+                        total: 25.6,
+                        label: "Km parcourus",
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 60),
+                  // Section: Semaine actuelle
                   Text(
-                    "Semaine prochaine",
+                    "Séances de la semaine",
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 25),
-
-                  // Liste des séances NON terminées de la semaine prochaine
-                  for (WorkoutLightClass w in weeklyWokouts!) ...[
-                    if (w.week == nextWeek &&
-                        (w.status != WorkoutStatut.COMPLETED)) ...[
-                      InkWell(
-                        onTap: () => _openWorkoutDetail(w),
-                        child: workoutLightCard(
-                          title: "Test",
-                          subtitle: "test subtitle",
-                          workout: w,
+                  SizedBox(height: 25),
+                  if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) ...[
+                    // Liste des séances NON terminées de la semaine actuelle
+                    for (WorkoutLightClass w in weeklyWokouts!) ...[
+                      if ((currentWeek != null && w.week == currentWeek) &&
+                          (w.status != WorkoutStatut.COMPLETED)) ...[
+                        InkWell(
+                          onTap: () => _openWorkoutDetail(w),
+                          child: workoutLightCard(
+                            title: "Test",
+                            subtitle: "test subtitle",
+                            workout: w,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
+                        const SizedBox(height: 15),
+                      ],
                     ],
+
+                    // Liste des séances terminées de la semaine actuelle
+                    for (WorkoutLightClass w in weeklyWokouts!) ...[
+                      if ((currentWeek != null && w.week == currentWeek) &&
+                          (w.status == WorkoutStatut.COMPLETED)) ...[
+                        InkWell(
+                          onTap: () => _openWorkoutDetail(w),
+                          child: workoutLightCard(
+                            title: "Test",
+                            subtitle: "test subtitle",
+                            workout: w,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                    ],
+                  ] else ...[
+                    Text.rich(
+                      TextSpan(
+                        text:
+                            "Vous n'avez pas encore de séance planifiée.\nCréez un plan d'entraînement depuis la page ",
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text: "Entraînement",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.purple,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(text: " pour commencer."),
+                        ],
+                      ),
+                    ),
                   ],
 
-                  // Liste des séances terminées de la semaine prochaine
-                  for (WorkoutLightClass w in weeklyWokouts!) ...[
-                    if (w.week == nextWeek &&
-                        (w.status == WorkoutStatut.COMPLETED)) ...[
-                      InkWell(
-                        onTap: () => _openWorkoutDetail(w),
-                        child: workoutLightCard(
-                          title: "Test",
-                          subtitle: "test subtitle",
-                          workout: w,
-                        ),
+                  // Section: Semaine prochaine (si présente)
+                  if (nextWeek != null) ...[
+                    const SizedBox(height: 32),
+                    Text(
+                      "Semaine prochaine",
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 15),
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Liste des séances NON terminées de la semaine prochaine
+                    for (WorkoutLightClass w in weeklyWokouts!) ...[
+                      if (w.week == nextWeek &&
+                          (w.status != WorkoutStatut.COMPLETED)) ...[
+                        InkWell(
+                          onTap: () => _openWorkoutDetail(w),
+                          child: workoutLightCard(
+                            title: "Test",
+                            subtitle: "test subtitle",
+                            workout: w,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                    ],
+
+                    // Liste des séances terminées de la semaine prochaine
+                    for (WorkoutLightClass w in weeklyWokouts!) ...[
+                      if (w.week == nextWeek &&
+                          (w.status == WorkoutStatut.COMPLETED)) ...[
+                        InkWell(
+                          onTap: () => _openWorkoutDetail(w),
+                          child: workoutLightCard(
+                            title: "Test",
+                            subtitle: "test subtitle",
+                            workout: w,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                      ],
                     ],
                   ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
