@@ -1,13 +1,17 @@
+import 'package:ferum/models/training_plan_model.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/cycling_screen.dart';
-import 'package:ferum/pages/training_plan/createTrainingPlan/endDate_screen.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/end_date_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
 import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dart';
-import 'package:ferum/pages/training_plan/createTrainingPlan/daysOfWeek_screen.dart';
+import 'package:ferum/pages/training_plan/createTrainingPlan/days_of_week_screen.dart';
+import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class IntroScreen extends StatefulWidget {
-  final VoidCallback onPlanCreated;
+  final Function(TrainingPlan) onPlanCreated;
+  
   const IntroScreen({
     super.key,
     required this.onPlanCreated,
@@ -36,16 +40,26 @@ class _IntroScreenState extends State<IntroScreen> {
     ];
   }
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _pages.length - 1){
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300), 
         curve: Curves.easeOut,
       );
     } else {
-      // Last page : plan is created.
-      widget.onPlanCreated();
+    // Last page : plan is created
+    try {
+      final plan = await TrainingPlanService().createTrainingPlan();
+
+      if (plan != null) {
+        widget.onPlanCreated(plan);
+      } 
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
+  }
   }
 
   Widget _welcomeScreen(){
@@ -56,20 +70,38 @@ class _IntroScreenState extends State<IntroScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          const Text(
+          Text(
             "Bienvenue !",
+            style: GoogleFonts.volkhov(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!"
+          Text(
+            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
+            style: GoogleFonts.volkhov(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
           Image.asset(
             "assets/img/icon-tp.png",
             height: 400,
           ),
           const SizedBox(height: 20),
-          const Text(
-            "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!"
+          Text(
+            "Rejoins des centaines d'utilisateur-ices satisfait-e-s!",
+            style: GoogleFonts.volkhov(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),            
           ),          
         ],
       ),

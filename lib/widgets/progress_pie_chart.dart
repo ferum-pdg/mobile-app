@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProgressPieChart extends StatelessWidget {
   final int current;
@@ -26,14 +27,13 @@ class ProgressPieChart extends StatelessWidget {
             children: [
               PieChart(
                 PieChartData(
-                  centerSpaceRadius: 45, // pour faire l’anneau fin
+                  centerSpaceRadius: 45,
                   sectionsSpace: 0,
-                  startDegreeOffset: -90, // pour commencer en haut
+                  startDegreeOffset: -90,
                   sections: [
-                    // Partie remplie (progression)
                     PieChartSectionData(
                       value: current.toDouble(),
-                      color: null, // on met null car on va utiliser gradient
+                      color: null,
                       radius: 16,
                       showTitle: false,
                       gradient: const LinearGradient(
@@ -42,7 +42,6 @@ class ProgressPieChart extends StatelessWidget {
                         end: Alignment.bottomRight,
                       ),
                     ),
-                    // Partie restante
                     PieChartSectionData(
                       value: (total - current).toDouble(),
                       color: Colors.grey.shade300,
@@ -52,24 +51,26 @@ class ProgressPieChart extends StatelessWidget {
                   ],
                 ),
               ),
-              // Texte centré
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     "$current / $total",
-                    style: const TextStyle(
+                    style: GoogleFonts.volkhov(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
                       color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
                   ),
                   Text(
                     title,
-                    style: TextStyle(
+                    style: GoogleFonts.volkhov(
                       fontSize: 14,
                       color: Colors.grey.shade600,
-                    ),
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),                    
                   ),
                 ],
               )

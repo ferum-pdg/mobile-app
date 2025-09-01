@@ -17,7 +17,6 @@ class CyclingScreen extends StatefulWidget {
 }
 
 class _CyclingScreenState extends State<CyclingScreen> {
-  DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
   String? selectedGoalUID;
   GoalsList? cyclingGoalsList;
@@ -26,10 +25,10 @@ class _CyclingScreenState extends State<CyclingScreen> {
   void initState() {
     super.initState();
     initPrefs();
-    getCyclingGoals();
+    _getCyclingGoals();
   }
 
-  Future<void> getCyclingGoals() async {
+  Future<void> _getCyclingGoals() async {
     GoalsList? list = await GoalService().getGoalsBySport("CYCLING");
     setState(() {      
       cyclingGoalsList = list;

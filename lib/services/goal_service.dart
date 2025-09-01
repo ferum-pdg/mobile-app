@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,7 +22,8 @@ class GoalService {
         "$baseUrl/goals/$sport",
         options: Options(
           headers: {
-            "Authorization": "Bearer $token"
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json"
           }
         )
       );
@@ -35,7 +34,7 @@ class GoalService {
 
       return null;
     } catch (e) {
-      print("User storage failed: $e");
+      print("Goal retrieved failed: $e");
     }
   }
 }

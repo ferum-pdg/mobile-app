@@ -25,10 +25,10 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
   void initState() {
     super.initState();
     initPrefs();
-    getSwimmingGoals();
+    _getSwimmingGoals();
   }
 
-  Future<void> getSwimmingGoals() async {
+  Future<void> _getSwimmingGoals() async {
     GoalsList? list = await GoalService().getGoalsBySport("SWIMMING");
     setState(() {      
       swimmingGoalsList = list;
@@ -65,11 +65,12 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                     final selectedGoalString = prefs!.getString('selectedSwimmingGoal');
                     Goal? selectedGoal;
 
-                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
-
                     if (selectedGoalString != null){
                       selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
                     }
+
+                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
+
                     return GestureDetector(
                       onTap: () {
                         setState(() {
