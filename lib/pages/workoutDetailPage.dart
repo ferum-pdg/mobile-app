@@ -423,9 +423,9 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            "Bel entraînement bravo, cependant veillez à bien respecter les zones cardiaques cibles, cela vous évitera d'avoir des blessures.",
-                            style: TextStyle(fontSize: 18),
+                          Text(
+                            "${workout.aiReview}",
+                            style: const TextStyle(fontSize: 18),
                           ),
                         ],
                       ),
