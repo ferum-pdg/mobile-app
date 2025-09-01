@@ -24,18 +24,24 @@ class _CyclingScreenState extends State<CyclingScreen> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    _initPrefs();
     _getCyclingGoals();
   }
 
   Future<void> _getCyclingGoals() async {
-    GoalsList? list = await GoalService().getGoalsBySport("CYCLING");
-    setState(() {      
-      cyclingGoalsList = list;
-    });
+    try {
+      GoalsList? list = await GoalService().getGoalsBySport("CYCLING");
+      setState(() {      
+        cyclingGoalsList = list;
+      });      
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
-  Future<void> initPrefs() async {
+  Future<void> _initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
     setState(() {
       prefs = p;

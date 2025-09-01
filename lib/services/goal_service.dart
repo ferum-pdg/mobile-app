@@ -14,8 +14,7 @@ class GoalService {
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
-        return null;
+        throw Exception("Pas de token trouvé. Connectez-vous à nouveau.");        
       }
 
       final response = await _dio.get(
@@ -24,17 +23,18 @@ class GoalService {
           headers: {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
-          }
+          },
+          validateStatus: (status) => status! < 500,
         )
       );
 
       if (response.statusCode == 200) {        
         return GoalsList.fromJson(response.data);
-      }
+      } 
 
-      return null;
+      return null;      
     } catch (e) {
-      print("Goal retrieved failed: $e");
+      throw Exception("Goal retrieved failed: $e");
     }
   }
 }

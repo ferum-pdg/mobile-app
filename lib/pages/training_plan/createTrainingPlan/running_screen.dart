@@ -25,18 +25,24 @@ class _RunningScreenState extends State<RunningScreen> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    _initPrefs();
     _getRunningGoals();
   }
 
   Future<void> _getRunningGoals() async {
-    GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
-    setState(() {      
-      runningGoalsList = list;
-    });
+    try {
+      GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
+      setState(() {      
+        runningGoalsList = list;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
-  Future<void> initPrefs() async {
+  Future<void> _initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
     setState(() {
       prefs = p;

@@ -23,7 +23,6 @@ class _EndDateScreenState extends State<EndDateScreen> {
   // Default value.
   int minWeeksRequired = 12;
 
-
   @override
   void initState() {
     super.initState();

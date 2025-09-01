@@ -18,10 +18,10 @@ class _DaysOfWeekScreenState extends State<DaysOfWeekScreen> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    _initPrefs();
   }
 
-  Future<void> initPrefs() async {
+  Future<void> _initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
     setState(() {
       prefs = p;      
