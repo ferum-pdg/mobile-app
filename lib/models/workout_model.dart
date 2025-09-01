@@ -2,9 +2,9 @@ import 'package:ferum/models/enum.dart';
 
 class WorkoutClass {
   final String id;
-  final workoutSport;
-  final workoutType;
-  final String status;
+  final WorkoutSport sport;
+  final WorkoutType type;
+  final WorkoutStatut status;
   final DateTime? start;
   final DateTime? end;
   final String day;
@@ -19,8 +19,8 @@ class WorkoutClass {
 
   WorkoutClass({
     required this.id,
-    required this.workoutSport,
-    required this.workoutType,
+    required this.sport,
+    required this.type,
     required this.status,
     this.start,
     this.end,
@@ -38,9 +38,18 @@ class WorkoutClass {
   factory WorkoutClass.fromJson(Map<String, dynamic> json) {
     return WorkoutClass(
       id: json['id'],
-      workoutSport: json['sport'],
-      workoutType: json['type'],
-      status: json['status'],
+      sport: WorkoutSport.values.firstWhere(
+        (e) => e.name == json['sport'],
+        orElse: () => throw Exception("Invalid sport: ${json['sport']}"),
+      ),
+      type: WorkoutType.values.firstWhere(
+        (e) => e.name == json['type'],
+        orElse: () => throw Exception("Invalid type: ${json['type']}"),
+      ),
+      status: WorkoutStatut.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => throw Exception("Invalid statut: ${json['status']}"),
+      ),
       start: json['start'] != null ? DateTime.parse(json['start']) : null,
       end: json['end'] != null ? DateTime.parse(json['end']) : null,
       day: json['day'],
@@ -61,8 +70,8 @@ class WorkoutClass {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'sport': workoutSport,
-    'type': workoutType,
+    'sport': sport,
+    'type': type,
     'status': status,
     'start': start?.toIso8601String(),
     'end': end?.toIso8601String(),

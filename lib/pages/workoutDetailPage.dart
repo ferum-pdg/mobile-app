@@ -63,14 +63,77 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     }
   }
 
+  String getFrenchDay(String englishDay) {
+    switch (englishDay.toUpperCase()) {
+      case "MONDAY":
+        return "Lundi";
+      case "TUESDAY":
+        return "Mardi";
+      case "WEDNESDAY":
+        return "Mercredi";
+      case "THURSDAY":
+        return "Jeudi";
+      case "FRIDAY":
+        return "Vendredi";
+      case "SATURDAY":
+        return "Samedi";
+      case "SUNDAY":
+        return "Dimanche";
+      default:
+        return englishDay;
+    }
+  }
+
   String _formatDistance(num? meters, WorkoutSport sport) {
     if (meters == null) return '-';
-    if (sport == WorkoutSport.SWIMMING) {
+    final bool isSwimming = (sport == WorkoutSport.SWIMMING);
+    if (isSwimming) {
       return '${meters.toStringAsFixed(0)} m';
     }
     final km = meters.toDouble() / 1000.0;
     if (km >= 20) return '${km.toStringAsFixed(0)} km';
     return '${km.toStringAsFixed(1)} km';
+  }
+
+  Color _bpmColor(PerformanceDetail p) {
+    if (p.actualBPMMean > p.plannedBPMMax) return Colors.redAccent; // trop haut
+    if (p.actualBPMMean < p.plannedBPMMin) return Colors.orange; // trop bas
+    return Colors.green; // dans la cible
+  }
+
+  String _plannedRange(PerformanceDetail p) =>
+      '${p.plannedBPMMin}-${p.plannedBPMMax}';
+
+  IconData _sportIcon(WorkoutSport sport) {
+    switch (sport) {
+      case WorkoutSport.RUNNING:
+        return Icons.directions_run;
+      case WorkoutSport.CYCLING:
+        return Icons.directions_bike;
+      case WorkoutSport.SWIMMING:
+        return Icons.pool;
+      default:
+        return Icons.fitness_center;
+    }
+  }
+
+  String _typeLabel(WorkoutType type) {
+    switch (type) {
+      case WorkoutType.EF:
+        return 'Endurance fondamentale';
+      case WorkoutType.EA:
+        return 'Tempo';
+      case WorkoutType.LACTATE:
+        return 'Endurance active';
+      case WorkoutType.INTERVAL:
+        return 'Intervalles';
+      case WorkoutType.TECHNIC:
+        return 'Technique';
+      case WorkoutType.RA:
+        return 'Récupération active';
+      default:
+        return 'Séance';
+    }
   }
 
   @override
@@ -100,33 +163,30 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
 
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            titleSpacing: 0,
             title: Row(
               children: [
-                if (workout.workoutSport == WorkoutSport.RUNNING)
-                  const Icon(
-                    Icons.directions_run,
-                    size: 35,
-                    color: Colors.purple,
-                  ),
-                if (workout.workoutSport == WorkoutSport.CYCLING)
-                  const Icon(
-                    Icons.directions_bike,
-                    size: 35,
-                    color: Colors.purple,
-                  ),
-                if (workout.workoutSport == WorkoutSport.SWIMMING)
-                  const Icon(Icons.pool, size: 35, color: Colors.purple),
+                Icon(_sportIcon(workout.sport), size: 28, color: Colors.purple),
                 const SizedBox(width: 8),
                 Text(
-                  workout.workoutType.toString().split('.').last,
+                  _typeLabel(workout.type),
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
+                if (workout.status == WorkoutStatut.COMPLETED) ...[
+                  const SizedBox(width: 10),
+                  const Icon(
+                    Icons.check_circle_outline_sharp,
+                    color: Colors.purple,
+                  ),
+                ],
               ],
             ),
-            elevation: 0,
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -163,7 +223,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                             const SizedBox(width: 8),
                             Text(
                               workout.day != null
-                                  ? 'Jour: ${workout.day}'
+                                  ? 'Jour: ${getFrenchDay(workout.day)}'
                                   : 'Jour: —',
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -192,7 +252,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   const Divider(),
                   const SizedBox(height: 16),
 
-                  if (workout.status == 'COMPLETED') ...[
+                  if (workout.status == WorkoutStatut.COMPLETED) ...[
                     Text(
                       "Résulats",
                       style: TextStyle(
@@ -207,7 +267,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                         InfoCard(
                           title: _formatDistance(
                             workout.distanceMeters,
-                            workout.workoutSport,
+                            workout.sport,
                           ),
                           size: 100,
                           fontSize: 16,
@@ -234,6 +294,142 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       ],
                     ),
                     SizedBox(height: 10),
+                    // Tableau de performance par bloc
+                    if (workout.performanceDetails != null &&
+                        workout.performanceDetails!.isNotEmpty) ...[
+                      SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Performance de l'entraînement",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: const [
+                                  DataColumn(label: Text('Bloc')),
+                                  DataColumn(label: Text('BPM moyen planifié')),
+                                  DataColumn(label: Text('BPM réel')),
+                                ],
+                                rows: workout.performanceDetails!.map((p) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(p.blocId.toString())),
+                                      DataCell(Text(_plannedRange(p))),
+                                      DataCell(
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _bpmColor(
+                                              p,
+                                            ).withOpacity(0.15),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            border: Border.all(
+                                              color: _bpmColor(p),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            p.actualBPMMean.toString(),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: _bpmColor(p),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.black12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                'Ferum',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.purple,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Colors.blue, Colors.purple],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'AI',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Bel entraînement bravo, cependant veillez à bien respecter les zones cardiaques cibles, cela vous évitera d'avoir des blessures.",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                    ),
                     const Divider(),
                     const SizedBox(height: 16),
                   ],
@@ -256,9 +452,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                         children: [
                           StepBlock(
                             number: bloc.blocId,
-                            nbRepetition: bloc.repetitionCount > 1
-                                ? bloc.repetitionCount
-                                : null,
+                            nbRepetition: bloc.repetitionCount,
                             children: [
                               ...bloc.details.map(
                                 (d) => workoutDetailCard(
