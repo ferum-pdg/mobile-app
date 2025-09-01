@@ -5,13 +5,13 @@ class StepBlock extends StatelessWidget {
   final int number;
   final List<Widget> children;
   final List<SideBadge>? sideBadges;
-  final int? nbRepetition;
+  final int nbRepetition;
 
   const StepBlock({
     required this.number,
     required this.children,
     this.sideBadges,
-    this.nbRepetition = -1,
+    required this.nbRepetition,
   });
 
   @override
@@ -42,11 +42,11 @@ class StepBlock extends StatelessWidget {
               child: Column(children: sideBadges!),
             ),
           ],
-          if (nbRepetition != -1) ...[
+          if (nbRepetition > 1) ...[
             SizedBox(width: 10),
             Align(
               alignment: Alignment.center,
-              child: SideBadge(text: '7x', color: Colors.purple),
+              child: SideBadge(text: '${nbRepetition}x', color: Colors.purple),
             ),
           ],
         ],
