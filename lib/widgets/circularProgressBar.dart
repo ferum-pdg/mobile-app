@@ -8,15 +8,28 @@ class circularPogressBar extends StatelessWidget {
   final String label;
   final double size;
   final bool toInt;
+  final bool isHours;
 
   const circularPogressBar({
     super.key,
     required this.totalDone,
     required this.total,
     this.label = "",
-    this.size = 100.0,
+    this.size = 120.0,
     this.toInt = false,
+    this.isHours = false,
   });
+
+  String _formatHHMM(double valueHours) {
+    final totalMinutes = (valueHours * 60).round();
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+    if (hours > 0) {
+      return '${hours}h${minutes.toString().padLeft(2, '0')}';
+    } else {
+      return '${minutes}min';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +62,19 @@ class circularPogressBar extends StatelessWidget {
                   stroke: 10.0,
                 ),
                 child: Center(
-                  child: Text(
-                    toInt
-                        ? '${totalDone.toStringAsFixed(0)} / ${total.toStringAsFixed(0)}'
-                        : '$totalDone / $total',
-                    style: TextStyle(
-                      fontSize: toInt ? 14 : 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      isHours
+                          ? '${_formatHHMM(totalDone)} / ${_formatHHMM(total)}'
+                          : (toInt
+                                ? '${totalDone.toStringAsFixed(0)} / ${total.toStringAsFixed(0)}'
+                                : '$totalDone / $total'),
+                      style: TextStyle(
+                        fontSize: isHours ? 12 : (toInt ? 14 : 12),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -68,7 +86,7 @@ class circularPogressBar extends StatelessWidget {
           const SizedBox(height: 6), // espace entre la barre et le texte
           Text(
             label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ],
       ],
