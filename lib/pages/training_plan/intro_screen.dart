@@ -6,6 +6,7 @@ import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dar
 import 'package:ferum/pages/training_plan/createTrainingPlan/days_of_week_screen.dart';
 import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

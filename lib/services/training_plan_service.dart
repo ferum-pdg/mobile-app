@@ -55,8 +55,7 @@ class TrainingPlanService {
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
-        return null;
+        throw Exception("Pas de token trouvé");
       }
 
       final response = await _dio.get(
@@ -85,7 +84,7 @@ class TrainingPlanService {
         throw Exception("Erreur lors de la récupération du plan : ${response.data}");
       }
     } catch (e) {
-      print("Training plan fetch failed: $e");
+      throw Exception("Training plan fetch failed: $e");
     }
   }
 
@@ -95,8 +94,7 @@ class TrainingPlanService {
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("No token found.");
-        return null;
+        throw Exception("No token found.");      
       }
 
       final trainingPlanInfo = await _buildTrainingPlan();
@@ -117,14 +115,13 @@ class TrainingPlanService {
         return trainingPlan;
       }    
 
-    } catch (e) {
-      print("Training plan creation failed: $e");
+    } catch (e) {      
       if (e is DioException){
         final response = e.response;
         final message = response?.data['details'] ?? "Impossible de créer le plan. Réessayez.";
         throw Exception(message);
       }
-      throw e;
+      throw Exception("Training plan creation failed: $e");
     }
   }
 }

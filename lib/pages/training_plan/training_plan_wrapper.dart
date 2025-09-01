@@ -36,7 +36,10 @@ class _TrainingPlanWrapperState extends State<TrainingPlanWrapper> {
         trainingPlan = plan;
         isLoading = false;
       });
-    } catch (e) {      
+    } catch (e) {  
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );    
       setState(() {
         isLoading = false;
       });
