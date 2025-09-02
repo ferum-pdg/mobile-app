@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ferum/models/user_model.dart';
+import 'package:ferum/widgets/form_text_field.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,26 +20,28 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   User? _user;
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _weightController = TextEditingController();
-  final _heightController = TextEditingController();
-  final _fcMax = TextEditingController();  
+  late TextEditingController _firstNameController = TextEditingController();
+  late TextEditingController _lastNameController = TextEditingController();
+  late TextEditingController _weightController = TextEditingController();
+  late TextEditingController _heightController = TextEditingController();
+  late TextEditingController _fcMaxController = TextEditingController();  
 
   @override
   void initState() {    
     super.initState();
     _user = widget.user;
+    // initialize controllers with current user values.
+    _firstNameController = TextEditingController(text: widget.user?.firstName ?? "");
+    _lastNameController = TextEditingController(text: widget.user?.lastName ?? "");
+    _weightController = TextEditingController(text: widget.user?.weight.toString() ?? "");
+    _heightController = TextEditingController(text: widget.user?.height.toString() ?? "");
+    _fcMaxController = TextEditingController(text: widget.user?.fcMax.toString() ?? "");
+
   }
 
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.black),
-          elevation: 0,
-          backgroundColor: Colors.white,
-        ),
       body: Column(
         children: [          
           Container(
@@ -84,6 +87,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
 
           const SizedBox(height: 20),
+
+          FormTextField(controller: _firstNameController, label: _user!.firstName, color: Colors.black,),
 
 
 

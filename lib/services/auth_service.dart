@@ -18,7 +18,9 @@ class AuthService {
         "$baseUrl/auth/login",
         data: {"email": email, "password": password},
         options: Options(
-          headers: {"Content-Type": "application/json"},
+          headers: {
+            "Content-Type": "application/json"
+          },
           validateStatus: (status) => status != null && status < 500,
         ),
       );
@@ -56,17 +58,17 @@ class AuthService {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
       final response = await _dio.post(
-        "$baseUrl/auth/login",
+        "$baseUrl/auth/register",
         data: {
-          email: email,
-          password: password,
-          firstName: firstName,
-          lastName: lastName,
-          phoneNumber: phoneNumber,
-          birthDate: birthDate,
-          weight: weight,
-          height: height,
-          fcMax: fcMax
+          "email": email,
+          "password": password,
+          "firstName": firstName,
+          "lastName": lastName,
+          "phoneNumber": phoneNumber,
+          "birthDate": birthDate,
+          "weight": weight,
+          "height": height,
+          "fcMax": fcMax
         },
         options: Options(
           headers: {
@@ -76,7 +78,7 @@ class AuthService {
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final token = response.data["token"];
         if (token == null || token.isEmpty) {
           throw Exception("No token received from server.");
@@ -93,7 +95,7 @@ class AuthService {
     } on DioException catch (e) {
       final message =
           e.response?.data?["details"] ??
-          "Unable to Registrater. Please try again later.";
+          "Unable to Register. Please try again later.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Registration request failed: $e");

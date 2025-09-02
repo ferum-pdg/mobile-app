@@ -8,6 +8,7 @@ class FormTextField extends StatefulWidget {
   final bool obscureText;
   final String obscuringCharacter;
   final bool isDateField;
+  final Color color;
 
   const FormTextField({
     super.key,
@@ -17,6 +18,7 @@ class FormTextField extends StatefulWidget {
     this.obscureText = false,
     this.obscuringCharacter = '*',
     this.isDateField = false,
+    this.color = Colors.white,
   });
 
   @override
@@ -33,7 +35,7 @@ class _FormTextFieldState extends State<FormTextField> {
         keyboardType: widget.keyboardType,
         obscureText: widget.obscureText,
         obscuringCharacter: widget.obscuringCharacter,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: widget.color),
         decoration: FormInputDecoration(label: widget.label).build(),
         validator: (value) {
           if (value == null || value.isEmpty) {
