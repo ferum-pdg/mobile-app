@@ -115,12 +115,13 @@ flutter pub get
 ### Lancement du projet
 
 Depuis VS Code :
-- En bas à droite de l'écran, choisir l'appareil cible (Start iOS Simulator).
+- En bas à droite de l'écran, choisir l'appareil cible (Start iOS Simulator), par défaut, il est écris `macos`s.
 - Exécuter le fichier main.dart
 
 Depuis le terminal :
 
 ```bash
+open -a Simulator
 flutter run
 ```
 
