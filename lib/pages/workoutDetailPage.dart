@@ -406,7 +406,10 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Colors.blue, Colors.purple],
+                                    colors: [
+                                      Colors.blue.shade900,
+                                      Colors.purple,
+                                    ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
