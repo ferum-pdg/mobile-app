@@ -1,4 +1,5 @@
 import 'package:ferum/models/training_plan_model.dart';
+import 'package:ferum/widgets/circularProgressBar.dart';
 import 'package:ferum/widgets/daily_plan_card.dart';
 
 import 'package:ferum/widgets/progress_pie_chart.dart';
@@ -44,18 +45,20 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: ProgressPieChart(
-                        current: widget.trainingPlan!.currentWeekNb, 
-                        total: widget.trainingPlan!.totalNbOfWeeks, 
-                        title: "Semaines", 
+                      child: circularPogressBar(
+                        totalDone: widget.trainingPlan!.currentWeekNb.toDouble(), 
+                        total: widget.trainingPlan!.totalNbOfWeeks.toDouble(), 
+                        label: "Semaines",
+                        toInt: true,
                       )
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: ProgressPieChart(
-                        current: widget.trainingPlan!.currentNbOfWorkouts, 
-                        total: widget.trainingPlan!.totalNbOfWorkouts, 
-                        title: "Séances", 
+                      child: circularPogressBar(
+                        totalDone: widget.trainingPlan!.currentNbOfWorkouts.toDouble(), 
+                        total: widget.trainingPlan!.totalNbOfWorkouts.toDouble(), 
+                        label: "Séances",
+                        toInt: true,
                       )
                     ),
                   ],
@@ -76,7 +79,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: widget.trainingPlan!.currentWeeklyPlan.dailyPlans.length,
                   itemBuilder: (context, index) {
                     final plan = widget.trainingPlan!.currentWeeklyPlan.dailyPlans[index];
