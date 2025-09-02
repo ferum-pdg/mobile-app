@@ -158,7 +158,10 @@ class workoutLightCard extends StatelessWidget {
                         else if (workout.sport == WorkoutSport.CYCLING)
                           TagBadge(text: "CYCLISME", color: Colors.green)
                         else if (workout.sport == WorkoutSport.SWIMMING)
-                          TagBadge(text: "NATATION", color: Colors.blue),
+                          TagBadge(
+                            text: "NATATION",
+                            color: Colors.blue.shade900,
+                          ),
                       ],
                     ),
                   ],

@@ -1,4 +1,5 @@
 import 'package:ferum/pigeons/healthkit_workout.g.dart';
+import 'package:ferum/services/sync_service.dart';
 import 'package:ferum/widgets/workoutLightCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,6 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     initWeeklyWorkouts();
     initPrefs();
+
+    //Sync with backend
+    final syncService = SyncService();
+    syncService.sync();
 
     // Demande authorisation
     authHealthKit

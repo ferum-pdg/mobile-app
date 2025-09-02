@@ -329,7 +329,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                               child: DataTable(
                                 columns: const [
                                   DataColumn(label: Text('Bloc')),
-                                  DataColumn(label: Text('BPM moyen planifié')),
+                                  DataColumn(label: Text('BPM planifié')),
                                   DataColumn(label: Text('BPM réel')),
                                 ],
                                 rows: workout.performanceDetails!.map((p) {
@@ -428,6 +428,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                           const SizedBox(height: 8),
                           Text(
                             "${workout.aiReview}",
+                            textAlign: TextAlign.justify,
                             style: const TextStyle(fontSize: 18),
                           ),
                         ],
