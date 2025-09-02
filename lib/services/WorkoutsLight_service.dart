@@ -4,12 +4,15 @@ import 'package:ferum/models/workoutLight_model.dart';
 
 class WorkoutLightService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://127.0.0.1:8080";
 
   Future<List<WorkoutLightClass>> fetchWorkoutsLight() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString("jwt_token");
+      final String? baseUrl = prefs.getString("BackendURL");
+      if (baseUrl == null || baseUrl.isEmpty) {
+        throw Exception("BackendURL not set in SharedPreferences.");
+      }
 
       if (token == null) {
         throw Exception("Token manquant, utilisateur non connecté");

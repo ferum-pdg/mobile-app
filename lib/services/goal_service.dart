@@ -5,7 +5,7 @@ import '../models/goal_model.dart';
 
 class GoalService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://localhost:8080";
+
   SharedPreferences? prefs;
 
   /// Fetches all goals for a given sport from the API.
@@ -13,8 +13,12 @@ class GoalService {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
+      final String? baseUrl = prefs.getString("BackendURL");
+      if (baseUrl == null || baseUrl.isEmpty) {
+        throw Exception("BackendURL not set in SharedPreferences.");
+      }
 
-      if (token == null){
+      if (token == null) {
         throw Exception("No token found. Please log in again.");
       }
 
@@ -23,11 +27,11 @@ class GoalService {
         options: Options(
           headers: {
             "Authorization": "Bearer $token",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
-        )
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -38,7 +42,9 @@ class GoalService {
         throw Exception("Error while fetching goals: ${response.data}");
       }
     } on DioException catch (e) {
-      final message = e.response?.data['details'] ?? "Unable to fetch goals. Please try again.";
+      final message =
+          e.response?.data['details'] ??
+          "Unable to fetch goals. Please try again.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Goal retrieval failed: $e");

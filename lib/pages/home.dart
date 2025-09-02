@@ -82,13 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
 
-    // Only set default values on first launch
-    bool isFirstLaunch = p.getBool('isFirstLaunch') ?? true;
-    if (isFirstLaunch) {
-      defaultSharedPreferences(p);
-      await p.setBool('isFirstLaunch', false);
-    }
-
     setState(() {
       prefs = p;
     });
