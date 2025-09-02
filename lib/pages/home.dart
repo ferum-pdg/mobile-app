@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   double hoursPlannedThisWeek = 0.0;
   int doneSecondsThisWeek = 0;
   int plannedSecondsThisWeek = 0;
+  bool _isLoadingWeekly = true;
   @override
   void initState() {
     super.initState();
@@ -105,38 +106,73 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initWeeklyWorkouts() async {
-    final fetched = await workoutLightService.fetchWorkoutsLight();
-
-    // Calcule les heures planifiées et effectuées pour la semaine courante (à partir des workouts light)
-    int plannedSeconds = 0;
-    int doneSeconds = 0;
-    int? currentWeek;
-    if (fetched.isNotEmpty) {
-      final weeks = fetched.map((w) => w.week).toSet().toList()..sort();
-      currentWeek = weeks.first;
+    if (mounted) {
+      setState(() {
+        _isLoadingWeekly = true;
+      });
+    } else {
+      _isLoadingWeekly = true;
     }
-    if (currentWeek != null) {
-      for (final w in fetched) {
-        if (w.week == currentWeek) {
-          final int durSec = (w.duration as int? ?? 0);
-          plannedSeconds += durSec;
-          if (w.status == WorkoutStatut.COMPLETED) {
-            doneSeconds += durSec;
+    try {
+      final fetched = await workoutLightService.fetchWorkoutsLight();
+
+      // Calcule les heures planifiées et effectuées pour la semaine courante (à partir des workouts light)
+      int plannedSeconds = 0;
+      int doneSeconds = 0;
+      int? currentWeek;
+      if (fetched.isNotEmpty) {
+        final weeks = fetched.map((w) => w.week).toSet().toList()..sort();
+        currentWeek = weeks.first;
+      }
+      if (currentWeek != null) {
+        for (final w in fetched) {
+          if (w.week == currentWeek) {
+            final int durSec = (w.duration is int)
+                ? (w.duration as int)
+                : (w.duration is double)
+                ? (w.duration as double).round()
+                : (w.duration is String)
+                ? (int.tryParse(w.duration as String) ?? 0)
+                : 0;
+            plannedSeconds += durSec;
+            if (w.status == WorkoutStatut.COMPLETED) {
+              doneSeconds += durSec;
+            }
           }
         }
       }
+
+      final plannedHours = plannedSeconds / 3600.0;
+      final doneHours = doneSeconds / 3600.0;
+
+      if (!mounted) return;
+      setState(() {
+        weeklyWokouts = fetched;
+        plannedSecondsThisWeek = plannedSeconds;
+        doneSecondsThisWeek = doneSeconds;
+        hoursPlannedThisWeek = double.parse(plannedHours.toStringAsFixed(1));
+        hoursDoneThisWeek = double.parse(doneHours.toStringAsFixed(1));
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          weeklyWokouts = [];
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur lors du chargement des séances : $e')),
+        );
+      } else {
+        weeklyWokouts = [];
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingWeekly = false;
+        });
+      } else {
+        _isLoadingWeekly = false;
+      }
     }
-
-    final plannedHours = plannedSeconds / 3600.0;
-    final doneHours = doneSeconds / 3600.0;
-
-    setState(() {
-      weeklyWokouts = fetched;
-      plannedSecondsThisWeek = plannedSeconds;
-      doneSecondsThisWeek = doneSeconds;
-      hoursPlannedThisWeek = double.parse(plannedHours.toStringAsFixed(1));
-      hoursDoneThisWeek = double.parse(doneHours.toStringAsFixed(1));
-    });
   }
 
   Future<void> _refreshAll() async {
@@ -254,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ? sessionsPlanned.toDouble()
                               : (sessionsCompleted > 0
                                     ? sessionsCompleted.toDouble()
-                                    : 1.0)),
+                                    : 0.0)),
                           label: "Séances effectuées",
                           toInt: true,
                         ),
@@ -267,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           totalDone: hoursDone,
                           total: (hoursPlanned > 0
                               ? hoursPlanned
-                              : (hoursDone > 0 ? hoursDone : 1.0)),
+                              : (hoursDone > 0 ? hoursDone : 0.0)),
                           label: "Durée d'entraînement",
                           isHours: true,
                         ),
@@ -309,7 +345,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         const SizedBox(height: 15),
                       ],
                     ],
-                  ] else ...[
+                  ] else if (!_isLoadingWeekly) ...[
                     Text.rich(
                       TextSpan(
                         text:
@@ -328,6 +364,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
+                  ] else ...[
+                    SizedBox.shrink(),
                   ],
 
                   // Section: Semaine prochaine (si présente)
