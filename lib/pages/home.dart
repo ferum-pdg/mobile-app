@@ -219,6 +219,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingWeekly) {
+      return Scaffold(
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: _refreshAll,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+                    username == null
+                        ? const SizedBox(height: 38)
+                        : Text(
+                            "Bonjour ${username}",
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Votre résumé de la semaine",
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    // Intentionally render nothing else while loading to avoid flicker
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     int? currentWeek;
     int? nextWeek;
     if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) {
