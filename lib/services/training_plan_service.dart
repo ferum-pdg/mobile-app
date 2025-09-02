@@ -68,7 +68,7 @@ class TrainingPlanService {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
-          // Prevent Dio from throwing on client errors (400/404).
+          // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
         )
       );
@@ -115,7 +115,7 @@ class TrainingPlanService {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
-          // Prevent Dio from throwing on client errors (400/404).
+          // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
         ),        
         data: trainingPlanInfo,

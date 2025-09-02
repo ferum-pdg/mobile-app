@@ -206,13 +206,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Email ou mot de passe incorrect")),
+                                      const SnackBar(content: Text("Incorrect email or password.")),
                                     );
                                   }
-                                } catch (e) {
-                                  print("login failed : $e");
+                                } catch (e) {                                  
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("Erreur lors de la connexion : $e")),
+                                    SnackBar(content: Text("User log in failed : $e")),
                                   );
                                 }
                               }                      
