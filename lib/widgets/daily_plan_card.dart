@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class DailyPlanCard extends StatelessWidget {
   final String dayOfWeek;
@@ -33,19 +32,17 @@ class DailyPlanCard extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         title: Text(
           dayOfWeek,
-          style: GoogleFonts.volkhov(
+          style: TextStyle(
             fontSize: 18,
             color:Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+            fontWeight: FontWeight.bold,            
           ),                    
         ),
         subtitle: Text(
           sport,
-          style: GoogleFonts.volkhov(
+          style: TextStyle(
             fontSize: 14,
-            color:Colors.white.withOpacity(0.9),
-            letterSpacing: 1.2,
+            color:Colors.white.withOpacity(0.9),            
           ),          
         ),
         trailing: Icon(

@@ -8,7 +8,6 @@ import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// IntroScreen widget: allows the user to go through multiple setup steps 
 /// before generating a TrainingPlan.
@@ -82,21 +81,19 @@ class _IntroScreenState extends State<IntroScreen> {
           const SizedBox(height: 24),
           Text(
             "Bienvenue !",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
             ),
           ),
           const SizedBox(height: 20),
           Text(
             "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.bold, 
             ),
           ),
           Image.asset(
@@ -106,11 +103,10 @@ class _IntroScreenState extends State<IntroScreen> {
           const SizedBox(height: 20),
           Text(
             "Rejoins des centaines d'utilisateur-ices satisfait-e-s!",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
             ),            
           ),          
         ],
