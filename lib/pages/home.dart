@@ -38,8 +38,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    //Initialize weekly workouts
     initWeeklyWorkouts();
+    //init preferences
     initPrefs();
+    //retrieve username
     getUsername();
 
     //Sync with backend
@@ -47,29 +50,30 @@ class _MyHomePageState extends State<MyHomePage> {
     syncService.sync();
 
     // Demande authorisation
-    authHealthKit
-        .requestAuthorization()
-        .then((isAuthorized) {
-          if (isAuthorized == true) {
-            loadWorkouts().then((_) async {
-              // Délègue l'envoi au service dédié
-              final svc = HKWorkoutService();
-              for (HKWorkoutData? w in hkWorkouts) {
-                if (w?.sport == "running" ||
-                    w?.sport == "cycling" ||
-                    w?.sport == "swimming") {
-                  final HKWorkoutJson = hkWorkoutToJson(w!);
-                  await svc.sendWorkout(HKWorkoutJson);
-                }
+    try {
+      authHealthKit.requestAuthorization().then((isAuthorized) {
+        if (isAuthorized == true) {
+          loadWorkouts().then((_) async {
+            // Délègue l'envoi au service dédié
+            final svc = HKWorkoutService();
+            for (HKWorkoutData? w in hkWorkouts) {
+              if (w?.sport == "running" ||
+                  w?.sport == "cycling" ||
+                  w?.sport == "swimming") {
+                final HKWorkoutJson = hkWorkoutToJson(w!);
+                await svc.sendWorkout(HKWorkoutJson);
               }
-            });
-          } else {
-            print("⚠️ Accès Apple Health refusé par l'utilisateur");
-          }
-        })
-        .catchError((e) {
-          print("❌ Erreur lors de la demande d'autorisation: $e");
-        });
+            }
+          });
+        } else {
+          print("Accès Apple Health refusé par l'utilisateur");
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
@@ -91,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // Get username of user
   Future<void> getUsername() async {
     final loggedInUser = await UserService().getUser();
     setState(() {
@@ -137,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //Refresh the workout after a pull
   Future<void> _refreshAll() async {
     try {
       // Recharge les workouts Apple Health
@@ -169,12 +175,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //Open page for workout detail
   void _openWorkoutDetail(WorkoutLightClass w) {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
+  // format timestamp
   String _formatHHMM(int totalSeconds) {
     final totalMinutes = (totalSeconds / 60).round();
     final hours = totalMinutes ~/ 60;
