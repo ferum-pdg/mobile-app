@@ -260,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ? sessionsPlanned.toDouble()
                               : (sessionsCompleted > 0
                                     ? sessionsCompleted.toDouble()
-                                    : 1.0)),
+                                    : 0.0)),
                           label: "Séances effectuées",
                           toInt: true,
                         ),
