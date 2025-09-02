@@ -11,16 +11,17 @@ class TrainingPlanService {
   final String baseUrl = "http://localhost:8080";
   SharedPreferences? prefs;
 
+  /// Builds the request payload for training plan creation.
   Future<Map<String, dynamic>> _buildTrainingPlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
-    // Gets end date.
+    // Retrieve end date.
     final String? endDate = prefs.getString('endDate');
 
-    // Gets days of the week.
+    // Retrieve selected days of the week.
     final List<String> daysOfWeek = prefs.getStringList('selectedDays') ?? [];
 
-    // Gets goals
+    // Retrieve selected goals.
     final List<String> goals = [];
     
     final String? selectedRunningGoalString = prefs.getString('selectedRunningGoal');
@@ -49,13 +50,14 @@ class TrainingPlanService {
     };
   }
 
+  /// Fetches the current training plan from the API.
   Future<TrainingPlan?> getTrainingPlan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        throw Exception("Pas de token trouvé");
+        throw Exception("No token found. Please log in again.");
       }
 
       final response = await _dio.get(
@@ -66,11 +68,13 @@ class TrainingPlanService {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
-          validateStatus: (status) => status! < 500,          
+          // Prevent Dio from throwing on client errors (400/404).
+          validateStatus: (status) => status != null && status < 500,
         )
       );
 
       if (response.statusCode == 200) {
+        // Handle empty body (no plan available).
         if (response.data == null || response.data.toString().isEmpty) {
           return null;
         }
@@ -79,22 +83,27 @@ class TrainingPlanService {
         print(response.data);
         return trainingPlan;
       } else if (response.statusCode == 404){
+         // No training plan exists yet.
         return null;
       } else {
-        throw Exception("Erreur lors de la récupération du plan : ${response.data}");
+        throw Exception("Error while fetching training plan: ${response.data}");
       }
+    } on DioException catch (e) {
+      final message = e.response?.data['details'] ?? "Unable to fetch training plan. Please try again.";
+      throw Exception(message);
     } catch (e) {
       throw Exception("Training plan fetch failed: $e");
     }
   }
 
+  /// Creates a new training plan and returns it.
   Future<TrainingPlan?> createTrainingPlan() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        throw Exception("No token found.");      
+        throw Exception("No token found. Please log in again.");
       }
 
       final trainingPlanInfo = await _buildTrainingPlan();
@@ -105,7 +114,9 @@ class TrainingPlanService {
           headers: {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
-          }
+          },
+          // Prevent Dio from throwing on client errors (400/404).
+          validateStatus: (status) => status != null && status < 500,
         ),        
         data: trainingPlanInfo,
       );
@@ -113,14 +124,14 @@ class TrainingPlanService {
       if(response.statusCode == 201){
         final trainingPlan = await getTrainingPlan();          
         return trainingPlan;
-      }    
-
-    } catch (e) {      
-      if (e is DioException){
-        final response = e.response;
-        final message = response?.data['details'] ?? "Impossible de créer le plan. Réessayez.";
-        throw Exception(message);
+      } else {
+        throw Exception("Error while creating training plan: ${response.data}");
       }
+
+    } on DioException catch (e) {
+      final message = e.response?.data['details'] ?? "Unable to create training plan. Please try again.";
+      throw Exception(message);
+    } catch (e) {
       throw Exception("Training plan creation failed: $e");
     }
   }

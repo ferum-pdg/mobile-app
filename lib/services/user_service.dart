@@ -17,8 +17,7 @@ class UserService {
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
-        return null;
+        throw Exception("Pas de token trouvé");
       }
 
       final response = await _dio.get(
@@ -38,7 +37,7 @@ class UserService {
 
       return null;
     } catch (e) {
-      print("User storage failed: $e");
+      throw Exception("User storage failed: $e");
     }
   }
 
