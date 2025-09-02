@@ -5,6 +5,9 @@ import 'package:ferum/widgets/progress_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
+/// Screen that displays the details of a TrainingPlan,
+/// including progress charts and the weekly workout schedule.
 class TrainingPlanScreen extends StatefulWidget {
   final TrainingPlan? trainingPlan;
 
@@ -37,7 +40,8 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 8),                           
+                const SizedBox(height: 8),
+                /// Section: Progress indicators (weeks and workouts).                      
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -59,6 +63,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   ],
                 ),
                 const SizedBox(height: 30),
+                /// Section: Weekly training plan.
                 Text(
                   "Plan d'entraînement",
                   style: GoogleFonts.volkhov(
@@ -69,6 +74,8 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                
+                /// List of daily plans in the current weekly plan.
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
