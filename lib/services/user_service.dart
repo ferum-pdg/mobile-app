@@ -11,22 +11,25 @@ class UserService {
   final String baseUrl = "http://localhost:8080";
   SharedPreferences? prefs;
 
+  // Fetches the currently authenticated user from the API.
   Future<User?> getUser() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
-        return null;
+        throw Exception("No token found. Please log in again.");
       }
 
       final response = await _dio.get(
         "$baseUrl/auth/me",
         options: Options(
           headers: {
-            "Authorization": "Bearer $token"
-          }
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          // Allow Dio to return 4xx errors instead of throwing.
+          validateStatus: (status) => status != null && status < 500,
         )
       );
 
@@ -34,37 +37,52 @@ class UserService {
         final user = User.fromJson(response.data);
         await prefs.setString('user', jsonEncode(user.toJson()));     
         return user;   
+      } else if (response.statusCode == 401) {
+        throw Exception("Unauthorized. Please log in again.");
+      } else {
+        throw Exception("Error while fetching user: ${response.data}");
       }
-
-      return null;
+    } on DioException catch (e) {
+      final message = e.response?.data['details'] ?? "Unable to fetch user. Please try again.";
+      throw Exception(message);
     } catch (e) {
-      print("User storage failed: $e");
+      throw Exception("User fetch failed: $e");
     }
   }
 
+  /// Updates the user profile on the API and stores it locally.
   Future<void> setUser(User user) async {
      try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        print("Pas de token trouvé");
-        return;
+        throw Exception("No token found. Please log in again.");        
       }
 
       final response = await _dio.put(
         "$baseUrl/auth/me",
-        data: {user.toJson()},
+        data: user.toJson(),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+          validateStatus: (status) => status != null && status < 500,
+        ),        
       );
 
       if (response.statusCode == 200) {
         // Save the new user with the updated information.
         final newUser = User.fromJson(user.toJson());
         await prefs.setString('user', jsonEncode(newUser.toJson()));  
+      } else {
+        throw Exception("Error while updating user: ${response.data}");
       }
-
+    } on DioException catch (e) {
+      final message = e.response?.data['details'] ?? "Unable to update user. Please try again.";
+      throw Exception(message);
     } catch (e) {
-      print("User storage failed: $e");
-    }    
+      throw Exception("User update failed: $e");
+    }
   }
 }

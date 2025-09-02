@@ -3,36 +3,57 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://127.0.0.1:8080";
+  final String baseUrl = "http://localhost:8080";
 
+
+  /// Logs in a user using email and password.
+  /// Returns true if login succeeds, error otherwise.
   Future<bool> login(String email, String password) async {
     try {
       final response = await _dio.post(
         "$baseUrl/auth/login",
         data: {"email": email, "password": password},
+        options: Options(
+          headers: {
+            "Content-Type": "application/json"
+          },
+          validateStatus: (status) => status != null && status < 500,
+        ),
       );
 
       if (response.statusCode == 200) {
-        String token = response.data["token"];
+        final token = response.data["token"];
+        if (token == null || token.isEmpty) {
+          throw Exception("No token received from server.");
+        }
         await saveToken(token);
         return true;
+      } else if (response.statusCode == 401) {
+        throw Exception("Invalid credentials. Please check your email and password.");
+      } else {
+        throw Exception("Login failed: ${response.data}");
       }
+    } on DioException catch (e) {
+      final message = e.response?.data?["details"] ?? "Unable to login. Please try again later.";
+      throw Exception(message);
     } catch (e) {
-      print("Login failed: $e");
+      throw Exception("Login request failed: $e");
     }
-    return false;
   }
 
+  /// Saves the JWT token securely in SharedPreferences.
   Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("jwt_token", token);    
   }
 
+  /// Retrieves the JWT token from SharedPreferences.
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString("jwt_token");
   }
 
+  /// Removes the JWT token (logout).
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("jwt_token");

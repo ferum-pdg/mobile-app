@@ -6,9 +6,11 @@ import 'package:ferum/pages/training_plan/createTrainingPlan/swimming_screen.dar
 import 'package:ferum/pages/training_plan/createTrainingPlan/days_of_week_screen.dart';
 import 'package:ferum/services/training_plan_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter/material.dart';
+
+/// IntroScreen widget: allows the user to go through multiple setup steps 
+/// before generating a TrainingPlan.
 class IntroScreen extends StatefulWidget {
   final Function(TrainingPlan) onPlanCreated;
   
@@ -23,13 +25,16 @@ class IntroScreen extends StatefulWidget {
 
 class _IntroScreenState extends State<IntroScreen> {
   final PageController _pageController = PageController();
+  // Tracks the current page index.
   int _currentPage = 0;
   
+  // The list of all setup screens.
   late final List<Widget> _pages;
 
   @override
   void initState() {    
     super.initState();
+    // Initialize the list of pages in the onboarding flow.
     _pages = [
       _welcomeScreen(),
       RunningScreen(),
@@ -40,14 +45,17 @@ class _IntroScreenState extends State<IntroScreen> {
     ];
   }
 
+  /// Navigate to the next page.
+  /// If it's the last page, attempt to create the training plan.
   void _nextPage() async {
     if (_currentPage < _pages.length - 1){
+      // Move to the next page with animation.
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300), 
         curve: Curves.easeOut,
       );
     } else {
-    // Last page : plan is created
+    // Last page: call the service to create the training plan.
     try {
       final plan = await TrainingPlanService().createTrainingPlan();
 
@@ -62,6 +70,7 @@ class _IntroScreenState extends State<IntroScreen> {
   }
   }
 
+  /// First screen displayed: introduction and motivation text.
   Widget _welcomeScreen(){
     return Padding(
       padding: const EdgeInsets.all(32.0),
@@ -72,21 +81,19 @@ class _IntroScreenState extends State<IntroScreen> {
           const SizedBox(height: 24),
           Text(
             "Bienvenue !",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
             ),
           ),
           const SizedBox(height: 20),
           Text(
             "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.bold, 
             ),
           ),
           Image.asset(
@@ -96,11 +103,10 @@ class _IntroScreenState extends State<IntroScreen> {
           const SizedBox(height: 20),
           Text(
             "Rejoins des centaines d'utilisateur-ices satisfait-e-s!",
-            style: GoogleFonts.volkhov(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
             ),            
           ),          
         ],
@@ -112,6 +118,7 @@ class _IntroScreenState extends State<IntroScreen> {
     return Scaffold(
       body: Column(
         children: [
+          // Main content: PageView containing all steps.
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -123,7 +130,8 @@ class _IntroScreenState extends State<IntroScreen> {
               children: _pages,
             )
           ),
-
+          
+          // Bottom button to go to the next page or create the plan.
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: GradientButton(

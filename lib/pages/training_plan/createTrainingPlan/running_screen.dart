@@ -8,7 +8,9 @@ import 'package:ferum/widgets/goalHeader.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
+/// Screen that allows the user to select a running-related goal.
+/// Goals are retrieved from the backend through [GoalService] and persisted
+/// locally using SharedPreferences.
 class RunningScreen extends StatefulWidget {
   const RunningScreen({super.key});
 
@@ -18,25 +20,36 @@ class RunningScreen extends StatefulWidget {
 }
 
 class _RunningScreenState extends State<RunningScreen> {
-  DateTime selectedDay = DateTime.now();
   SharedPreferences? prefs;
+
+  // List of running goals fetched from the backend.
   GoalsList? runningGoalsList;
 
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    // Initialize SharedPreferences.
+    _initPrefs();
+    // Fetch running goals from the backend.
     _getRunningGoals();
   }
 
+  /// Fetches the list of running goals from the backend service.
   Future<void> _getRunningGoals() async {
-    GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
-    setState(() {      
-      runningGoalsList = list;
-    });
+    try {
+      GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
+      setState(() {      
+        runningGoalsList = list;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
-  Future<void> initPrefs() async {
+  /// Initializes SharedPreferences instance used for persisting selected goal.
+  Future<void> _initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
     setState(() {
       prefs = p;
@@ -56,6 +69,7 @@ class _RunningScreenState extends State<RunningScreen> {
               icon: Icons.directions_run, 
               gradientColors: [Color(0xFF0D47A1), Colors.purple]
             ),
+            // Show list of running goals if they have been loaded.
             if (runningGoalsList != null)...[
               Expanded(
                 child: ListView.builder(
@@ -63,6 +77,8 @@ class _RunningScreenState extends State<RunningScreen> {
                   itemCount: runningGoalsList?.goals.length,                        
                   itemBuilder: (context, index) {                                        
                     final goal = runningGoalsList?.goals[index];
+
+                    // Retrieve locally saved goal from SharedPreferences.
                     final selectedGoalString = prefs!.getString('selectedRunningGoal');
                     Goal? selectedGoal;
 
@@ -70,11 +86,13 @@ class _RunningScreenState extends State<RunningScreen> {
                       selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
                     }
 
+                    // Check if the current goal is the one selected by the user.
                     final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
 
                     return GestureDetector(
                       onTap: () {
                         setState(() {
+                          // Toggle goal selection: save or remove from SharedPreferences.
                           if (isSelected){
                             prefs!.remove('selectedRunningGoal');
                           } else {                            

@@ -8,6 +8,10 @@ import 'package:ferum/widgets/goalHeader.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+/// Screen that allows the user to select a swimming-related goal.
+/// Goals are retrieved from the backend through [GoalService] and persisted
+/// locally using SharedPreferences.
 class SwimmingScreen extends StatefulWidget {
   const SwimmingScreen({super.key});
 
@@ -24,18 +28,26 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
   @override
   void initState() {
     super.initState();
-    initPrefs();
+    _initPrefs();
     _getSwimmingGoals();
   }
 
+  /// Fetches the list of swimming goals from the backend service.
   Future<void> _getSwimmingGoals() async {
-    GoalsList? list = await GoalService().getGoalsBySport("SWIMMING");
-    setState(() {      
-      swimmingGoalsList = list;
-    });
+    try {
+      GoalsList? list = await GoalService().getGoalsBySport("SWIMMING");
+      setState(() {      
+        swimmingGoalsList = list;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
-  Future<void> initPrefs() async {
+  /// Initializes SharedPreferences instance used for persisting selected goal.
+  Future<void> _initPrefs() async {
     SharedPreferences p = await SharedPreferences.getInstance();
     setState(() {
       prefs = p;
@@ -55,6 +67,7 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
               icon: Icons.pool, 
               gradientColors: [Color(0xFF0D47A1), Colors.purple]
             ),
+            // Show list of swimming goals if they have been loaded.
             if (swimmingGoalsList != null)...[
               Expanded(
                 child: ListView.builder(
@@ -62,6 +75,8 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                   itemCount: swimmingGoalsList?.goals.length,                        
                   itemBuilder: (context, index) {                    
                     final goal = swimmingGoalsList?.goals[index];
+
+                    // Retrieve locally saved goal from SharedPreferences.
                     final selectedGoalString = prefs!.getString('selectedSwimmingGoal');
                     Goal? selectedGoal;
 
@@ -69,11 +84,13 @@ class _SwimmingScreenState extends State<SwimmingScreen> {
                       selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
                     }
 
+                    // Check if the current goal is the one selected by the user.
                     final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
 
                     return GestureDetector(
                       onTap: () {
                         setState(() {
+                          // Toggle goal selection: save or remove from SharedPreferences.
                           if (isSelected){
                             prefs!.remove('selectedSwimmingGoal');
                           } else {                            
