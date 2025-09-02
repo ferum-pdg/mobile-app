@@ -28,16 +28,9 @@ String getFrenchDay(String englishDay) {
 }
 
 class workoutLightCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
   final WorkoutLightClass workout;
 
-  const workoutLightCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.workout,
-  });
+  const workoutLightCard({super.key, required this.workout});
 
   @override
   Widget build(BuildContext context) {

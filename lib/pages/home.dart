@@ -276,11 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status != WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -292,11 +288,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status == WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -341,11 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status != WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -357,11 +345,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status == WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
