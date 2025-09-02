@@ -8,13 +8,14 @@ class GoalService {
   final String baseUrl = "http://localhost:8080";
   SharedPreferences? prefs;
 
+  /// Fetches all goals for a given sport from the API.
   Future<GoalsList?> getGoalsBySport(String sport) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null){
-        throw Exception("Pas de token trouvé. Connectez-vous à nouveau.");        
+        throw Exception("No token found. Please log in again.");
       }
 
       final response = await _dio.get(
@@ -24,17 +25,23 @@ class GoalService {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
-          validateStatus: (status) => status! < 500,
+          // Allow Dio to return 4xx errors instead of throwing.
+          validateStatus: (status) => status != null && status < 500,
         )
       );
 
-      if (response.statusCode == 200) {        
+      if (response.statusCode == 200) {
         return GoalsList.fromJson(response.data);
-      } 
-
-      return null;      
+      } else if (response.statusCode == 404) {
+        return null; // No goals found for this sport
+      } else {
+        throw Exception("Error while fetching goals: ${response.data}");
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['details'] ?? "Unable to fetch goals. Please try again.";
+      throw Exception(message);
     } catch (e) {
-      throw Exception("Goal retrieved failed: $e");
+      throw Exception("Goal retrieval failed: $e");
     }
   }
 }
