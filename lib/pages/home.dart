@@ -7,7 +7,6 @@ import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/circularProgressBar.dart';
 
-import '../models/workout_model.dart';
 import '../models/enum.dart';
 
 import '../utils/sharedPreferences.dart';
