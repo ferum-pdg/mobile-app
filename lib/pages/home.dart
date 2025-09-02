@@ -1,5 +1,6 @@
 import 'package:ferum/pigeons/healthkit_workout.g.dart';
 import 'package:ferum/services/sync_service.dart';
+import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/workoutLightCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
 import '../models/workoutLight_model.dart';
+import '../models/user_model.dart';
 import '../services/WorkoutsLight_service.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -38,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     initWeeklyWorkouts();
     initPrefs();
+    getUsername();
 
     //Sync with backend
     final syncService = SyncService();
@@ -85,7 +88,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       prefs = p;
-      username = p.getString('username');
+    });
+  }
+
+  Future<void> getUsername() async {
+    final loggedInUser = await UserService().getUser();
+    setState(() {
+      username = loggedInUser?.firstName;
     });
   }
 
@@ -219,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 38,
                         ) // reserve space to avoid layout shift
                       : Text(
-                          "Bonjour $username",
+                          "Bonjour ${username}",
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
