@@ -1,5 +1,7 @@
 import 'package:ferum/pigeons/healthkit_workout.g.dart';
-import 'package:ferum/widgets/workoutCard.dart';
+import 'package:ferum/services/sync_service.dart';
+import 'package:ferum/services/user_service.dart';
+import 'package:ferum/widgets/workoutLightCard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,7 +9,6 @@ import '../pigeons/healthkit_authorization.g.dart';
 
 import '../widgets/circularProgressBar.dart';
 
-import '../models/workout_model.dart';
 import '../models/enum.dart';
 
 import '../utils/sharedPreferences.dart';
@@ -15,6 +16,7 @@ import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
 import '../models/workoutLight_model.dart';
+import '../models/user_model.dart';
 import '../services/WorkoutsLight_service.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -36,33 +38,42 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    //Initialize weekly workouts
     initWeeklyWorkouts();
+    //init preferences
     initPrefs();
+    //retrieve username
+    getUsername();
+
+    //Sync with backend
+    final syncService = SyncService();
+    syncService.sync();
 
     // Demande authorisation
-    authHealthKit
-        .requestAuthorization()
-        .then((isAuthorized) {
-          if (isAuthorized == true) {
-            loadWorkouts().then((_) async {
-              // Délègue l'envoi au service dédié
-              final svc = HKWorkoutService();
-              for (HKWorkoutData? w in hkWorkouts) {
-                if (w?.sport == "running" ||
-                    w?.sport == "cycling" ||
-                    w?.sport == "swimming") {
-                  final HKWorkoutJson = hkWorkoutToJson(w!);
-                  await svc.sendWorkout(HKWorkoutJson);
-                }
+    try {
+      authHealthKit.requestAuthorization().then((isAuthorized) {
+        if (isAuthorized == true) {
+          loadWorkouts().then((_) async {
+            // Délègue l'envoi au service dédié
+            final svc = HKWorkoutService();
+            for (HKWorkoutData? w in hkWorkouts) {
+              if (w?.sport == "running" ||
+                  w?.sport == "cycling" ||
+                  w?.sport == "swimming") {
+                final HKWorkoutJson = hkWorkoutToJson(w!);
+                await svc.sendWorkout(HKWorkoutJson);
               }
-            });
-          } else {
-            print("⚠️ Accès Apple Health refusé par l'utilisateur");
-          }
-        })
-        .catchError((e) {
-          print("❌ Erreur lors de la demande d'autorisation: $e");
-        });
+            }
+          });
+        } else {
+          print("Accès Apple Health refusé par l'utilisateur");
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
@@ -81,7 +92,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       prefs = p;
-      username = p.getString('username');
+    });
+  }
+
+  // Get username of user
+  Future<void> getUsername() async {
+    final loggedInUser = await UserService().getUser();
+    setState(() {
+      username = loggedInUser?.firstName;
     });
   }
 
@@ -124,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //Refresh the workout after a pull
   Future<void> _refreshAll() async {
     try {
       // Recharge les workouts Apple Health
@@ -156,12 +175,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //Open page for workout detail
   void _openWorkoutDetail(WorkoutLightClass w) {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
+  // format timestamp
   String _formatHHMM(int totalSeconds) {
     final totalMinutes = (totalSeconds / 60).round();
     final hours = totalMinutes ~/ 60;
@@ -215,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 38,
                         ) // reserve space to avoid layout shift
                       : Text(
-                          "Bonjour $username",
+                          "Bonjour ${username}",
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -277,11 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status != WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -293,11 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status == WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -342,11 +355,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status != WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],
@@ -358,11 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           (w.status == WorkoutStatut.COMPLETED)) ...[
                         InkWell(
                           onTap: () => _openWorkoutDetail(w),
-                          child: workoutLightCard(
-                            title: "Test",
-                            subtitle: "test subtitle",
-                            workout: w,
-                          ),
+                          child: workoutLightCard(workout: w),
                         ),
                         const SizedBox(height: 15),
                       ],

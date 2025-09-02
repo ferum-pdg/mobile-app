@@ -28,16 +28,9 @@ String getFrenchDay(String englishDay) {
 }
 
 class workoutLightCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
   final WorkoutLightClass workout;
 
-  const workoutLightCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.workout,
-  });
+  const workoutLightCard({super.key, required this.workout});
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +158,10 @@ class workoutLightCard extends StatelessWidget {
                         else if (workout.sport == WorkoutSport.CYCLING)
                           TagBadge(text: "CYCLISME", color: Colors.green)
                         else if (workout.sport == WorkoutSport.SWIMMING)
-                          TagBadge(text: "NATATION", color: Colors.blue),
+                          TagBadge(
+                            text: "NATATION",
+                            color: Colors.blue.shade900,
+                          ),
                       ],
                     ),
                   ],
