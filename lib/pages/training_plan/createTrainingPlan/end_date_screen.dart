@@ -20,9 +20,9 @@ class EndDateScreen extends StatefulWidget {
 class _EndDateScreenState extends State<EndDateScreen> {
   // Currently selected end date.
   DateTime endDateDay = DateTime.now();
-  
+
   SharedPreferences? prefs;
-  
+
   // Loading indicator.
   bool isLoading = true;
 
@@ -65,11 +65,15 @@ class _EndDateScreenState extends State<EndDateScreen> {
     }
 
     // Take the maximum number of weeks or default if no goals.
-    final maxWeeks = weeks.isNotEmpty ? weeks.reduce((a, b) => a > b ? a : b) : minWeeksRequired;
+    final maxWeeks = weeks.isNotEmpty
+        ? weeks.reduce((a, b) => a > b ? a : b)
+        : minWeeksRequired;
 
     setState(() {
       minWeeksRequired = maxWeeks;
-      endDateDay = DateTime.now().add(Duration(days: maxWeeks * 7));
+      endDateDay = DateTime.now()
+          .add(Duration(days: maxWeeks * 7))
+          .add(Duration(days: 1));
       isLoading = false;
     });
   }
@@ -90,20 +94,20 @@ class _EndDateScreenState extends State<EndDateScreen> {
   @override
   Widget build(BuildContext context) {
     // Show loading indicator while calculating minWeeksRequired.
-    if (isLoading){
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-      
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(          
+          child: Column(
             children: [
               GoalHeader(
-                    title: "Objectif", 
-                    subTitle: "Date", 
-                    icon: Icons.date_range, 
-                    gradientColors: [Color(0xFF0D47A1), Colors.purple]
+                title: "Objectif",
+                subTitle: "Date",
+                icon: Icons.date_range,
+                gradientColors: [Color(0xFF0D47A1), Colors.purple],
               ),
               const SizedBox(height: 20),
               // Calendar widget to select the end date.
@@ -118,7 +122,9 @@ class _EndDateScreenState extends State<EndDateScreen> {
                 selectedDayPredicate: (day) => isSameDay(day, endDateDay),
                 focusedDay: endDateDay,
                 // The earliest selectable date is minWeeksRequired weeks from now.
-                firstDay: DateTime.now().add(Duration(days: minWeeksRequired * 7)),
+                firstDay: DateTime.now()
+                    .add(Duration(days: (minWeeksRequired * 7)))
+                    .add(Duration(days: 1)),
                 lastDay: DateTime.utc(2030, 10, 10),
                 onDaySelected: _onDaySelected,
                 calendarStyle: CalendarStyle(
@@ -134,7 +140,7 @@ class _EndDateScreenState extends State<EndDateScreen> {
               ),
             ],
           ),
-        ),        
+        ),
       ),
     );
   }
