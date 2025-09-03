@@ -3,7 +3,7 @@ import 'package:ferum/models/enum.dart';
 class WorkoutLightClass {
   final String id;
   final WorkoutSport sport;
-  final WorkoutType type;
+  final WorkoutType? type;
   final WorkoutStatut status;
   final String day;
   final int duration;
@@ -28,10 +28,12 @@ class WorkoutLightClass {
         (e) => e.name == json['sport'],
         orElse: () => throw Exception("Invalid sport: ${json['sport']}"),
       ),
-      type: WorkoutType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => throw Exception("Invalid type: ${json['type']}"),
-      ),
+      type: json['type'] != null
+          ? WorkoutType.values.firstWhere(
+              (e) => e.name == json['type'],
+              orElse: () => throw Exception("Invalid type: ${json['type']}"),
+            )
+          : null,
       status: WorkoutStatut.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => throw Exception("Invalid statut: ${json['status']}"),
@@ -46,7 +48,7 @@ class WorkoutLightClass {
   Map<String, dynamic> toJson() => {
     'id': id,
     'sport': sport.name,
-    'type': type.name,
+    'type': type!.name,
     'statut': status.name,
     'day': day,
     'duration': duration,
