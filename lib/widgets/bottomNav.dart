@@ -8,10 +8,12 @@ import 'package:ferum/pages/workouts.dart';
 
 class BottomNav extends StatefulWidget {
   final User? user;
+  final int index;
 
   const BottomNav({
     super.key,
-    required this.user
+    required this.user,
+    this.index = 0
   });
 
   @override
@@ -19,10 +21,16 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   PageController pageController = PageController();
 
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.index;
+  }
+  
   void onTapped(int index) {
     setState(() {
       selectedIndex = index;

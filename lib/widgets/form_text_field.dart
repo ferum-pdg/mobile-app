@@ -9,6 +9,7 @@ class FormTextField extends StatefulWidget {
   final String obscuringCharacter;
   final bool isDateField;
   final Color color;
+  final Color fillColor;
 
   const FormTextField({
     super.key,
@@ -19,6 +20,7 @@ class FormTextField extends StatefulWidget {
     this.obscuringCharacter = '*',
     this.isDateField = false,
     this.color = Colors.white,
+    this.fillColor = Colors.white12,
   });
 
   @override
@@ -36,7 +38,7 @@ class _FormTextFieldState extends State<FormTextField> {
         obscureText: widget.obscureText,
         obscuringCharacter: widget.obscuringCharacter,
         style: TextStyle(color: widget.color),
-        decoration: FormInputDecoration(label: widget.label).build(),
+        decoration: FormInputDecoration(label: widget.label, fillColor: widget.fillColor).build(),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Veuillez entrer ${widget.label}';
@@ -68,15 +70,19 @@ class _FormTextFieldState extends State<FormTextField> {
 
 class FormInputDecoration {
   final String label;
+  final Color fillColor;
 
-  FormInputDecoration({required this.label});
+  FormInputDecoration({
+    required this.label,
+    this.fillColor = Colors.white12,
+  });
 
   InputDecoration build() {
     return InputDecoration(
       label: Text(label),
       labelStyle: const TextStyle(color: Colors.white),
       filled: true,
-      fillColor: Colors.white12,
+      fillColor: fillColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30),
       ),

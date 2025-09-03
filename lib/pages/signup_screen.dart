@@ -15,7 +15,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formSignInKey = GlobalKey<FormState>();
+  final _formSignUpKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 child: SingleChildScrollView(
                   child: Form(
-                    key: _formSignInKey,
+                    key: _formSignUpKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -148,7 +148,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () async {
-                              if (_formSignInKey.currentState!.validate()) {
+                              if (_formSignUpKey.currentState!.validate()) {
                                 try {
                                   bool success = await AuthService().register(
                                     _emailController.text,
