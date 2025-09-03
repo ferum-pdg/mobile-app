@@ -42,7 +42,7 @@ class AuthService {
     } on DioException catch (e) {
       final message =
           e.response?.data?["details"] ??
-          "Unable to login. Please try again later.";
+          "Unable to login : $e. Please try again later.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Login request failed: $e");
@@ -95,7 +95,7 @@ class AuthService {
     } on DioException catch (e) {
       final message =
           e.response?.data?["details"] ??
-          "Unable to Register. Please try again later.";
+          "Unable to Register : $e. Please try again later.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Registration request failed: $e");

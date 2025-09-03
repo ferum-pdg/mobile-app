@@ -44,7 +44,7 @@ class GoalService {
     } on DioException catch (e) {
       final message =
           e.response?.data['details'] ??
-          "Unable to fetch goals. Please try again.";
+          "Unable to fetch goals : $e. Please try again.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Goal retrieval failed: $e");

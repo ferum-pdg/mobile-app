@@ -50,7 +50,7 @@ class UserService {
     } on DioException catch (e) {
       final message =
           e.response?.data['details'] ??
-          "Unable to fetch user. Please try again.";
+          "Unable to fetch user : $e. Please try again.";
       throw Exception(message);
     } catch (e) {
       throw Exception("User fetch failed: $e");
@@ -93,7 +93,7 @@ class UserService {
     } on DioException catch (e) {
       final message =
           e.response?.data['details'] ??
-          "Unable to update user. Please try again.";
+          "Unable to update user : $e. Please try again.";
       throw Exception(message);
     } catch (e) {
       throw Exception("User update failed: $e");

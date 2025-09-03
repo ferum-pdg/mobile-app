@@ -151,7 +151,7 @@ class TrainingPlanService {
     } on DioException catch (e) {
       final message =
           e.response?.data['details'] ??
-          "Unable to create training plan. Please try again.";
+          "Unable to create training plan : $e. Please try again.";
       throw Exception(message);
     } catch (e) {
       throw Exception("Training plan creation failed: $e");
