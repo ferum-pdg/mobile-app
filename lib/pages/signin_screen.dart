@@ -1,6 +1,7 @@
 import 'package:ferum/pages/signup_screen.dart';
 import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/bottomNav.dart';
+import 'package:ferum/widgets/form_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:ferum/services/auth_service.dart';
 
@@ -79,82 +80,17 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: TextFormField(
-                            controller: _emailController,
-                            style: const TextStyle(color: Colors.white),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer un email';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              label: const Text('Email'),
-                              labelStyle: const TextStyle(color: Colors.white),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              hintText: 'Entrer un email',
-                              hintStyle: const TextStyle(color: Colors.white70),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
+                        FormTextField(
+                          controller: _emailController, 
+                          label: "Email",
+                          keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 15),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: TextFormField(
-                            controller: _passwordController,
-                            style: const TextStyle(color: Colors.white),
-                            obscureText: true,
-                            obscuringCharacter: '*',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer un mot de passe.';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              label: const Text('Password'),
-                              labelStyle: const TextStyle(color: Colors.white),
-                              hintText: 'Entrer un mot de passe',
-                              hintStyle: const TextStyle(color: Colors.white),
-                              filled: true,
-                              fillColor: Colors.white12,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
+                        FormTextField(
+                          controller: _passwordController, 
+                          label: "Mot de passe",
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: true,
                         ),
                         const SizedBox(width: 50),
                         Row(
@@ -175,15 +111,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ],
-                            ),
-                            GestureDetector(
-                              child: Text(
-                                'Forget password?',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
                             ),
                           ],
                         ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:ferum/models/user_model.dart';
 import 'package:ferum/pages/edit_profile_screen.dart';
+import 'package:ferum/pages/welcome_screen.dart';
+import 'package:ferum/services/auth_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -129,16 +131,41 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 const SizedBox(height: 20),
 
-                GradientButton(
-                  text: "Modifier le profil", 
-                  height: 60,
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (e) => EditProfilePage(user: _user)),
-                    );
-                  },
-                )
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: GradientButton(
+                        text: "Modifier",
+                        height: 60,
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (e) => EditProfilePage(user: _user)),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: GradientButton(
+                        text: "Déconnecter",
+                        height: 60,
+                        onTap: () async {
+                          // Removes the token and the user.
+                          await AuthService().logout();                                                   
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (e) => WelcomeScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+
+
                 
               ],
             ),
