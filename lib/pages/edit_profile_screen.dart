@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ferum/models/user_model.dart';
 import 'package:ferum/pages/profile_screen.dart';
+import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/bottomNav.dart';
 import 'package:ferum/widgets/elevButton.dart';
 import 'package:ferum/widgets/form_text_field.dart';
@@ -59,7 +60,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       // Save in SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString("user", jsonEncode(updatedUser.toJson()));    
+      await prefs.setString("user", jsonEncode(updatedUser.toJson()));  
+
+      await UserService().setUser(updatedUser);
 
       if (mounted) {
         Navigator.pushReplacement(
