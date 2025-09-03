@@ -69,7 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           context,
           MaterialPageRoute(
             builder: (context) => 
-              BottomNav(user: updatedUser, index: 2), 
+              BottomNav(user: updatedUser), 
           ),
         );
       }
