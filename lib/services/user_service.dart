@@ -76,6 +76,7 @@ class UserService {
         data: user.toJson(),
         options: Options(
           headers: {
+            "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
           validateStatus: (status) => status != null && status < 500,
