@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/welcome_button.dart';
 
+// Initial landing screen: shows app logo and buttons to sign in or sign up
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -17,13 +18,11 @@ class WelcomeScreen extends StatelessWidget {
             Flexible(
               flex: 8,
               child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: 250,
-                  horizontal: 40
-                ),
+                padding: EdgeInsets.symmetric(vertical: 250, horizontal: 40),
                 child: Center(
                   child: Column(
                     children: [
+                      // App logo (centered)
                       Image.asset(
                         'assets/img/ferum-full.png',
                         width: 300,
@@ -39,31 +38,34 @@ class WelcomeScreen extends StatelessWidget {
               flex: 1,
               child: Align(
                 alignment: Alignment.bottomRight,
+                // Bottom row with two navigation buttons
                 child: Row(
                   children: [
                     Expanded(
+                      // Navigate to Sign In screen
                       child: WelcomeButton(
                         buttonText: 'Sign in',
                         onTap: SignInScreen(),
                         colors: [Colors.transparent],
-                        textColor: Colors.black
+                        textColor: Colors.black,
                       ),
                     ),
                     Expanded(
+                      // Navigate to Sign Up screen
                       child: WelcomeButton(
                         buttonText: 'Sign up',
                         onTap: SignUpScreen(),
                         colors: [Color(0xFF0D47A1), Colors.purple],
-                        textColor: Colors.white
-                      )
-                    )
+                        textColor: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
-              )
-            )
-          ]
+              ),
+            ),
+          ],
         ),
-      )
+      ),
     );
   }
 }

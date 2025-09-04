@@ -9,8 +9,7 @@ import 'package:ferum/widgets/gradientButton.dart';
 
 import 'package:flutter/material.dart';
 
-/// IntroScreen widget: allows the user to go through multiple setup steps
-/// before generating a TrainingPlan.
+// Onboarding flow for creating a training plan: sequence of screens, ends by calling TrainingPlanService
 class IntroScreen extends StatefulWidget {
   final Function(TrainingPlan) onPlanCreated;
 
@@ -54,6 +53,7 @@ class _IntroScreenState extends State<IntroScreen> {
     } else {
       // Last page: call the service to create the training plan.
       try {
+        // Attempt to create the plan with the backend when reaching the last page
         final plan = await TrainingPlanService().createTrainingPlan();
 
         if (plan != null) {
@@ -85,6 +85,7 @@ class _IntroScreenState extends State<IntroScreen> {
             "Ici vous pourrez créer un plan d'entraînement qui vous permettra d'atteindre des sommets!",
             style: TextStyle(fontSize: 19),
           ),
+          // Illustration for the intro screen
           Image.asset("assets/img/icon-tp.png", height: 350),
           const SizedBox(height: 20),
           Text(
@@ -101,7 +102,7 @@ class _IntroScreenState extends State<IntroScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Main content: PageView containing all steps.
+          // Swipeable pages for each setup step
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -117,6 +118,7 @@ class _IntroScreenState extends State<IntroScreen> {
           // Bottom button to go to the next page or create the plan.
           Padding(
             padding: const EdgeInsets.all(16.0),
+            // Bottom CTA: label changes depending on whether it's the last step
             child: GradientButton(
               text: _currentPage < _pages.length - 1
                   ? "Suivant"

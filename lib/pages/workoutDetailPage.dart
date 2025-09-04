@@ -8,6 +8,7 @@ import '../widgets/infoCard.dart';
 
 import 'package:ferum/services/Workout_service.dart';
 
+// Workout details page: fetch by ID, then display summary, AI review, and the step-by-step plan
 class WorkoutDetailPage extends StatefulWidget {
   final String id;
   const WorkoutDetailPage({super.key, required this.id});
@@ -24,9 +25,11 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   void initState() {
     super.initState();
     _service = WorkoutService();
+    // Fetch once on init; result cached in _future for the FutureBuilder below
     _future = _service.fetchWorkoutById(id: widget.id);
   }
 
+  // Format minutes as human-readable (e.g., 90 -> "1h 30min")
   String _formatDuration(int minutes) {
     final h = minutes ~/ 60;
     final m = minutes % 60;
@@ -35,6 +38,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     return '${m}min';
   }
 
+  // Format seconds as human-readable (supports h/min/s combinations)
   String _formatSec(int seconds) {
     final h = seconds ~/ 3600;
     final m = (seconds % 3600) ~/ 60;
@@ -46,6 +50,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     return '${s}s';
   }
 
+  // Map intensity zone label to a consistent color used in the UI
   Color _zoneColor(String zone) {
     switch (zone) {
       case 'RECOVERY':
@@ -63,6 +68,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     }
   }
 
+  // Localize weekday from English enum/name to French label
   String getFrenchDay(String englishDay) {
     switch (englishDay.toUpperCase()) {
       case "MONDAY":
@@ -84,6 +90,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     }
   }
 
+  // Distance formatting: meters for swimming, kilometers otherwise (rounded)
   String _formatDistance(num? meters, WorkoutSport sport) {
     if (meters == null) return '-';
     final bool isSwimming = (sport == WorkoutSport.SWIMMING);
@@ -95,15 +102,18 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     return '${km.toStringAsFixed(1)} km';
   }
 
+  // Color-code average BPM vs planned range: red=too high, orange=too low, green=within target
   Color _bpmColor(PerformanceDetail p) {
     if (p.actualBPMMean > p.plannedBPMMax) return Colors.redAccent; // trop haut
     if (p.actualBPMMean < p.plannedBPMMin) return Colors.orange; // trop bas
     return Colors.green; // dans la cible
   }
 
+  // Helper to render planned BPM range as "min-max"
   String _plannedRange(PerformanceDetail p) =>
       '${p.plannedBPMMin}-${p.plannedBPMMax}';
 
+  // Map sport to Material icon (fallback to a generic fitness icon)
   IconData _sportIcon(WorkoutSport sport) {
     switch (sport) {
       case WorkoutSport.RUNNING:
@@ -117,6 +127,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     }
   }
 
+  // Translate internal workout type to a user-facing label (FR)
   String _typeLabel(WorkoutType type) {
     switch (type) {
       case WorkoutType.EF:
@@ -141,11 +152,13 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     return FutureBuilder<WorkoutClass>(
       future: _future,
       builder: (context, snapshot) {
+        // Show loading spinner while fetching the workout
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
+        // Error state with a minimal AppBar to allow back navigation
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(),
@@ -158,7 +171,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
           );
         }
         final workout = snapshot.data!;
-        // Assume durationSec is expressed in seconds for display
+        // Convert server-provided seconds to minutes for display
         final durationMinutes = (workout.durationSec / 60).round();
 
         return Scaffold(
@@ -178,6 +191,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                     color: Colors.black,
                   ),
                 ),
+                // Add a completion checkmark when the workout is marked as done
                 if (workout.status == WorkoutStatut.COMPLETED) ...[
                   const SizedBox(width: 10),
                   const Icon(
@@ -194,6 +208,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Summary card: date and planned duration
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -252,6 +267,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   const Divider(),
                   const SizedBox(height: 16),
 
+                  // Results section is only visible once the workout is completed
                   if (workout.status == WorkoutStatut.COMPLETED) ...[
                     Text(
                       "Résulats",
@@ -261,6 +277,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       ),
                     ),
                     SizedBox(height: 10),
+                    // Key metrics: distance, average HR, calories
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -294,7 +311,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       ],
                     ),
                     SizedBox(height: 10),
-                    // Tableau de performance par bloc
+                    // Table of performance per block
                     if (workout.performanceDetails != null &&
                         workout.performanceDetails!.isNotEmpty) ...[
                       SizedBox(height: 10),
@@ -326,6 +343,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                             const SizedBox(height: 8),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
+                              // Block-by-block comparison: planned BPM range vs actual mean BPM
                               child: DataTable(
                                 columns: const [
                                   DataColumn(label: Text('Bloc')),
@@ -338,6 +356,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                       DataCell(Text(p.blocId.toString())),
                                       DataCell(Text(_plannedRange(p))),
                                       DataCell(
+                                        // Use background tint + border with the color from _bpmColor(p)
                                         Container(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 8,
@@ -373,6 +392,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       ),
                     ],
                     const SizedBox(height: 16),
+                    // AI-generated post-workout review/summary
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -438,6 +458,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                     const SizedBox(height: 16),
                   ],
 
+                  // Planned steps for the session (what to do)
                   Text(
                     "Programme",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -454,6 +475,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       final bloc = workout.plan[index];
                       return Column(
                         children: [
+                          // One step (bloc) of the workout, possibly repeated
                           StepBlock(
                             number: bloc.blocId,
                             nbRepetition: bloc.repetitionCount,
@@ -464,6 +486,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                       '${_formatSec(d.durationSec)} • ${d.bpmMinTarget}-${d.bpmMaxTarget} BPM',
                                   tag: d.intensityZone,
                                   tagColor: _zoneColor(d.intensityZone),
+                                  // Visual de-emphasis for easy zones: no border for RECOVERY/ENDURANCE
                                   transparentBorder:
                                       d.intensityZone == 'RECOVERY' ||
                                       d.intensityZone == 'ENDURANCE',

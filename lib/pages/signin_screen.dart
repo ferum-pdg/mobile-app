@@ -5,6 +5,7 @@ import 'package:ferum/widgets/form_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:ferum/services/auth_service.dart';
 
+// Sign-in screen: allows existing users to log into their account
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -13,9 +14,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  // Form key for validation and access to form state
   final _formSignInKey = GlobalKey<FormState>();
+  // Local "remember me" flag (not yet wired to persistent storage)
   bool rememberPassword = true;
   final authService = AuthService();
+  // Controllers for input fields
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -37,6 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Center(
                   child: Column(
                     children: [
+                      // App logo
                       Image.asset(
                         'assets/img/f.png',
                         width: 300,
@@ -54,11 +59,13 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
                 decoration: const BoxDecoration(
+                  // Gradient background for lower section
                   gradient: LinearGradient(
                     colors: [Color(0xFF0D47A1), Colors.purple],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
+                  // Rounded top corners to create a sheet effect
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(40.0),
                     topRight: Radius.circular(40.0),
@@ -71,6 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 20),
+                        // Section title
                         Text(
                           "Te revoilà !",
                           style: TextStyle(
@@ -81,13 +89,13 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         const SizedBox(height: 30),
                         FormTextField(
-                          controller: _emailController, 
+                          controller: _emailController,
                           label: "Email",
                           keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 15),
                         FormTextField(
-                          controller: _passwordController, 
+                          controller: _passwordController,
                           label: "Mot de passe",
                           keyboardType: TextInputType.visiblePassword,
                           obscureText: true,
@@ -98,6 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           children: [
                             Row(
                               children: [
+                                // Toggle "remember me"
                                 Checkbox(
                                   value: rememberPassword,
                                   onChanged: (bool? value) {
@@ -118,52 +127,68 @@ class _SignInScreenState extends State<SignInScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
+                            // Submit: validate form, attempt login, then navigate or show error
                             onPressed: () async {
                               if (_formSignInKey.currentState!.validate()) {
                                 try {
-                                  bool loginPass = await AuthService()
-                                      .login(_emailController.text, _passwordController.text);
+                                  bool loginPass = await AuthService().login(
+                                    _emailController.text,
+                                    _passwordController.text,
+                                  );
 
                                   if (loginPass) {
-                                    // Gets the user logged in.
-                                    final loggedInUser = await UserService().getUser();                                    
+                                    // After successful login, retrieve user profile
+                                    final loggedInUser = await UserService()
+                                        .getUser();
+                                    // Replace stack with BottomNav as the main app entry
                                     Navigator.pushReplacement(
                                       context,
-                                      MaterialPageRoute(builder: (e) => BottomNav(user: loggedInUser)),
+                                      MaterialPageRoute(
+                                        builder: (e) =>
+                                            BottomNav(user: loggedInUser),
+                                      ),
                                     );
                                   } else {
+                                    // Wrong credentials: show error message
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Incorrect email or password.")),
+                                      const SnackBar(
+                                        content: Text(
+                                          "Incorrect email or password.",
+                                        ),
+                                      ),
                                     );
                                   }
-                                } catch (e) {                                  
+                                } catch (e) {
+                                  // Unexpected error: surface exception
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text("User log in failed : $e")),
+                                    SnackBar(
+                                      content: Text("User log in failed : $e"),
+                                    ),
                                   );
                                 }
-                              }                      
+                              }
                             },
                             child: const Text('Sign in'),
                           ),
                         ),
                         const SizedBox(height: 10),
+                        // No account yet? Offer quick link to Sign Up
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
                               'Vous n\'avez pas de compte ?',
-                              style: TextStyle(
-                                  color: Colors.white,
-                              ),                              
+                              style: TextStyle(color: Colors.white),
                             ),
                             const SizedBox(width: 4),
                             GestureDetector(
+                              // Navigate to Sign Up screen
                               onTap: () {
                                 Navigator.push(
-                                  context, 
+                                  context,
                                   MaterialPageRoute(
-                                    builder: (e) => const SignUpScreen()
-                                  )
+                                    builder: (e) => const SignUpScreen(),
+                                  ),
                                 );
                               },
                               child: Text(
@@ -171,11 +196,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
-                                ),                                              
+                                ),
                               ),
-                            )
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),

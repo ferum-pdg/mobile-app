@@ -1,19 +1,14 @@
-import 'dart:convert';
-
 import 'package:ferum/models/user_model.dart';
 import 'package:ferum/pages/edit_profile_screen.dart';
 import 'package:ferum/pages/welcome_screen.dart';
 import 'package:ferum/services/auth_service.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+// Profile screen: shows user's basic info and offers edit & logout actions
 class ProfilePage extends StatefulWidget {
   final User? user;
-  const ProfilePage({
-    super.key,
-    required this.user
-  });  
+  const ProfilePage({super.key, required this.user});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -23,8 +18,9 @@ class _ProfilePageState extends State<ProfilePage> {
   User? _user;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    // Cache the user passed from navigation; beware: code uses `_user!` later
     _user = widget.user;
   }
 
@@ -32,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [          
+        children: [
           Container(
             height: 290,
             width: double.infinity,
@@ -42,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
+              // Rounded bottom corners to visually separate the header from content
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
@@ -51,11 +48,13 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
+                // Placeholder profile avatar (uses a local asset)
                 const CircleAvatar(
                   radius: 50,
                   backgroundImage: AssetImage("assets/img/profile.png"),
                 ),
                 const SizedBox(height: 10),
+                // Display name and email pulled from `_user`
                 Text(
                   "${_user!.firstName}",
                   style: TextStyle(
@@ -66,10 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Text(
                   "${_user!.email}",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -77,6 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           const SizedBox(height: 20),
 
+          // Details list: read-only cards for key profile fields
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -99,8 +96,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   elevation: 4,
                   child: ListTile(
-                    leading: const Icon(Icons.fitness_center, color: Colors.purple),
+                    leading: const Icon(
+                      Icons.fitness_center,
+                      color: Colors.purple,
+                    ),
                     title: const Text("Poids"),
+                    // Units: kilograms
                     subtitle: Text("${_user!.weight}"),
                   ),
                 ),
@@ -113,6 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.height, color: Colors.purple),
                     title: const Text("Taille"),
+                    // Units: centimeters
                     subtitle: Text("${_user!.height}"),
                   ),
                 ),
@@ -125,13 +127,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     leading: const Icon(Icons.favorite, color: Colors.purple),
                     title: const Text("Fréquence Cardiaque Max"),
+                    // Units: beats per minute (bpm)
                     subtitle: Text("${_user!.fcMax}"),
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-
+                // Actions: edit profile or log out
                 Row(
                   children: [
                     Expanded(
@@ -139,9 +142,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         text: "Modifier",
                         height: 60,
                         onTap: () {
+                          // Go to profile edit screen and replace current page
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (e) => EditProfilePage(user: _user)),
+                            MaterialPageRoute(
+                              builder: (e) => EditProfilePage(user: _user),
+                            ),
                           );
                         },
                       ),
@@ -152,8 +158,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         text: "Déconnecter",
                         height: 60,
                         onTap: () async {
-                          // Removes the token and the user.
-                          await AuthService().logout();                                                   
+                          // Clear session (e.g., JWT in storage) and redirect to Welcome
+                          await AuthService().logout();
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (e) => WelcomeScreen()),
@@ -162,10 +168,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ],
-                ),                
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

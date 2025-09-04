@@ -17,6 +17,7 @@ import 'workoutDetailPage.dart';
 import '../models/workoutLight_model.dart';
 import '../services/WorkoutsLight_service.dart';
 
+// Home screen: weekly summary, HealthKit sync, and lists of current/next week workouts
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -26,9 +27,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<WorkoutLightClass>? weeklyWokouts;
+  // Last fetched HealthKit workouts (via Pigeon API)
   List<HKWorkoutData?> hkWorkouts = [];
+  // Cached SharedPreferences instance for lightweight flags
   SharedPreferences? prefs;
+  // Display name fetched from backend
   String? username;
+  // Aggregates used for the two circular progress bars
   double hoursDoneThisWeek = 0.0;
   double hoursPlannedThisWeek = 0.0;
   int doneSecondsThisWeek = 0;
@@ -37,17 +42,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // Load "light" workouts and compute weekly aggregates
     initWeeklyWorkouts();
+    // Prepare SharedPreferences for later use
     initPrefs();
+    // Fetch the logged-in user's first name for greeting
     getUsername();
 
-    //Sync with backend
+    // Optional backend sync (note: at init, weeklyWokouts is usually null/empty)
     if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) {
       final syncService = SyncService();
       syncService.sync();
     }
 
-    // Demande authorisation
+    // Ask HealthKit permission, then fetch workouts and forward eligible ones to backend
     authHealthKit
         .requestAuthorization()
         .then((isAuthorized) {
@@ -73,19 +81,22 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  // Pigeon-generated bridge to iOS HealthKit authorization
   final authHealthKit = HealthKitAuthorization(); //  classe générée Pigeon
+  // Pigeon-generated API used to read workouts from HealthKit
   late final HKWorkoutAPI = HealthKitWorkoutApi();
   final workoutLightService = WorkoutLightService();
 
   Future<void> initPrefs() async {
+    // Obtain a single SharedPreferences instance (async)
     SharedPreferences p = await SharedPreferences.getInstance();
-
     setState(() {
       prefs = p;
     });
   }
 
   Future<void> getUsername() async {
+    // Retrieve user profile from backend to display greeting
     final loggedInUser = await UserService().getUser();
     setState(() {
       username = loggedInUser?.firstName;
@@ -93,10 +104,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> loadWorkouts() async {
+    // Pull raw workouts from HealthKit via Pigeon
     hkWorkouts = await HKWorkoutAPI.getWorkouts();
   }
 
   Future<void> initWeeklyWorkouts() async {
+    // Set loading flag (guarded by `mounted` to avoid setState on disposed widget)
     if (mounted) {
       setState(() {
         _isLoadingWeekly = true;
@@ -105,11 +118,13 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoadingWeekly = true;
     }
     try {
+      // Fetch condensed workouts for the dashboard (faster than full details)
       final fetched = await workoutLightService.fetchWorkoutsLight();
 
       // Calcule les heures planifiées et effectuées pour la semaine courante (à partir des workouts light)
       int plannedSeconds = 0;
       int doneSeconds = 0;
+      // Determine the current week from available data (lowest week index)
       int? currentWeek;
       if (fetched.isNotEmpty) {
         final weeks = fetched.map((w) => w.week).toSet().toList()..sort();
@@ -118,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (currentWeek != null) {
         for (final w in fetched) {
           if (w.week == currentWeek) {
+            // Duration can be int/double/string depending on source; normalize to seconds
             final int durSec = (w.duration is int)
                 ? (w.duration as int)
                 : (w.duration is double)
@@ -133,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
 
+      // Convert to hours and round to one decimal for display
       final plannedHours = plannedSeconds / 3600.0;
       final doneHours = doneSeconds / 3600.0;
 
@@ -149,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           weeklyWokouts = [];
         });
+        // Surface a non-blocking error to the user if fetching failed
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur lors du chargement des séances : $e')),
         );
@@ -156,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         weeklyWokouts = [];
       }
     } finally {
+      // Clear loading flag (guarded by `mounted`)
       if (mounted) {
         setState(() {
           _isLoadingWeekly = false;
@@ -168,10 +187,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _refreshAll() async {
     try {
-      // Recharge les workouts Apple Health
+      // 1) Refresh HealthKit data
       await loadWorkouts();
 
-      // Renvoie les workouts éligibles au backend
+      // 2) Forward eligible workouts (running/cycling/swimming) to backend
       final svc = HKWorkoutService();
       for (final w in hkWorkouts) {
         if (w != null &&
@@ -183,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
 
-      // Recharge les workouts "light" depuis l'API et met à jour l'affichage
+      // 3) Recompute weekly aggregates and refresh UI
       await initWeeklyWorkouts();
 
       if (!mounted) return;
@@ -198,12 +217,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // Navigate to the full workout detail page
   void _openWorkoutDetail(WorkoutLightClass w) {
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => WorkoutDetailPage(id: w.id)));
   }
 
+  // Format seconds as `HhMM` or `MMmin` (e.g., 5400 -> 1h30)
   String _formatHHMM(int totalSeconds) {
     final totalMinutes = (totalSeconds / 60).round();
     final hours = totalMinutes ~/ 60;
@@ -217,6 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Skeleton state while weekly data is loading; still supports pull-to-refresh
     if (_isLoadingWeekly) {
       return Scaffold(
         body: SafeArea(
@@ -253,6 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     }
+    // Identify current vs next week from the fetched dataset
     int? currentWeek;
     int? nextWeek;
     if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) {
@@ -262,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
         nextWeek = weeks.last;
       }
     }
+    // Count planned and completed sessions for the current week
     int sessionsPlanned = 0;
     int sessionsCompleted = 0;
     if (weeklyWokouts != null) {
@@ -313,6 +337,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 160,
                         child: circularPogressBar(
                           totalDone: sessionsCompleted.toDouble(),
+                          // Avoid divide-by-zero: fall back to `done` when `planned` is 0
                           total: (sessionsPlanned > 0
                               ? sessionsPlanned.toDouble()
                               : (sessionsCompleted > 0
@@ -328,6 +353,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 160,
                         child: circularPogressBar(
                           totalDone: hoursDone,
+                          // Same protection for hours progress
                           total: (hoursPlanned > 0
                               ? hoursPlanned
                               : (hoursDone > 0 ? hoursDone : 0.0)),
@@ -349,7 +375,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SizedBox(height: 25),
                   if (weeklyWokouts != null && weeklyWokouts!.isNotEmpty) ...[
-                    // Liste des séances NON terminées de la semaine actuelle
+                    // Current week — first show incomplete sessions
                     for (WorkoutLightClass w in weeklyWokouts!) ...[
                       if ((currentWeek != null && w.week == currentWeek) &&
                           (w.status != WorkoutStatut.COMPLETED)) ...[
@@ -361,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ],
 
-                    // Liste des séances terminées de la semaine actuelle
+                    // Then show completed sessions
                     for (WorkoutLightClass w in weeklyWokouts!) ...[
                       if ((currentWeek != null && w.week == currentWeek) &&
                           (w.status == WorkoutStatut.COMPLETED)) ...[
@@ -408,7 +434,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 25),
 
-                    // Liste des séances NON terminées de la semaine prochaine
+                    // Next week — incomplete sessions
                     for (WorkoutLightClass w in weeklyWokouts!) ...[
                       if (w.week == nextWeek &&
                           (w.status != WorkoutStatut.COMPLETED)) ...[
@@ -420,7 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ],
 
-                    // Liste des séances terminées de la semaine prochaine
+                    // Next week — completed sessions
                     for (WorkoutLightClass w in weeklyWokouts!) ...[
                       if (w.week == nextWeek &&
                           (w.status == WorkoutStatut.COMPLETED)) ...[

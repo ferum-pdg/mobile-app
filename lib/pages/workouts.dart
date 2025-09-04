@@ -1,16 +1,14 @@
 import 'dart:ui';
 
-import 'package:ferum/pages/training_plan/createTrainingPlan/running_screen.dart';
-import 'package:ferum/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/sharedPreferences.dart';
 import '../widgets/gradientButton.dart';
 import 'training_plan/createTrainingPlan/swimming_screen.dart';
 
+// Workouts screen: calendar selection + entry point to create a training plan
 class WorkoutsPage extends StatefulWidget {
   const WorkoutsPage({super.key});
 
@@ -19,16 +17,21 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
+  // Currently selected date in the calendar (defaults to today)
   DateTime selectedDay = DateTime.now();
+  // Cached SharedPreferences instance used to read simple flags (e.g., hasTrainingPlan)
   SharedPreferences? prefs;
 
   @override
   void initState() {
     super.initState();
+    // Ensure French locale data is loaded for TableCalendar titles/labels
     initializeDateFormatting('fr_FR', null);
+    // Load SharedPreferences asynchronously and store in state
     initPrefs();
   }
 
+  // Update the selected day when the user taps a date
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       selectedDay = day;
@@ -36,6 +39,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   }
 
   Future<void> initPrefs() async {
+    // Obtain a single SharedPreferences instance (async)
     SharedPreferences p = await SharedPreferences.getInstance();
 
     setState(() {
@@ -58,6 +62,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   'Entrainements',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
+                // Monthly calendar (French locale) with Monday as the first day
                 TableCalendar(
                   headerStyle: HeaderStyle(
                     formatButtonVisible: false,
@@ -66,12 +71,16 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   locale: 'fr_FR',
                   startingDayOfWeek: StartingDayOfWeek.monday,
                   availableGestures: AvailableGestures.all,
+                  // Tell the calendar which day is selected for styling
                   selectedDayPredicate: (day) => isSameDay(day, selectedDay),
+                  // Center the calendar on the selected day
                   focusedDay: selectedDay,
+                  // Visible range of the calendar
                   firstDay: DateTime.utc(2020, 10, 10),
                   lastDay: DateTime.utc(2030, 10, 10),
                   onDaySelected: _onDaySelected,
                   calendarStyle: CalendarStyle(
+                    // Today’s cell: semi-transparent gradient circle
                     todayDecoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -83,6 +92,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       ),
                       shape: BoxShape.circle,
                     ),
+                    // Selected day: solid gradient circle
                     selectedDecoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Color(0xFF0D47A1), Colors.purple],
@@ -94,16 +104,17 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   ),
                 ),
                 SizedBox(height: 10),
+                // If no training plan exists yet, show the CTA to create one
                 if (!(prefs?.getBool('hasTrainingPlan') ?? false)) ...[
                   const SizedBox(height: 10),
                   GradientButton(
                     text: "Créer un plan d'entraînement",
                     onTap: () {
+                      // Navigate to the plan creation flow (starts with SwimmingScreen)
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const SwimmingScreen(),
+                          builder: (context) => const SwimmingScreen(),
                         ),
                       );
                     },
