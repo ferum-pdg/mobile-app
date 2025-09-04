@@ -1,17 +1,23 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:ferum/models/goal_model.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/training_plan_model.dart';
+import 'package:ferum/models/training_plan_model.dart';
+import 'package:ferum/models/goal_model.dart';
 
+/// Service responsible for handling training plan API requests.
 class TrainingPlanService {
   final Dio _dio = Dio();
   SharedPreferences? prefs;
   String? baseUrl;
 
-  /// Builds the request payload for training plan creation.
+  /// Builds the request payload for training plan creation
+  /// 
+  /// Retrieves:
+  /// - end date (`endDate`),
+  /// - selected days of the week (`selectedDays`),
+  /// - selected goals (running, swimming, cycling).
   Future<Map<String, dynamic>> _buildTrainingPlan() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -58,12 +64,25 @@ class TrainingPlanService {
     return {"endDate": endDate, "daysOfWeek": daysOfWeek, "goals": goals};
   }
 
-  /// Fetches the current training plan from the API.
+  /// Fetches the current training plan from the backend.
+  ///
+  /// Returns:
+  /// - A TrainingPlan object if available,
+  /// - null if no training plan exists yet.
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an unexpected error.
   Future<TrainingPlan?> getTrainingPlan() async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
       final token = prefs.getString('jwt_token');
       baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl!.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
@@ -90,12 +109,12 @@ class TrainingPlanService {
         if (response.data == null || response.data.toString().isEmpty) {
           return null;
         }
+        // Get the current training plan and save it.
         final trainingPlan = TrainingPlan.fromJson(jsonDecode(response.data));
         await prefs.setString(
           'trainingPlan',
           jsonEncode(trainingPlan.toJson()),
         );
-        print(response.data);
         return trainingPlan;
       } else if (response.statusCode == 404) {
         // No training plan exists yet.
@@ -113,12 +132,25 @@ class TrainingPlanService {
     }
   }
 
-  /// Creates a new training plan and returns it.
+  /// Creates a new training plan on the backend
+  ///
+  /// Returns:
+  /// - The newly created TrainingPlan,
+  /// - else null.
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an error.
   Future<TrainingPlan?> createTrainingPlan() async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
       final token = prefs.getString('jwt_token');
       baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl!.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }

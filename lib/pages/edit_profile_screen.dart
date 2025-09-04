@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:ferum/models/user_model.dart';
-import 'package:ferum/pages/profile_screen.dart';
 import 'package:ferum/services/user_service.dart';
 import 'package:ferum/widgets/bottomNav.dart';
-import 'package:ferum/widgets/elevButton.dart';
 import 'package:ferum/widgets/form_text_field.dart';
 import 'package:ferum/widgets/gradientButton.dart';
 import 'package:flutter/material.dart';

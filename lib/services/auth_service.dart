@@ -2,18 +2,32 @@ import 'package:dio/dio.dart';
 import 'package:ferum/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Service responsible for handling authentification API requests.
 class AuthService {
   final Dio _dio = Dio();
 
   /// Logs in a user using email and password.
-  /// Returns true if login succeeds, error otherwise.
+  ///
+  /// Returns:
+  /// - true if login succeeds,
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - Token not returned by the server.
+  /// - HTTP code 401, if the credentials are wrongs,
+  /// - API returns an unexpected error.
   Future<bool> login(String email, String password) async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      
+      // Get backend URL from preferences.
       final String? baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
+
       final response = await _dio.post(
         "$baseUrl/auth/login",
         data: {"email": email, "password": password},
@@ -21,6 +35,7 @@ class AuthService {
           headers: {
             "Content-Type": "application/json"
           },
+          // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
         ),
       );
@@ -50,13 +65,28 @@ class AuthService {
   }
 
 
+  /// Register a new user.
+  ///
+  /// Returns:
+  /// - true if registrations succeeds,
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - Token not returned by the server.
+  /// - HTTP code 404, if the data enterred are invalid.
+  /// - API returns an unexpected error.
   Future<bool> register(String email, String password, String firstName, String lastName, String phoneNumber, String birthDate, double weight, double height, int fcMax) async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get backend URL from preferences.
       final String? baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
+
       final response = await _dio.post(
         "$baseUrl/auth/register",
         data: {
@@ -74,6 +104,7 @@ class AuthService {
           headers: {
             "Content-Type": "application/json"
           },
+          // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
         ),
       );
@@ -115,7 +146,7 @@ class AuthService {
     return prefs.getString("jwt_token");
   }
 
-  /// Removes the JWT token (logout).
+  /// Removes the JWT token and the user (logout).
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("jwt_token");

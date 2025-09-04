@@ -11,12 +11,10 @@ import '../widgets/circularProgressBar.dart';
 
 import '../models/enum.dart';
 
-import '../utils/sharedPreferences.dart';
 import '../services/HKWorkouts_service.dart';
 import '../utils/HKWorkouts_to_json.dart';
 import 'workoutDetailPage.dart';
 import '../models/workoutLight_model.dart';
-import '../models/user_model.dart';
 import '../services/WorkoutsLight_service.dart';
 
 class MyHomePage extends StatefulWidget {

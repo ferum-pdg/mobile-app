@@ -3,17 +3,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/goal_model.dart';
 
+/// Service responsible for handling goals API requests.
 class GoalService {
   final Dio _dio = Dio();
 
   SharedPreferences? prefs;
 
   /// Fetches all goals for a given sport from the API.
+  ///
+  /// Returns:
+  /// - A GoalsList object if available,
+  /// - null if no goals exist yet for the given sport.
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an unexpected error.
   Future<GoalsList?> getGoalsBySport(String sport) async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
       final token = prefs.getString('jwt_token');
       final String? baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }

@@ -1,23 +1,35 @@
 import 'dart:async';
 import 'dart:convert';
 
-import '../models/user_model.dart';
 import 'package:dio/dio.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_model.dart';
+
+/// Service responsible for handling user-related API requests.
 class UserService {
   final Dio _dio = Dio();
 
   SharedPreferences? prefs;
   String? baseUrl;
 
-  // Fetches the currently authenticated user from the API.
+  /// Fetch the currently authenticated user from the backend.
+  /// 
+  /// Stores the user in SharedPreferences under the key "user".
+  /// 
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an unexpected error.
   Future<User?> getUser() async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
       final token = prefs.getString('jwt_token');
       baseUrl = prefs.getString("BackendURL");
+      
       if (baseUrl == null || baseUrl!.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
@@ -39,11 +51,10 @@ class UserService {
       );
 
       if (response.statusCode == 200) {
+        // Save the current user authentificated.
         final user = User.fromJson(response.data);
         await prefs.setString('user', jsonEncode(user.toJson()));
-        return user;
-      } else if (response.statusCode == 401) {
-        throw Exception("Unauthorized. Please log in again.");
+        return user;      
       } else {
         throw Exception("Error while fetching user: ${response.data}");
       }
@@ -57,12 +68,23 @@ class UserService {
     }
   }
 
-  /// Updates the user profile on the API and stores it locally.
+  /// Update the user profile on the backend and persist it locally.
+  /// 
+  /// Saves the updated user in SharedPreferences under the key "user".
+  /// 
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an unexpected error.
   Future<void> setUser(User user) async {
     try {
+      // Retrieve shared preferences (persistent storage on device).
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
       final token = prefs.getString('jwt_token');
       baseUrl = prefs.getString("BackendURL");
+
       if (baseUrl == null || baseUrl!.isEmpty) {
         throw Exception("BackendURL not set in SharedPreferences.");
       }
@@ -79,6 +101,7 @@ class UserService {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json"
           },
+          // Allow Dio to return 4xx errors instead of throwing.
           validateStatus: (status) => status != null && status < 500,
         ),
       );
