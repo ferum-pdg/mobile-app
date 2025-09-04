@@ -1,0 +1,192 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:ferum/models/training_plan_model.dart';
+import 'package:ferum/models/goal_model.dart';
+
+/// Service responsible for handling training plan API requests.
+class TrainingPlanService {
+  final Dio _dio = Dio();
+  SharedPreferences? prefs;
+  String? baseUrl;
+
+  /// Builds the request payload for training plan creation
+  /// 
+  /// Retrieves:
+  /// - end date (`endDate`),
+  /// - selected days of the week (`selectedDays`),
+  /// - selected goals (running, swimming, cycling).
+  Future<Map<String, dynamic>> _buildTrainingPlan() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Retrieve end date.
+    final String? endDate = prefs.getString('endDate');
+
+    // Retrieve selected days of the week.
+    final List<String> daysOfWeek = prefs.getStringList('selectedDays') ?? [];
+
+    // Retrieve selected goals.
+    final List<String> goals = [];
+
+    final String? selectedRunningGoalString = prefs.getString(
+      'selectedRunningGoal',
+    );
+    final String? selectedSwimmingGoalString = prefs.getString(
+      'selectedSwimmingGoal',
+    );
+    final String? selectedCyclingGoalString = prefs.getString(
+      'selectedCyclingGoal',
+    );
+
+    if (selectedRunningGoalString != null) {
+      final selectedRunningGoal = Goal.fromJson(
+        jsonDecode(selectedRunningGoalString),
+      );
+      goals.add(selectedRunningGoal.id);
+    }
+
+    if (selectedSwimmingGoalString != null) {
+      final selectedSwimmingGoal = Goal.fromJson(
+        jsonDecode(selectedSwimmingGoalString),
+      );
+      goals.add(selectedSwimmingGoal.id);
+    }
+
+    if (selectedCyclingGoalString != null) {
+      final selectedCyclingGoal = Goal.fromJson(
+        jsonDecode(selectedCyclingGoalString),
+      );
+      goals.add(selectedCyclingGoal.id);
+    }
+
+    return {"endDate": endDate, "daysOfWeek": daysOfWeek, "goals": goals};
+  }
+
+  /// Fetches the current training plan from the backend.
+  ///
+  /// Returns:
+  /// - A TrainingPlan object if available,
+  /// - null if no training plan exists yet.
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an unexpected error.
+  Future<TrainingPlan?> getTrainingPlan() async {
+    try {
+      // Retrieve shared preferences (persistent storage on device).
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
+      final token = prefs.getString('jwt_token');
+      baseUrl = prefs.getString("BackendURL");
+
+      if (baseUrl == null || baseUrl!.isEmpty) {
+        throw Exception("BackendURL not set in SharedPreferences.");
+      }
+
+      if (token == null) {
+        throw Exception("No token found. Please log in again.");
+      }
+
+      final response = await _dio.get(
+        "$baseUrl/training-plan",
+        options: Options(
+          responseType: ResponseType.plain,
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          // Allow Dio to return 4xx errors instead of throwing.
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Handle empty body (no plan available).
+        if (response.data == null || response.data.toString().isEmpty) {
+          return null;
+        }
+        // Get the current training plan and save it.
+        final trainingPlan = TrainingPlan.fromJson(jsonDecode(response.data));
+        await prefs.setString(
+          'trainingPlan',
+          jsonEncode(trainingPlan.toJson()),
+        );
+        return trainingPlan;
+      } else if (response.statusCode == 404) {
+        // No training plan exists yet.
+        return null;
+      } else {
+        throw Exception("Error while fetching training plan: ${response.data}");
+      }
+    } on DioException catch (e) {
+      final message =
+          e.response?.data['details'] ??
+          "Unable to fetch training plan. Please try again.";
+      throw Exception(message);
+    } catch (e) {
+      throw Exception("Training plan fetch failed: $e");
+    }
+  }
+
+  /// Creates a new training plan on the backend
+  ///
+  /// Returns:
+  /// - The newly created TrainingPlan,
+  /// - else null.
+  ///
+  /// Throws Exception if:
+  /// - BackendURL is missing,
+  /// - JWT token is missing,
+  /// - API returns an error.
+  Future<TrainingPlan?> createTrainingPlan() async {
+    try {
+      // Retrieve shared preferences (persistent storage on device).
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Get token and backend URL from preferences.
+      final token = prefs.getString('jwt_token');
+      baseUrl = prefs.getString("BackendURL");
+
+      if (baseUrl == null || baseUrl!.isEmpty) {
+        throw Exception("BackendURL not set in SharedPreferences.");
+      }
+
+      if (token == null) {
+        throw Exception("No token found. Please log in again.");
+      }
+
+      final trainingPlanInfo = await _buildTrainingPlan();
+
+      final response = await _dio.post(
+        "$baseUrl/training-plan",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          // Allow Dio to return 4xx errors instead of throwing.
+          validateStatus: (status) => status != null && status < 500,
+        ),
+        data: trainingPlanInfo,
+      );
+
+      if (response.statusCode == 201) {
+        final trainingPlan = await getTrainingPlan();
+        return trainingPlan;
+      } else {
+        throw Exception("Error while creating training plan: ${response.data}");
+      }
+    } on DioException catch (e) {
+      final message =
+          e.response?.data['details'] ??
+          "Unable to create training plan : $e. Please try again.";
+      throw Exception(message);
+    } catch (e) {
+      throw Exception("Training plan creation failed: $e");
+    }
+  }
+}

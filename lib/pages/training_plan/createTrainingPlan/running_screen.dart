@@ -1,0 +1,121 @@
+import 'dart:convert';
+
+import 'package:ferum/models/goal_model.dart';
+import 'package:ferum/services/goal_service.dart';
+import 'package:ferum/widgets/goalCard.dart';
+import 'package:ferum/widgets/goalHeader.dart';
+
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Screen that allows the user to select a running-related goal.
+/// Goals are retrieved from the backend through [GoalService] and persisted
+/// locally using SharedPreferences.
+class RunningScreen extends StatefulWidget {
+  const RunningScreen({super.key});
+
+  @override
+  State<RunningScreen> createState() =>
+      _RunningScreenState();
+}
+
+class _RunningScreenState extends State<RunningScreen> {
+  SharedPreferences? prefs;
+
+  // List of running goals fetched from the backend.
+  GoalsList? runningGoalsList;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize SharedPreferences.
+    _initPrefs();
+    // Fetch running goals from the backend.
+    _getRunningGoals();
+  }
+
+  /// Fetches the list of running goals from the backend service.
+  Future<void> _getRunningGoals() async {
+    try {
+      GoalsList? list = await GoalService().getGoalsBySport("RUNNING");
+      setState(() {      
+        runningGoalsList = list;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
+  /// Initializes SharedPreferences instance used for persisting selected goal.
+  Future<void> _initPrefs() async {
+    SharedPreferences p = await SharedPreferences.getInstance();
+    setState(() {
+      prefs = p;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GoalHeader(
+              title: "Objectif", 
+              subTitle: "Running", 
+              icon: Icons.directions_run, 
+              gradientColors: [Color(0xFF0D47A1), Colors.purple]
+            ),
+            // Show list of running goals if they have been loaded.
+            if (runningGoalsList != null)...[
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(24.0),
+                  itemCount: runningGoalsList?.goals.length,                        
+                  itemBuilder: (context, index) {                                        
+                    final goal = runningGoalsList?.goals[index];
+
+                    // Retrieve locally saved goal from SharedPreferences.
+                    final selectedGoalString = prefs!.getString('selectedRunningGoal');
+                    Goal? selectedGoal;
+
+                    if (selectedGoalString != null){
+                      selectedGoal = Goal.fromJson(jsonDecode(selectedGoalString));
+                    }
+
+                    // Check if the current goal is the one selected by the user.
+                    final isSelected = selectedGoal != null && goal!.id == selectedGoal.id;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          // Toggle goal selection: save or remove from SharedPreferences.
+                          if (isSelected){
+                            prefs!.remove('selectedRunningGoal');
+                          } else {                            
+                            prefs!.setString('selectedRunningGoal', jsonEncode(goal.toJson()));
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: GoalCard(
+                          name: goal!.name, 
+                          icon: Icons.directions_run,
+                          isSelected: isSelected,
+                        ),
+                      ),
+                    );
+                  }
+                )
+              ),
+            ]        
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -34,10 +34,34 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  
+  pigeon: ^26.0.0
+
+
+  # For HTTP requests.
+  dio: ^5.9.0
+
+  # To store JWT locally.
+  shared_preferences: ^2.5.3
+
+  # Decode and validate JWTs.
+  jwt_decoder: ^2.0.1 
+
+  table_calendar: ^3.2.0
+  intl: ^0.20.2
+
+  # Pick image.
+  image_picker: ^1.2.0
+  fl_chart: ^1.0.0
+
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # Modify launcher icon
+  flutter_launcher_icons: ^0.14.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -49,6 +73,11 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/img/f.png"
+
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -58,8 +87,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/img/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
