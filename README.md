@@ -92,7 +92,7 @@ open -a Simulator
 flutter run
 ```
 
-### Dépannage (tips rapides)
+### Dépannage (tips rapides)
 
 Si le build échoue après modification des dépendances :
 
