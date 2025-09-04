@@ -1,31 +1,5 @@
 # Ferum mobile app
 
-## Page accueil
-
-Compteur de nombre de séance pas semaine
-Compteur distance effectuée ?
-Séances de la semaine
-Score d’entrainement 
-
-## Page entrainement
-
-Le calendrier avec la séance du jour sélectionné comme dans Figma
-
-Créer son entrainement :
-Sélectionner Sport voir objectif dans docs entrainement.
-Mettre jours disponible pour les séances
-Sélectionner l’échéance
-
-Page qui va à mesure (avec barre progression)
-Sélection sport + distance
-Sélection jours
-Sélections tranche horaire
-Proposition mettre historique (entrée manuelle)
-
-
-
-## Page profil
-
 ## Getting Started
 
 Ce document explique les étapes nécessaires afin de rejoindre l’équipe de développement mobile et de lancer l’application Flutter localement.
@@ -155,7 +129,7 @@ Afin de modifier l'url du backend sur lequel vous souhaitez vous connecter, alle
 await prefs.setString('BackendURL', 'http://127.0.0.1:8080');
 ```
 
-Si vous avez le backend en local, utilisez l'URL `http://127.0.0.1:8080`. Si vous souhaitez utiliser le backend hébergé sur infomaniak vous devez mettre `http://83.228.200.235/backend/`.
+Si vous avez le backend en local, utilisez l'URL `http://127.0.0.1:8080`. Si vous souhaitez utiliser le backend hébergé sur infomaniak vous devez mettre `http://83.228.200.235`.
 
 ### Import d'entrainement effectué
 
