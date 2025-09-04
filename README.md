@@ -133,20 +133,8 @@ Si vous avez le backend en local, utilisez l'URL `http://127.0.0.1:8080`. Si vou
 
 ### Import d'entrainement effectué
 
-Afin d'importer un entrainement effectué vous pouvez aller directement dans Apple Santé sur l'iOS Simulator et rajouter des données.
+Afin d'importer un entrainement effectué vous pouvez aller directement dans Apple Santé sur l'iOS Simulator et rajouter des données manuellement.
 
 Autrement, vous pouvez importer un workout en vous connectant directement à l'API.
 
-Pour cela d'abord vous devez récupérer le token JWT, pour cela vous faite un `POST` sur `http://localhost:8080/auth/login` avec le body suivant :
-
-```json
-{
-  "email": "test@example.com",
-  "password": "password"
-}
-```
-Veuillez remplacer les valeurs par défaut avec l'email et le mot de passe de votre compte.
-
-Ensuite, il est nécessaire d'effectuer un `POST` sur `http://localhost:8080/workouts` avec le `json` de l'entrainement. Il est nécessaire de mettre le body suivant et de modifier les dates afin de faire correspondre à un entrainement RUNNING du plan d'entrainement. Il ne faut pas uniquement modifier la date `start` et `end` mais tous les `timestamp`.
-
-Vous trouverez des exemples des payloads dans le [repository du backend](https://github.com/ferum-pdg/backend-api).
+Vous trouverez des exemples des payloads ainsi que les explications pour utiliser l'API dans le [repository du backend](https://github.com/ferum-pdg/backend-api).
