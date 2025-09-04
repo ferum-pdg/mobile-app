@@ -1,15 +1,15 @@
-import 'package:ferum/pages/signup_screen.dart';
 import 'package:flutter/material.dart';
 
+// Custom welcome screen button with optional solid color or gradient background
 class WelcomeButton extends StatelessWidget {
   const WelcomeButton({
-    super.key, 
-    this.buttonText, 
-    this.onTap, 
+    super.key,
+    this.buttonText,
+    this.onTap,
     this.colors,
-    this.textColor
+    this.textColor,
   });
-  
+
   final String? buttonText;
   final Widget? onTap;
   final List<Color>? colors;
@@ -17,30 +17,29 @@ class WelcomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Decide whether to render with a solid color or a gradient
     final hasSingleColor = colors != null && colors!.length == 1;
     final hasGradient = colors != null && colors!.length >= 2;
 
+    // GestureDetector wraps the button to handle navigation on tap
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context, 
-          MaterialPageRoute(
-            builder: (e) => onTap!,
-          ),
-        );
+        // Navigate to the widget provided in onTap
+        Navigator.push(context, MaterialPageRoute(builder: (e) => onTap!));
       },
       child: Container(
         padding: EdgeInsets.all(30.0),
         decoration: BoxDecoration(
-          color: hasSingleColor ? colors!.first : null,          
-          gradient: hasGradient ? LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: colors!
-          ) : null,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(50)
-          )
+          color: hasSingleColor ? colors!.first : null,
+          gradient: hasGradient
+              ? LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: colors!,
+                )
+              : null,
+          // Rounded corner only on the top-left side
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(50)),
         ),
         child: Text(
           buttonText!,
@@ -48,9 +47,9 @@ class WelcomeButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
-            color: textColor!
+            color: textColor!,
           ),
-        )
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tagBadge.dart';
 
+// A row block for a workout "step": number bubble + main content + optional side badges and repetition counter
 class StepBlock extends StatelessWidget {
   final int number;
   final List<Widget> children;
@@ -16,6 +17,7 @@ class StepBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Card-like container with subtle border and rounded corners
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black12),
@@ -27,6 +29,7 @@ class StepBlock extends StatelessWidget {
         children: [
           const SizedBox(width: 12),
 
+          // Leading step index (1, 2, 3, ...)
           CircleNumber(number: number),
 
           Expanded(
@@ -35,6 +38,7 @@ class StepBlock extends StatelessWidget {
               children: children,
             ),
           ),
+          // Optional vertical stack of side badges (e.g., intensity, notes)
           if (sideBadges != null && sideBadges!.isNotEmpty) ...[
             const SizedBox(width: 12),
             Align(
@@ -42,6 +46,7 @@ class StepBlock extends StatelessWidget {
               child: Column(children: sideBadges!),
             ),
           ],
+          // Show repetition count on the right when this step repeats (e.g., 3x)
           if (nbRepetition > 1) ...[
             SizedBox(width: 10),
             Align(
@@ -55,6 +60,7 @@ class StepBlock extends StatelessWidget {
   }
 }
 
+// Top-level card header used to title a workout section with a colored tag
 class workoutDetailCard extends StatelessWidget {
   final String title;
   final String tag;
@@ -73,6 +79,7 @@ class workoutDetailCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
+        // Elevation only when a border is visible; keep it flat when `transparentBorder` is true
         boxShadow: [
           if (!transparentBorder)
             BoxShadow(
@@ -81,6 +88,7 @@ class workoutDetailCard extends StatelessWidget {
               offset: const Offset(0, 3),
             ),
         ],
+        // Toggle between transparent and subtle gray border
         border: transparentBorder
             ? Border.all(color: Colors.transparent)
             : Border.all(color: Colors.black12),
@@ -101,6 +109,7 @@ class workoutDetailCard extends StatelessWidget {
   }
 }
 
+// Filled circular badge for the step index
 class CircleNumber extends StatelessWidget {
   final int number;
   const CircleNumber({required this.number});
@@ -126,6 +135,7 @@ class CircleNumber extends StatelessWidget {
   }
 }
 
+// Small circular badge placed on the right: shows either text or an icon
 class SideBadge extends StatelessWidget {
   final String? text;
   final IconData? icon;
@@ -134,6 +144,7 @@ class SideBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Compact, pill-like circle; text variant used for counts (e.g., "3x"), icon variant for symbols
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

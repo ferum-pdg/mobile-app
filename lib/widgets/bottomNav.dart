@@ -4,25 +4,25 @@ import 'package:flutter/material.dart';
 import '../pages/profile_screen.dart';
 import '../pages/home.dart';
 import '../models/user_model.dart';
-import 'package:ferum/pages/workouts.dart';
 
+// Main bottom navigation wrapper: switches between Home, Training Plan, and Profile
 class BottomNav extends StatefulWidget {
   final User? user;
 
-  const BottomNav({
-    super.key,
-    required this.user,
-  });
+  const BottomNav({super.key, required this.user});
 
   @override
   State<BottomNav> createState() => _BottomNavState();
 }
 
 class _BottomNavState extends State<BottomNav> {
+  // Tracks which tab is currently selected
   int selectedIndex = 0;
 
+  // Controls PageView to sync with BottomNavigationBar
   PageController pageController = PageController();
-  
+
+  // Handle bottom nav tap: update index and jump to the corresponding page
   void onTapped(int index) {
     setState(() {
       selectedIndex = index;
@@ -35,7 +35,12 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: [MyHomePage(), TrainingPlanWrapper(), ProfilePage(user: widget.user)],
+        // Each tab's root widget: Home, Training Plan, Profile
+        children: [
+          MyHomePage(),
+          TrainingPlanWrapper(),
+          ProfilePage(user: widget.user),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,

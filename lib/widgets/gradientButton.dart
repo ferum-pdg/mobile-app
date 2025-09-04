@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Reusable button with a customizable gradient background and ripple effect
 class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback? onTap;
@@ -30,6 +31,7 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Button content: gradient background + centered text
     final child = Container(
       width: width,
       height: height,
@@ -47,7 +49,7 @@ class GradientButton extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ))
-                  // dim le texte si disabled
+                  // Dim the text color when button is disabled
                   .copyWith(
                     color: (textStyle?.color ?? Colors.white).withValues(
                       alpha: enabled ? 1.0 : 0.6,
@@ -57,12 +59,13 @@ class GradientButton extends StatelessWidget {
       ),
     );
 
-    // Material + InkWell pour un ripple propre au-dessus du gradient
+    // Wrap with Material + InkWell to provide proper ripple effect on gradient
     return Material(
       color: Colors.transparent,
       borderRadius: borderRadius,
       child: InkWell(
         borderRadius: borderRadius,
+        // Disable tap handling when not enabled
         onTap: enabled ? onTap : null,
         child: Padding(padding: EdgeInsets.zero, child: child),
       ),

@@ -6,6 +6,7 @@ import '../models/workoutLight_model.dart';
 import 'infoCard.dart';
 import 'tagBadge.dart';
 
+// Map an English weekday (from enum/name) to a French display label
 String getFrenchDay(String englishDay) {
   switch (englishDay.toUpperCase()) {
     case "MONDAY":
@@ -27,6 +28,7 @@ String getFrenchDay(String englishDay) {
   }
 }
 
+// Compact workout summary card used in lists
 class workoutLightCard extends StatelessWidget {
   final WorkoutLightClass workout;
 
@@ -38,6 +40,7 @@ class workoutLightCard extends StatelessWidget {
       width: double.infinity,
       child: Container(
         decoration: BoxDecoration(
+          // Purple border highlights a completed workout
           border: Border.all(
             color: (workout.status == WorkoutStatut.COMPLETED)
                 ? Colors.purple
@@ -54,6 +57,7 @@ class workoutLightCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Localized day label (input is English, UI shows French)
                     Text(
                       getFrenchDay(workout.day),
                       style: TextStyle(fontSize: 12, color: Colors.black),
@@ -61,6 +65,7 @@ class workoutLightCard extends StatelessWidget {
                     SizedBox(height: 5),
                     Row(
                       children: [
+                        // Map internal workout type to a short, user-facing title; color switches to purple when completed
                         if (workout.type == WorkoutType.EF)
                           Text(
                             "Endurance fondamentale",
@@ -128,6 +133,7 @@ class workoutLightCard extends StatelessWidget {
                             ),
                           ),
 
+                        // Completion checkmark
                         if (workout.status == WorkoutStatut.COMPLETED) ...[
                           SizedBox(width: 10),
                           Icon(
@@ -143,6 +149,7 @@ class workoutLightCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(width: 10),
+                        // Duration comes in seconds: show hh:mm when > 1h, otherwise show minutes
                         if (workout.duration > 3600)
                           InfoCard(
                             title:
@@ -153,6 +160,7 @@ class workoutLightCard extends StatelessWidget {
                             title: " ${(workout.duration / 60).toInt()} \nmin",
                           ),
                         SizedBox(width: 15),
+                        // Sport-specific tag badge
                         if (workout.sport == WorkoutSport.RUNNING)
                           TagBadge(text: "RUNNING", color: Colors.purple)
                         else if (workout.sport == WorkoutSport.CYCLING)
@@ -168,6 +176,7 @@ class workoutLightCard extends StatelessWidget {
                 ),
                 Column(
                   children: [
+                    // Sport-specific leading icon
                     if (workout.sport == WorkoutSport.RUNNING) ...[
                       const Icon(
                         Icons.directions_run,
@@ -199,6 +208,7 @@ class workoutLightCard extends StatelessWidget {
   }
 }
 
+// Format minutes as `HhMM` (e.g., 1h05); integer division + left-pad minutes
 String formatDuration(int totalMinutes) {
   final hours = totalMinutes ~/ 60;
   final minutes = totalMinutes % 60;

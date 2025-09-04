@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'dart:math';
 
+// Circular progress bar with gradient foreground and numeric label (supports hh:mm formatting)
 class circularPogressBar extends StatelessWidget {
   final double totalDone;
   final double total;
@@ -20,6 +21,7 @@ class circularPogressBar extends StatelessWidget {
     this.isHours = false,
   });
 
+  // Format a fractional hour value into `HhMM` or `MMmin` (e.g., 1.5 -> 1h30)
   String _formatHHMM(double valueHours) {
     final totalMinutes = (valueHours * 60).round();
     final hours = totalMinutes ~/ 60;
@@ -34,8 +36,8 @@ class circularPogressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize
-          .min, // pour que la colonne prenne juste la place nécessaire
+      mainAxisSize: MainAxisSize.min,
+      // Keep the widget as small as needed (avoid taking full vertical space)
       children: [
         Container(
           width: size,
@@ -44,6 +46,7 @@ class circularPogressBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             shape: BoxShape.circle,
+            // Transparent stroke preserves consistent layout when embedded alongside other circular widgets
             border: Border.all(color: Colors.transparent, width: 2.0),
           ),
           child: Stack(
@@ -52,12 +55,14 @@ class circularPogressBar extends StatelessWidget {
               CustomPaint(
                 size: Size(size, size),
                 painter: _GradientCircularProgressPainter(
+                  // Expected range: 0..1 (no clamping here) — ensure `total > 0` upstream
                   progress: totalDone / total,
                   gradient: LinearGradient(
                     colors: [Colors.blue.shade900, Colors.purple],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
+                  // Neutral background ring for the "remaining" portion
                   backgroundColor: Colors.grey.shade400,
                   stroke: 10.0,
                 ),
@@ -65,6 +70,7 @@ class circularPogressBar extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
+                      // Choose between hh:mm display, integer-only, or raw doubles
                       isHours
                           ? '${_formatHHMM(totalDone)} / ${_formatHHMM(total)}'
                           : (toInt
@@ -94,6 +100,7 @@ class circularPogressBar extends StatelessWidget {
   }
 }
 
+// Custom painter that draws a full background arc and a rounded-caps gradient arc for progress
 class _GradientCircularProgressPainter extends CustomPainter {
   final double progress;
   final Gradient gradient;
@@ -112,6 +119,7 @@ class _GradientCircularProgressPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final strokeWidth = stroke ?? size.width / 10;
     final radius = (size.width / 2) - strokeWidth / 2;
+    // Start at 12 o'clock so progress grows clockwise from the top
     const startAngle = -pi / 2;
     const fullSweepAngle = 2 * pi;
     final progressSweepAngle = 2 * pi * progress;
@@ -130,7 +138,7 @@ class _GradientCircularProgressPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
 
-    // Draw the background arc
+    // Draw the remaining segment in the background color
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       startAngle + progressSweepAngle,
@@ -139,7 +147,7 @@ class _GradientCircularProgressPainter extends CustomPainter {
       backgroundPaint,
     );
 
-    // Draw the gradient arc
+    // Draw the completed segment with a gradient and rounded stroke caps
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       startAngle,
@@ -151,6 +159,7 @@ class _GradientCircularProgressPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    // Always repaint to reflect progress changes (inputs are not compared)
     return true;
   }
 }

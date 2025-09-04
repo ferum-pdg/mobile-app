@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Small square card showing a title (and optional subtitle), with optional gradient background
 class InfoCard extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -22,6 +23,7 @@ class InfoCard extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
+        // When useGradient = true, apply a blue→purple gradient; otherwise transparent background
         gradient: useGradient
             ? LinearGradient(
                 colors: [Colors.blue.shade900, Colors.purple],
@@ -31,6 +33,7 @@ class InfoCard extends StatelessWidget {
             : null,
         color: useGradient ? null : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
+        // Only draw a light border when no gradient is used
         border: useGradient ? null : Border.all(color: Colors.black12),
       ),
       padding: const EdgeInsets.all(8),
@@ -42,6 +45,7 @@ class InfoCard extends StatelessWidget {
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
+              // Switch text color for readability on gradient vs. plain background
               color: useGradient ? Colors.white : Colors.black,
             ),
           ),
