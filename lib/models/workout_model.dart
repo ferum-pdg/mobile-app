@@ -1,5 +1,6 @@
 import 'package:ferum/models/enum.dart';
 
+// Full workout model: includes schedule, planned steps (plan), and optional performance metrics
 class WorkoutClass {
   final String id;
   final WorkoutSport sport;
@@ -38,30 +39,38 @@ class WorkoutClass {
   factory WorkoutClass.fromJson(Map<String, dynamic> json) {
     return WorkoutClass(
       id: json['id'],
+      // Parse required sport enum from its string name; throws if unknown
       sport: WorkoutSport.values.firstWhere(
         (e) => e.name == json['sport'],
         orElse: () => throw Exception("Invalid sport: ${json['sport']}"),
       ),
+      // Parse required workout type enum from its string name; throws if unknown
       type: WorkoutType.values.firstWhere(
         (e) => e.name == json['type'],
         orElse: () => throw Exception("Invalid type: ${json['type']}"),
       ),
+      // Parse required status enum from its string name; throws if unknown
       status: WorkoutStatut.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => throw Exception("Invalid statut: ${json['status']}"),
       ),
+      // ISO-8601 timestamps; may be null when not scheduled
       start: json['start'] != null ? DateTime.parse(json['start']) : null,
       end: json['end'] != null ? DateTime.parse(json['end']) : null,
       day: json['day'],
+      // Planned duration in seconds
       durationSec: json['durationSec'],
+      // Optional metrics (units): distance in meters, calories in kcal, HR in bpm
       distanceMeters: (json['distanceMeters'] as num?)?.toDouble(),
       caloriesKcal: (json['caloriesKcal'] as num?)?.toDouble(),
       avgHeartRate: (json['avgHeartRate'] as num?)?.toDouble(),
       grade: (json['grade'] as num?)?.toDouble(),
       aiReview: json['aiReview'],
+      // Planned steps (blocks) for the session
       plan: ((json['plan'] as List?) ?? [])
           .map((e) => WorkoutBloc.fromJson(e as Map<String, dynamic>))
           .toList(),
+      // Optional post-workout metrics per block (actual vs planned)
       performanceDetails: (json['performanceDetails'] as List?)
           ?.map((e) => PerformanceDetail.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -70,9 +79,10 @@ class WorkoutClass {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'sport': sport,
+    // Enums are stored as enum objects here; using `.name` with the backend
     'type': type,
     'status': status,
+    // Serialize dates as ISO-8601 strings
     'start': start?.toIso8601String(),
     'end': end?.toIso8601String(),
     'day': day,
@@ -87,8 +97,10 @@ class WorkoutClass {
   };
 }
 
+// A step (block) of the workout: repeatable group of one or more details
 class WorkoutBloc {
   final int blocId;
+  // Number of times this block should be repeated
   final int repetitionCount;
   final List<BlocDetail> details;
 
@@ -101,6 +113,7 @@ class WorkoutBloc {
   factory WorkoutBloc.fromJson(Map<String, dynamic> json) {
     return WorkoutBloc(
       blocId: (json['blocId'] as num).toInt(),
+      // Number of times this block should be repeated
       repetitionCount: (json['repetitionCount'] as num).toInt(),
       details: (json['details'] as List<dynamic>)
           .map((e) => BlocDetail.fromJson(e as Map<String, dynamic>))
@@ -115,9 +128,12 @@ class WorkoutBloc {
   };
 }
 
+// Atomic instruction inside a block: duration + target HR range + intensity zone
 class BlocDetail {
   final int blocDetailId;
+  // Duration in seconds
   final int durationSec;
+  // Target HR range in bpm
   final int bpmMinTarget;
   final int bpmMaxTarget;
   final String intensityZone;
@@ -149,6 +165,7 @@ class BlocDetail {
   };
 }
 
+// Measured performance for a single block: planned BPM range vs actual mean
 class PerformanceDetail {
   final int blocId;
   final int plannedBPMMin;

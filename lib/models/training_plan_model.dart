@@ -1,8 +1,13 @@
+// High-level training plan summary: current progress and the active weekly plan
 class TrainingPlan {
   final String id;
+  // 1-based index of the current week within the plan
   final int currentWeekNb;
+  // Total number of weeks in the plan
   final int totalNbOfWeeks;
+  // Workouts completed so far (across the whole plan)
   final int currentNbOfWorkouts;
+  // Total workouts in the full plan
   final int totalNbOfWorkouts;
   final CurrentWeeklyPlan currentWeeklyPlan;
 
@@ -15,14 +20,15 @@ class TrainingPlan {
     required this.currentWeeklyPlan,
   });
 
-  factory TrainingPlan.fromJson(Map<String, dynamic> json){
+  factory TrainingPlan.fromJson(Map<String, dynamic> json) {
     return TrainingPlan(
-      id: json['id'], 
+      id: json['id'],
       currentWeekNb: json['currentWeekNb'],
       totalNbOfWeeks: json['totalNbOfWeeks'],
       currentNbOfWorkouts: json['currentNbOfWorkouts'],
       totalNbOfWorkouts: json['totalNbOfWorkouts'],
-      currentWeeklyPlan: CurrentWeeklyPlan.fromJson(json['currentWeeklyPlan']),      
+      // Nested object: the plan for the current week
+      currentWeeklyPlan: CurrentWeeklyPlan.fromJson(json['currentWeeklyPlan']),
     );
   }
 
@@ -36,6 +42,7 @@ class TrainingPlan {
   };
 }
 
+// The currently active week: list of daily plans and the week number
 class CurrentWeeklyPlan {
   final String id;
   final List<DailyPlan> dailyPlans;
@@ -47,14 +54,18 @@ class CurrentWeeklyPlan {
     required this.weekNumber,
   });
 
-  factory CurrentWeeklyPlan.fromJson(Map<String, dynamic> json){
+  factory CurrentWeeklyPlan.fromJson(Map<String, dynamic> json) {
+    // Decode the array of daily plans
     var list = json['dailyPlans'] as List;
-    List<DailyPlan> dailyPlans = list.map((i) => DailyPlan.fromJson(i)).toList();
+    // Map each JSON item to a DailyPlan model
+    List<DailyPlan> dailyPlans = list
+        .map((i) => DailyPlan.fromJson(i))
+        .toList();
 
     return CurrentWeeklyPlan(
-      id: json['id'], 
+      id: json['id'],
       dailyPlans: dailyPlans,
-      weekNumber: json['weekNumber'],   
+      weekNumber: json['weekNumber'],
     );
   }
 
@@ -63,25 +74,23 @@ class CurrentWeeklyPlan {
     'dailyPlans': dailyPlans.map((i) => i.toJson()).toList(),
     'weekNumber': weekNumber,
   };
-
 }
 
+// Minimal description of a day in the week: weekday label + sport
 class DailyPlan {
   final String id;
+  // Weekday name (e.g., MONDAY); used for localization in the UI
   final String dayOfWeek;
+  // Sport as a string; later mapped to enum/icons in the UI
   final String sport;
 
-  DailyPlan({
-    required this.id,
-    required this.dayOfWeek,
-    required this.sport,
-  });
+  DailyPlan({required this.id, required this.dayOfWeek, required this.sport});
 
-  factory DailyPlan.fromJson(Map<String, dynamic> json){
+  factory DailyPlan.fromJson(Map<String, dynamic> json) {
     return DailyPlan(
-      id: json['id'], 
+      id: json['id'],
       dayOfWeek: json['dayOfWeek'],
-      sport: json['sport'], 
+      sport: json['sport'],
     );
   }
 

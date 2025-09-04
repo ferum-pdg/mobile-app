@@ -1,12 +1,17 @@
+// Core user profile model: persisted locally and exchanged with backend
 class User {
   final String id;
   final String email;
   final String firstName;
   final String lastName;
   final String phoneNumber;
+  // Birth date as ISO-8601 string (yyyy-MM-dd)
   final String birthDate;
+  // Weight in kilograms
   final double weight;
+  // Height in centimeters
   final double height;
+  // Max heart rate (bpm)
   final int fcMax;
 
   User({
@@ -18,20 +23,20 @@ class User {
     required this.birthDate,
     required this.weight,
     required this.height,
-    required this.fcMax
+    required this.fcMax,
   });
 
-  factory User.fromJson(Map<String, dynamic> json){
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'], 
+      id: json['id'],
       email: json['email'],
       firstName: json['firstName'],
       lastName: json['lastName'],
       phoneNumber: json['phoneNumber'],
-      birthDate: json['birthDate'],      
+      birthDate: json['birthDate'],
       weight: json['weight'],
       height: json['height'],
-      fcMax: json['fcMax']
+      fcMax: json['fcMax'],
     );
   }
 
@@ -44,6 +49,6 @@ class User {
     'birthDate': birthDate,
     'weight': weight,
     'height': height,
-    'fcMax': fcMax    
+    'fcMax': fcMax,
   };
 }

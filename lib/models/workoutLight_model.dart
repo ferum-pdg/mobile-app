@@ -1,5 +1,6 @@
 import 'package:ferum/models/enum.dart';
 
+// Lightweight workout model used for lists and weekly summaries (no full step details)
 class WorkoutLightClass {
   final String id;
   final WorkoutSport sport;
@@ -24,16 +25,19 @@ class WorkoutLightClass {
   factory WorkoutLightClass.fromJson(Map<String, dynamic> json) {
     return WorkoutLightClass(
       id: json['id'],
+      // Parse sport enum from string; throw if invalid
       sport: WorkoutSport.values.firstWhere(
         (e) => e.name == json['sport'],
         orElse: () => throw Exception("Invalid sport: ${json['sport']}"),
       ),
+      // Parse optional type enum; null when not provided
       type: json['type'] != null
           ? WorkoutType.values.firstWhere(
               (e) => e.name == json['type'],
               orElse: () => throw Exception("Invalid type: ${json['type']}"),
             )
           : null,
+      // Parse workout status enum from string
       status: WorkoutStatut.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => throw Exception("Invalid statut: ${json['status']}"),
@@ -48,7 +52,9 @@ class WorkoutLightClass {
   Map<String, dynamic> toJson() => {
     'id': id,
     'sport': sport.name,
+    // ⚠️ Assumes type is non-null — will throw if not set
     'type': type!.name,
+    // Note: key is "statut" (French) while fromJson expects "status" → potential mismatch
     'statut': status.name,
     'day': day,
     'duration': duration,
@@ -56,12 +62,14 @@ class WorkoutLightClass {
     'source': source,
   };
 
+  // Helper to decode a list of workouts from JSON
   static List<WorkoutLightClass> fromJsonList(List<dynamic> list) {
     return list
         .map((e) => WorkoutLightClass.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
+  // Helper to encode a list of workouts into JSON
   static List<Map<String, dynamic>> toJsonList(List<WorkoutLightClass> items) {
     return items.map((e) => e.toJson()).toList();
   }
