@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-Ce document explique les étapes nécessaires afin de rejoindre l’équipe de développement mobile et de lancer l’application Flutter localement.
+Ce document explique les étapes nécessaires afin de lancer l’application Flutter localement.
 
 ### Installation de l'environnement de développement
 
@@ -81,7 +81,8 @@ flutter pub get
 ### Lancement du projet
 
 Depuis VS Code :
-- En bas à droite de l'écran, choisir l'appareil cible (Start iOS Simulator), par défaut, il est écris `macos`s.
+- En bas à droite de l'écran, choisir l'appareil cible (Start iOS Simulator), par défaut, il est écris `macos`.
+![](./img/ios_simulator_start.png)
 - Exécuter le fichier main.dart
 
 Depuis le terminal :
@@ -117,23 +118,23 @@ open -a Simulator
 
 Afin de réinitialiser l'application local, donc de supprimer les préférences, il est nécessaire de supprimer l'application de l'iPhone.
 
-Pour cela allez sur la page d'acceuil de l'iPhone et appuiez longuement sur l'app jusqu'à ce que le bouton surppimer l'application apparaisse.
+Pour cela, rendez-vous sur l'écran d'accueil de l'iPhone et appuiez longuement sur l'app jusqu'à ce que le bouton supprimer l'application apparaisse.
 
 ### Modification URL backend
 
-Par défaut sur la branche `main` le backend hébergé sur infomaniak est configuré.
+Par défaut, sur la branche `main`, le backend hébergé sur infomaniak est configuré.
 
-Afin de modifier l'url du backend sur lequel vous souhaitez vous connecter, allez dans dans le fichier `lib/utils/sharedPreferences.dart` et modifier la propriété backendURL
+Afin de modifier l'URL du backend sur laquelle vous souhaitez vous connecter, allez dans dans le fichier [lib/utils/sharedPreferences.dart](./lib/utils/sharedPreferences.dart) et modifier la propriété `BackendURLs`.
 
 ```dart
 await prefs.setString('BackendURL', 'http://127.0.0.1:8080');
 ```
 
-Si vous avez le backend en local, utilisez l'URL `http://127.0.0.1:8080`. Si vous souhaitez utiliser le backend hébergé sur infomaniak vous devez mettre `http://83.228.200.235`.
+Si vous exécutez le backend en local, utilisez l'URL `http://127.0.0.1:8080`. Si vous souhaitez utiliser le backend hébergé sur infomaniak vous devez mettre `http://83.228.200.235`.
 
 ### Import d'entrainement effectué
 
-Afin d'importer un entrainement effectué vous pouvez aller directement dans Apple Santé sur l'iOS Simulator et rajouter des données manuellement.
+Afin d'importer un entrainement effectué, vous pouvez aller directement dans Apple Santé sur l'iOS Simulator et rajouter des données manuellement.
 
 Autrement, vous pouvez importer un workout en vous connectant directement à l'API.
 
