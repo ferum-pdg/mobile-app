@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:ferum/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service responsible for handling authentification API requests.
